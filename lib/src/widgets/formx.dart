@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../extensions/context.dart';
 import 'text_formx_field.dart';
 
+InputDecorator? a;
+
 /// A widget that builds a form with [TextFormxField] widgets.
 class Formx extends StatefulWidget {
   /// A widget that builds a form with [TextFormxField] widgets.
@@ -39,9 +41,9 @@ class Formx extends StatefulWidget {
     this.onSaved,
     this.onChanged,
     this.onSubmitted,
-    this.valueModifier,
     this.fieldWrapper,
     this.fieldModifier,
+    this.valueModifier,
     this.errorTextModifier,
     this.decorationModifier,
     this.autovalidateMode,
@@ -69,14 +71,14 @@ class Formx extends StatefulWidget {
   /// Called when [FormxState.save] is called.
   final FormCallback? onSaved;
 
-  /// Modifier for each [FormMap] value. [FormxState.form] is built with this.
-  final ValueModifier? valueModifier;
-
   /// Wrapper for each resolved field [Widget].
   final FieldWrapper? fieldWrapper;
 
   /// Modifier for each [TextFormxField].
   final FieldModifier? fieldModifier;
+
+  /// Modifier for each [FormMap] value. [FormxState.form] is built with this.
+  final ValueModifier? valueModifier;
 
   /// Modifier for each `TextFormxField.validator` errorText.
   final ErrorTextModifier? errorTextModifier;
