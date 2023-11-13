@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../widgets/text_formx_field.dart';
 import 'text_formx_field_copy_with.dart';
 
-/// Addons extension for [TextFormxField].
+/// Extension modifiers for [TextFormxField].
 ///
 /// These are some examples of how powerful copyWith is.
 /// Use as reference and create your own extensions.
-extension TextFormxFieldAddons on TextFormxField {
+extension TextFormxFieldModifiers on TextFormxField {
   /// Adds a traditional validator to the field. Stackable.
   TextFormxField addValidator(FormFieldValidator<String> validator) {
     return copyWith(
@@ -31,7 +31,7 @@ extension TextFormxFieldAddons on TextFormxField {
     });
   }
 
-  /// Adds a num formatter and num validator. Stackable.
+  /// Adds a num validator. Stackable.
   ///
   /// You can override all [invalidText] with `Formx.onErrorText` callback.
   TextFormxField validateNum(
@@ -63,22 +63,25 @@ extension TextFormxFieldAddons on TextFormxField {
     });
   }
 
-  /// Adds a icon button to obscure the field.
+  /// Adds an suffixIcon to obscure the field.
   TextFormxField obscure({
     bool init = true,
+    bool required = true,
     Widget on = const Icon(Icons.visibility),
     Widget off = const Icon(Icons.visibility_off),
   }) {
     var obscure = init;
-    return copyWith(
+
+    var field = copyWith(
       obscureText: obscure,
-      decoration: (decoration ?? const InputDecoration()).copyWith(
+      decoration: decoration?.copyWith(
         suffixIcon: StatefulBuilder(
           builder: (context, setState) {
             return IconButton(
               icon: obscure ? off : on,
               onPressed: () {
                 setState(() {
+                  // convenient way to update the field programmatically.
                   TextFormxField.of(context).update((f) {
                     return f.copyWith(obscureText: obscure = !f.obscureText);
                   });
@@ -89,5 +92,10 @@ extension TextFormxFieldAddons on TextFormxField {
         ),
       ),
     );
+
+    if (required) {
+      field = field.required();
+    }
+    return field;
   }
 }
