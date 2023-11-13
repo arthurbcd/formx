@@ -13,7 +13,7 @@ extension TextFormxFieldCopyWith on TextFormxField {
   /// Creates a copy of this [TextFormxField] but with the given fields.
   TextFormxField copyWith({
     Key? key,
-    GlobalKey<FormFieldState<String>>? fieldKey,
+    // GlobalKey<FormFieldState<String>>? fieldKey,
     TextEditingController? controller,
     String? initialValue,
     FocusNode? focusNode,
@@ -83,7 +83,7 @@ extension TextFormxFieldCopyWith on TextFormxField {
     return TextFormxField(
       tag,
       key: key ?? this.key,
-      fieldKey: fieldKey ?? this.fieldKey,
+      // fieldKey: fieldKey ?? this.fieldKey,
       controller: controller ?? this.controller,
       initialValue: initialValue ?? this.initialValue,
       focusNode: focusNode ?? this.focusNode,

@@ -5,18 +5,17 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../extensions/text_formx_field_copy_with.dart';
-import '../interface/text_form_field_copy.dart';
+import '../interface/text_form_field_base.dart';
 import 'formx.dart';
 
 /// A [TextFormField] that can be used with [Formx].
-class TextFormxField extends TextFormFieldCopy {
+class TextFormxField extends TextFormFieldBase with FormxField<String> {
   /// A [TextFormField] that can be used with [Formx].
   ///
   /// The [tag] of this [TextFormxField], used as parameter key.
   const TextFormxField(
     this.tag, {
     super.key,
-    this.fieldKey,
     super.controller,
     super.initialValue,
     super.focusNode,
@@ -84,11 +83,8 @@ class TextFormxField extends TextFormFieldCopy {
     super.canRequestFocus = true,
   });
 
-  /// The [tag] of this [TextFormxField], used as parameter key.
+  @override
   final String tag;
-
-  /// The [key] of this internal [TextFormField].
-  final GlobalKey<FormFieldState<String>>? fieldKey;
 
   /// Accesses the nearest [TextFormxFieldState] above the given context.
   static TextFormxFieldState of(BuildContext context) {
@@ -98,14 +94,63 @@ class TextFormxField extends TextFormFieldCopy {
   }
 
   @override
-  State<TextFormxField> createState() => TextFormxFieldState();
+  TextFormxFieldState createState() => TextFormxFieldState();
+}
+
+/// A tagged widget for [Formx]. Where [T] is the type of the field value.
+mixin FormxField<T> on StatefulWidget {
+  /// The [tag] of this [TextFormxField], used as parameter key.
+  String get tag;
+}
+
+/// The [State] of fields below [Formx]. Currently only [TextFormxField].
+abstract class FormxFieldState<T> extends State<FormxField<T>> {
+  final _fieldKey = GlobalKey<FormFieldState<T>>();
+  FormFieldState<T> get _state => _fieldKey.currentState!;
+
+  /// The current value of this [TextFormxField].
+  T? get value => _state.value;
+
+  /// The current error text of this [TextFormxField].
+  String? get errorText => _state.errorText;
+
+  /// True if this field has any validation errors.
+  bool get hasError => _state.hasError;
+
+  /// Trus if the current value is valid.
+  bool get isValid => _state.isValid;
+
+  /// Calls the [FormField]'s onSaved method with the current value.
+  void save() => _state.save();
+
+  /// Resets this [TextFormxField] to its initial value.
+  void reset() => _state.reset();
+
+  /// Validates this [TextFormxField] and returns its error text.
+  bool validate() => _state.validate();
+
+  /// Calls [FormFieldState.didChange] with the current value.
+  void didChange(T? value) => _state.didChange(value);
+
+  /// Sets the current value of this [TextFormxField].
+  void setValue(T? value) => _state.setValue(value);
+
+  /// Gets [FormFieldState.restorationId].
+  String? get restorationId => _state.restorationId;
+
+  /// Calls [FormFieldState.restoreState].
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    _state.restoreState(oldBucket, initialRestore);
+  }
 }
 
 /// The [State] of a [TextFormxField].
-class TextFormxFieldState extends State<TextFormxField> {
+class TextFormxFieldState extends FormxFieldState<String> {
   late final _formx = Formx.of(context);
-  late final _fieldKey = widget.fieldKey ?? GlobalKey();
   late TextFormxField _field = widget;
+
+  @override
+  TextFormxField get widget => super.widget as TextFormxField;
 
   /// The [tag] of this [TextFormxField], used as parameter key.
   String get tag => widget.tag;
@@ -117,8 +162,8 @@ class TextFormxFieldState extends State<TextFormxField> {
 
   @override
   void initState() {
+    _formx.attachField(tag, this);
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
   }
 
   @override
@@ -126,37 +171,37 @@ class TextFormxFieldState extends State<TextFormxField> {
     if (mounted) super.setState(fn);
   }
 
-  @protected
-  void _init() {
-    _formx.attachField(widget.tag, _fieldKey.currentState!);
+  @override
+  void reassemble() {
+    super.reassemble();
+
+    //extensions methods are applied after reassemble, so this is needed.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() => _field = widget);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // * Field wrapper
-    final field = _formx.onField?.call(tag, _field) ?? _field;
+    final field = _formx.fieldModifier?.call(tag, _field) ?? _field;
 
-    // * Form inheritance
     final widget = field
         .copyWith(
           enabled: field.enabled ?? _formx.enabled,
           initialValue: field.controller == null
-              ? field.initialValue ?? _formx.form[tag] as String?
+              ? field.initialValue ?? _formx.initialValues[tag]?.toString()
               : null,
           autovalidateMode: field.autovalidateMode ?? _formx.autovalidateMode,
           onChanged: (value) {
             field.onChanged?.call(value);
-            _formx.didChange(tag, value);
+            _formx.onChanged(tag, value);
           },
           onFieldSubmitted: (value) {
             field.onFieldSubmitted?.call(value);
-            _formx.didSubmit();
+            _formx.onSubmitted(tag, value);
           },
-          decoration: () {
-            final onDecoration =
-                _formx.onDecoration?.call(tag, field.decoration);
-            return onDecoration ?? field.decoration;
-          }(),
+          decoration: _formx.decorationModifier?.call(tag, field.decoration) ??
+              field.decoration,
           validator: (value) {
             if ((field.autovalidateMode ?? _formx.autovalidateMode) == null) {
               update(
@@ -168,13 +213,12 @@ class TextFormxFieldState extends State<TextFormxField> {
             final errorText = field.validator?.call(value);
             if (errorText == null) return null;
 
-            final onErrorText = _formx.onErrorText?.call(tag, errorText);
+            final onErrorText = _formx.errorTextModifier?.call(tag, errorText);
             return onErrorText ?? errorText;
           },
         )
         .toTextFormField(_fieldKey);
 
-    // * Widget wrapper
-    return _formx.onWidget?.call(tag, widget) ?? widget;
+    return _formx.fieldWrapper?.call(tag, widget) ?? widget;
   }
 }
