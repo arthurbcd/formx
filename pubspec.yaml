@@ -1,6 +1,6 @@
 name: formx
 description: Build, validate and fill forms easily with extended Form and TextFormField.
-version: 0.3.13
+version: 0.5.0
 homepage: https://www.branvier.com
 
 environment:

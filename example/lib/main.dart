@@ -130,6 +130,9 @@ class FormxExample extends StatelessWidget {
           // Validate all fields. Just like `Form.validate()`.
           final isValid = state.validate();
 
+          // you can also validate specific fields with:
+          // validate(tag: , tags: , key: , keys: ,);
+
           if (isValid) {
             Map<String, dynamic> form = state.form;
             print('all valid and ready to go: $form');

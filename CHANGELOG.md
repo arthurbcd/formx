@@ -2,6 +2,35 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.0 - Nov 13, 2023
+
+- Added `FormxField` and `FormxFieldState` abstract interfaces.
+  - Updated [FormxState.validate] you can validate by tag, tags, key or keys.
+  - Added [FormxState.setValue].
+  - Added [FormxState.didChange].
+- Removed fieldKey param, use key directly with `FormxFieldState` for GlobalKey type.
+- Removed FormxException. AssertErrors will be thrown instead, for best practices.
+- Changes `TextFormxFieldModifiers.obscure`, which now also makes the field required.
+- Added `complex_structure` example.
+- Added `page_view` example.
+
+## 0.4.0 - Nov 07, 2023
+
+- Adds [Formx.valueModifier] and updates [FormxState.form] getter.
+- Adds [FormxState.save] and [Formx.onSaved] callback.
+- Adds [FormxState.reset].
+- Adds [FormxState.isValid].
+- Adds [FormxState.hasError].
+- Changes `onWidget` to `fieldWrapper`.
+- Changes `onField` to `fieldModifier`.
+- Changes `onDecoration` to `decorationModifier`.
+- Changes `onErrorText` to `errorTextModifier`.
+
+- Updates in code were made to better follow Effective Dart style and also improve developer experience:
+  - Adds `all_lint_rules.yaml`.
+  - Updates `analysis_options` for stricter lints.
+  - Updates CHANGELOG style.
+
 ## 0.3.13 - Oct 23, 2023
 
 - Bump to Flutter sdk 3.13.0.
