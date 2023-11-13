@@ -13,9 +13,9 @@ import 'package:flutter/services.dart';
 /// which is used in `TextFormxField` and `TextFormxField.copyWith`.
 ///
 /// Note: The class is not made abstract for tests purposes.
-class TextFormFieldCopy extends StatefulWidget {
+class TextFormFieldBase extends StatefulWidget {
   /// An exact copy of [TextFormField.new] constructor.
-  const TextFormFieldCopy({
+  const TextFormFieldBase({
     super.key,
     this.controller,
     this.initialValue,
