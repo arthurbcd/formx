@@ -26,6 +26,9 @@ analyzer:
     deprecated_member_use_from_same_package: ignore
 linter:
   rules:
+    prefer_final_locals: false
+    avoid_annotating_with_dynamic: false
+    
     # Conflicts with ignored parameters (final _) =>. Unnecessary final.
     prefer_final_parameters: false
 
