@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formx/formx.dart';
-import 'package:formx/src/interface/text_form_field_copy.dart';
+import 'package:formx/src/interface/text_form_field_base.dart';
 
 import 'constructor_parser/extractor.dart';
 import 'constructor_parser/param.dart';
@@ -9,7 +9,7 @@ import 'constructor_parser/param.dart';
 void main() {
   test('check if copiable TextFormField has same params as original', () {
     final mainParams = Constructor(TextFormField.new).params;
-    final copyParams = Constructor(TextFormFieldCopy.new).params;
+    final copyParams = Constructor(TextFormFieldBase.new).params;
 
     expect(mainParams, copyParams);
   });
