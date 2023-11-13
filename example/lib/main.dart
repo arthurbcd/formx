@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:formx/formx.dart';
 
 void main() {
-  runApp(const MaterialApp(home: FormxExample()));
+  runApp(const MaterialApp(home: Material(child: FormxExample())));
 }
 
 class User {
@@ -34,7 +34,9 @@ class FormxExample extends StatelessWidget {
 
         // Called when all fields are valid and submitted via Enter key or .submit().
         onSubmitted: (form) {
-          print('all valid and ready to go: $form');
+          if (Formx.at(context).validate()) {
+            print('all valid and ready to go: $form');
+          }
         },
 
         // Optional initial values for all fields. Tip: Model.toMap() or autofill.
@@ -43,21 +45,21 @@ class FormxExample extends StatelessWidget {
           'email': '',
           'address': {
             'street': 'Sesame Street',
-            'number': '42',
+            'number': 42, // will be stringified
           }
         },
 
         // Allows you to modify the field before it's built.
-        onField: (tag, field) {
-          // `.required()` is an extension. See [TextFormxFieldAddons]
-          return ['name', 'email'].contains(tag) ? field.required() : field;
+        fieldModifier: (tag, field) {
+          // `.required()` is an extension. See [TextFormxFieldModifiers]
+          return tag == 'name' ? field.required() : field;
         },
 
         // A wrapper that will be applied to all fields. DRY!
-        onWidget: (tag, widget) => Padding(padding: padding, child: widget),
+        fieldWrapper: (tag, widget) => Padding(padding: padding, child: widget),
 
-        // [InputDecoration] callback. Tip: scoped form themes!
-        onDecoration: (tag, decoration) {
+        // [InputDecoration] callback. Tip: scope your form themes!
+        decorationModifier: (tag, decoration) {
           return decoration?.copyWith(
             labelText: tag,
             border: const OutlineInputBorder(),
@@ -66,7 +68,10 @@ class FormxExample extends StatelessWidget {
         },
 
         // [TextFormField.validator] errorText callback. Tip: nice for i18n key.
-        onErrorText: (tag, errorText) => '$errorText.$tag',
+        errorTextModifier: (tag, errorText) {
+          if (tag == 'email') return errorText;
+          return '$errorText.$tag';
+        },
 
         // Your creativity is the limit. Manage your fields however you want.
         // Just make sure there's a [Formx] above them.
@@ -76,22 +81,39 @@ class FormxExample extends StatelessWidget {
             children: [
               const Text('USER'),
 
-              /// Simple as one line can be.
+              // Same as TextFormField but copiable and const.
               const TextFormxField('name'),
-              const TextFormxField('email'),
 
-              /// Nested fields too!? Yes!
+              /// Stack validators through extensions modifiers.
+              const TextFormxField('email')
+                  .validate((value) => value.isNotEmpty) // same as .required()
+                  .validate((value) => value.contains('form'))
+                  .validate((value) => value.contains('x'), 'Missing x')
+                  .validate((value) => value.contains('@'), 'Not an email'),
+
+              /// Simple as one line.
+              const TextFormxField('password'), // adds suffixIcon
+
+              /// Nested fields too!?
               Formx(
                 tag: 'address',
+
+                /// and value modifier? Yes!
+                valueModifier: (tag, value) {
+                  if (tag == 'number') {
+                    return int.tryParse(value);
+                  }
+                  return value;
+                },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text('Address:'),
 
-                    // Same as TextFormField but copiable and const.
+                    // Use copyWith to create your own extensions!
                     const TextFormxField('street').copyWith(),
 
-                    // Thanks to copyWith we can have cool extensions!
+                    // Like this cool num validator.
                     const TextFormxField('number').validateNum((n) => n < 100),
                   ],
                 ),
@@ -103,22 +125,79 @@ class FormxExample extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // You can use formxKey or just visit the state at context.
-          final formxState = Formx.at(context); // or .of() for above.
+          final state = Formx.at(context); // or .of() for above.
 
           // Validate all fields. Just like `Form.validate()`.
-          final isValid = formxState.validate();
+          final isValid = state.validate();
 
           if (isValid) {
-            Map<String, dynamic> form = formxState.submit();
+            Map<String, dynamic> form = state.form;
             print('all valid and ready to go: $form');
           } else {
             print('invalid fields:');
-            formxState.errorTexts.forEach((tag, errorText) {
+            state.errorTexts.forEach((tag, errorText) {
               print('$tag: $errorText');
             });
           }
         },
         child: const Icon(Icons.check),
+      ),
+    );
+  }
+}
+
+class ComplexDataStructure extends StatelessWidget {
+  const ComplexDataStructure({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Formx(
+      initialValues: {
+        'user': {
+          'name': 'Big',
+          'email': 'a@a',
+        },
+        'details': {
+          'address': {
+            'street': 'Sesame Street',
+            'number': 42, // will be stringified
+          },
+          'school': 'Sesame School',
+        },
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Formx(
+            tag: 'user',
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormxField('name'),
+                TextFormxField('email'),
+              ],
+            ),
+          ),
+          Formx(
+            tag: 'details',
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Formx(
+                  tag: 'address',
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormxField('street'),
+                      TextFormxField('number'),
+                    ],
+                  ),
+                ),
+                TextFormxField('school'),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
