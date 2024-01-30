@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.1 - Jan 23, 2024
+
+- Added `Formx.disableValidatorsOnDebugMode` to disable validators on debug mode.
+- Added `suffixIcon` extension to `TextFormxFieldModifiers`.
+- Added `prefixIcon` extension to `FormxFieldModifiers`.
+
 ## 0.5.0 - Nov 13, 2023
 
 - Added `FormxField` and `FormxFieldState` abstract interfaces.

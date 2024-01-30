@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import '../extensions/context.dart';
 import 'text_formx_field.dart';
 
-InputDecorator? a;
-
 /// A widget that builds a form with [TextFormxField] widgets.
 class Formx extends StatefulWidget {
   /// A widget that builds a form with [TextFormxField] widgets.
@@ -91,6 +89,9 @@ class Formx extends StatefulWidget {
 
   /// The widget tree with [TextFormxField] widgets (or [Formx] with [tag]).
   final Widget child;
+
+  /// When true, disables all validators. Works only on debug mode.
+  static bool disableValidatorsOnDebugMode = false;
 
   /// Returns the first [FormxState] above [BuildContext].
   static FormxState of(BuildContext context) {

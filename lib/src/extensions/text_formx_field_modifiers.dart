@@ -98,4 +98,18 @@ extension TextFormxFieldModifiers on TextFormxField {
     }
     return field;
   }
+
+  /// Adds a suffixIcon to the field.
+  TextFormxField suffixIcon(Widget suffixIcon) {
+    return copyWith(
+      decoration: decoration?.copyWith(suffixIcon: suffixIcon),
+    );
+  }
+
+  /// Adds a prefixIcon to the field.
+  TextFormxField prefixIcon(Widget prefixIcon) {
+    return copyWith(
+      decoration: decoration?.copyWith(prefixIcon: prefixIcon),
+    );
+  }
 }

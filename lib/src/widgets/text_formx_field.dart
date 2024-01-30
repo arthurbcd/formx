@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_dynamic_calls, lines_longer_than_80_chars, invalid_use_of_protected_member
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -85,6 +86,14 @@ class TextFormxField extends TextFormFieldBase with FormxField<String> {
 
   @override
   final String tag;
+
+  @override
+  FormFieldValidator<String>? get validator {
+    if (Formx.disableValidatorsOnDebugMode && kDebugMode) {
+      return null;
+    }
+    return super.validator;
+  }
 
   /// Accesses the nearest [TextFormxFieldState] above the given context.
   static TextFormxFieldState of(BuildContext context) {
