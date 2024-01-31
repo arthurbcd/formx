@@ -2,6 +2,13 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.6.0 - Jan 30, 2024
+
+- Changes `TextFormxField` tag to named parameter.
+- Adds `FormxState.value` to get a field value by tag, no matter how deep it is.
+- Adds `Formx.builder` parameter for context and state access.
+- Removed `Formx.at` to access state below context.
+
 ## 0.5.1 - Jan 23, 2024
 
 - Added `Formx.disableValidatorsOnDebugMode` to disable validators on debug mode.

@@ -33,10 +33,10 @@ class FormxExample extends StatelessWidget {
         onChanged: print,
 
         // Called when all fields are valid and submitted via Enter key or .submit().
-        onSubmitted: (form) {
-          if (Formx.at(context).validate()) {
-            print('all valid and ready to go: $form');
-          }
+        onSubmitted: (state) {
+          // if (Formx.at(context).validate()) {
+          print('all valid and ready to go: $state');
+          // }
         },
 
         // Optional initial values for all fields. Tip: Model.toMap() or autofill.
@@ -46,7 +46,7 @@ class FormxExample extends StatelessWidget {
           'address': {
             'street': 'Sesame Street',
             'number': 42, // will be stringified
-          }
+          },
         },
 
         // Allows you to modify the field before it's built.
@@ -75,75 +75,100 @@ class FormxExample extends StatelessWidget {
 
         // Your creativity is the limit. Manage your fields however you want.
         // Just make sure there's a [Formx] above them.
-        child: Center(
-          child: Column(
+        builder: (context, state) => Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('USER'),
+
+                // Same as TextFormField but copiable and const.
+                const TextFormxField(tag: 'name'),
+
+                /// Stack validators through extensions modifiers.
+                const TextFormxField(tag: 'email')
+                    .validate(
+                        (value) => value.isNotEmpty) // same as .required()
+                    .validate((value) => value.contains('form'))
+                    .validate((value) => value.contains('x'), 'Missing x')
+                    .validate((value) => value.contains('@'), 'Not an email'),
+
+                /// Simple as one line.
+                const TextFormxField(tag: 'password'), // adds suffixIcon
+
+                /// Nested fields too!?
+                Formx(
+                  tag: 'address',
+
+                  /// and value modifier? Yes!
+                  valueModifier: (tag, value) {
+                    if (tag == 'number') {
+                      return int.tryParse(value);
+                    }
+                    return value;
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Address:'),
+
+                      // Use copyWith to create your own extensions!
+                      const TextFormxField(tag: 'street').copyWith(),
+
+                      // Like this cool num validator.
+                      const TextFormxField(tag: 'number')
+                          .validateNum((n) => n < 100),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          floatingActionButton: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('USER'),
-
-              // Same as TextFormField but copiable and const.
-              const TextFormxField('name'),
-
-              /// Stack validators through extensions modifiers.
-              const TextFormxField('email')
-                  .validate((value) => value.isNotEmpty) // same as .required()
-                  .validate((value) => value.contains('form'))
-                  .validate((value) => value.contains('x'), 'Missing x')
-                  .validate((value) => value.contains('@'), 'Not an email'),
-
-              /// Simple as one line.
-              const TextFormxField('password'), // adds suffixIcon
-
-              /// Nested fields too!?
-              Formx(
-                tag: 'address',
-
-                /// and value modifier? Yes!
-                valueModifier: (tag, value) {
-                  if (tag == 'number') {
-                    return int.tryParse(value);
-                  }
-                  return value;
+              FloatingActionButton(
+                onPressed: () {
+                  state.reset();
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Address:'),
+                child: const Icon(Icons.refresh),
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  state.fill({
+                    'name': 'Biggy',
+                    'email': 'z@z',
+                    'address': {
+                      'street': 'Lalala Street',
+                      'number': 43,
+                    },
+                  });
+                },
+                child: const Icon(Icons.edit),
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  // Validate all fields. Just like `Form.validate()`.
+                  final isValid = state.validate();
 
-                    // Use copyWith to create your own extensions!
-                    const TextFormxField('street').copyWith(),
+                  // you can also validate specific fields with:
+                  // validate(tag: , tags: , key: , keys: ,);
 
-                    // Like this cool num validator.
-                    const TextFormxField('number').validateNum((n) => n < 100),
-                  ],
-                ),
+                  if (isValid) {
+                    Map<String, dynamic> form = state.form;
+                    print('all valid and ready to go: $form');
+                  } else {
+                    print('invalid fields:');
+                    state.errorTexts.forEach((tag, errorText) {
+                      print('$tag: $errorText');
+                    });
+                  }
+                },
+                child: const Icon(Icons.check),
               ),
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // You can use formxKey or just visit the state at context.
-          final state = Formx.at(context); // or .of() for above.
-
-          // Validate all fields. Just like `Form.validate()`.
-          final isValid = state.validate();
-
-          // you can also validate specific fields with:
-          // validate(tag: , tags: , key: , keys: ,);
-
-          if (isValid) {
-            Map<String, dynamic> form = state.form;
-            print('all valid and ready to go: $form');
-          } else {
-            print('invalid fields:');
-            state.errorTexts.forEach((tag, errorText) {
-              print('$tag: $errorText');
-            });
-          }
-        },
-        child: const Icon(Icons.check),
       ),
     );
   }
@@ -176,8 +201,8 @@ class ComplexDataStructure extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormxField('name'),
-                TextFormxField('email'),
+                TextFormxField(tag: 'name'),
+                TextFormxField(tag: 'email'),
               ],
             ),
           ),
@@ -191,12 +216,12 @@ class ComplexDataStructure extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextFormxField('street'),
-                      TextFormxField('number'),
+                      TextFormxField(tag: 'street'),
+                      TextFormxField(tag: 'number'),
                     ],
                   ),
                 ),
-                TextFormxField('school'),
+                TextFormxField(tag: 'school'),
               ],
             ),
           ),

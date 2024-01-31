@@ -56,8 +56,8 @@ class Page1 extends StatelessWidget {
       body: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormxField('name', onSaved: print),
-          TextFormxField('email', onSaved: print),
+          TextFormxField(tag: 'name', onSaved: print),
+          TextFormxField(tag: 'email', onSaved: print),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -79,8 +79,8 @@ class Page2 extends StatelessWidget {
       body: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormxField('street', onSaved: print),
-          TextFormxField('number', onSaved: print),
+          TextFormxField(tag: 'street', onSaved: print),
+          TextFormxField(tag: 'number', onSaved: print),
         ],
       ),
       floatingActionButton: FloatingActionButton(onPressed: context.nextPage),
@@ -97,7 +97,7 @@ class Page3 extends StatelessWidget {
       body: const Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormxField('school', onSaved: print),
+          TextFormxField(tag: 'school', onSaved: print),
         ],
       ),
       floatingActionButton: FloatingActionButton(

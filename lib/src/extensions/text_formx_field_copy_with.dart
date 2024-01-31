@@ -81,7 +81,7 @@ extension TextFormxFieldCopyWith on TextFormxField {
     bool? canRequestFocus,
   }) {
     return TextFormxField(
-      tag,
+      tag: tag,
       key: key ?? this.key,
       // fieldKey: fieldKey ?? this.fieldKey,
       controller: controller ?? this.controller,

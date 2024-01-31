@@ -1,8 +1,9 @@
 // ignore_for_file: public_member_api_docs, invalid_use_of_protected_member
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
-import '../extensions/context.dart';
 import 'text_formx_field.dart';
 
 /// A widget that builds a form with [TextFormxField] widgets.
@@ -45,8 +46,9 @@ class Formx extends StatefulWidget {
     this.errorTextModifier,
     this.decorationModifier,
     this.autovalidateMode,
-    required this.child,
-  });
+    this.child,
+    this.builder,
+  }) : assert(child != null || builder != null, 'child or builder must be set');
 
   /// When present, links this form to a parent [FormxState.form]. This also enables parent/child callbacks.
   /// The tagged form map will be nested in the parent form map.
@@ -61,13 +63,13 @@ class Formx extends StatefulWidget {
   final FormMap? initialValues;
 
   /// Listens to all changes of this [FormxState.form].
-  final FormCallback? onChanged;
+  final FormxCallback? onChanged;
 
   /// Called when `onFieldSubmitted` or `submit()` are called and valid.
-  final FormCallback? onSubmitted;
+  final FormxCallback? onSubmitted;
 
   /// Called when [FormxState.save] is called.
-  final FormCallback? onSaved;
+  final FormxCallback? onSaved;
 
   /// Wrapper for each resolved field [Widget].
   final FieldWrapper? fieldWrapper;
@@ -88,7 +90,10 @@ class Formx extends StatefulWidget {
   final AutovalidateMode? autovalidateMode;
 
   /// The widget tree with [TextFormxField] widgets (or [Formx] with [tag]).
-  final Widget child;
+  final Widget? child;
+
+  /// Sintaxsugar replacement for [child].
+  final Widget Function(BuildContext, FormxState)? builder;
 
   /// When true, disables all validators. Works only on debug mode.
   static bool disableValidatorsOnDebugMode = false;
@@ -109,16 +114,6 @@ class Formx extends StatefulWidget {
     return widget?.state;
   }
 
-  /// Returns the first [FormxState] below [context]. Filters by [key] or [tag].
-  static FormxState at(BuildContext context, {Key? key, String? tag}) {
-    return context.visitState(
-      assertType: 'Formx',
-      filter: (state) =>
-          (tag == null || tag == state.widget.tag) &&
-          (key == null || key == state.widget.key),
-    );
-  }
-
   @override
   State<Formx> createState() => FormxState();
 }
@@ -128,8 +123,8 @@ class Formx extends StatefulWidget {
 /// - `value` is either a field value [String] or a nested form [FormMap].
 typedef FormMap = Map<String, dynamic>;
 
-/// Signature for [FormMap] callback.
-typedef FormCallback = void Function(FormMap form);
+/// Signature for [FormxState] callback.
+typedef FormxCallback = void Function(FormxState state);
 
 /// Signature for field wrapper by [TextFormxField.tag].
 typedef FieldWrapper = Widget Function(String tag, Widget widget);
@@ -160,7 +155,7 @@ typedef FieldStateMap = Map<String, TextFormxFieldState>;
 
 /// The state of a [Formx] widget.
 ///
-/// You can access the state using [Formx.key], [Formx.of] or [Formx.at].
+/// You can access the state using [Formx.key] or [Formx.of].
 class FormxState extends State<Formx> {
   /// The parent [FormxState] descendant of this [context].
   late final FormxState? parent = () {
@@ -194,7 +189,7 @@ class FormxState extends State<Formx> {
       widget.autovalidateMode ?? (hasTag ? parent?.autovalidateMode : null);
 
   /// The initial values for this [form]. Applied to [_fields] and [_nested].
-  late final FormMap initialValues = widget.initialValues != null
+  FormMap get initialValues => widget.initialValues != null
       ? Map.of(widget.initialValues!)
       : Map.of(parent?.initialValues[widget.tag] as FormMap? ?? {});
 
@@ -216,18 +211,6 @@ class FormxState extends State<Formx> {
     _nested.forEach((tag, formx) => errorTexts.addAll(formx.errorTexts));
     return errorTexts..removeWhere((key, value) => value.isEmpty);
   }
-
-  // /// Returns a [FormMap] if [validate] succeeds, or throws a [FormxException].
-  // FormMap submit() {
-  //   return trySubmit() ?? (throw FormxException.withErrorTexts(errorTexts));
-  // }
-
-  // /// Returns a [FormMap] if [isValid] succeeds, or null.
-  // FormMap? trySubmit() {
-  //   if (!validate()) return null;
-  //   widget.onSubmitted?.call(form);
-  //   return form;
-  // }
 
   /// Returns a [FormMap] with all [_fields] and [_nested] values.
   ///
@@ -314,13 +297,28 @@ class FormxState extends State<Formx> {
     return !hasError;
   }
 
+  /// Attempts to find the [TextFormxFieldState] by [tag], or returns null.
+  TextFormxFieldState? fieldOrNull(String tag) {
+    final state = stateWhere(
+      (t, state) => t == tag && state is TextFormxFieldState,
+    );
+    return state as TextFormxFieldState?;
+  }
+
+  /// Attempts to find the [TextFormxFieldState] by [tag], or throws.
+  TextFormxFieldState field(String tag) {
+    final state = fieldOrNull(tag);
+    assert(state != null, 'Formx.field $tag not found');
+    return state!;
+  }
+
   /// Fills this [FormxState.form] with new [values].
   ///
   /// Values that are not a [FormMap] or [String] will be stringified.
   void fill(FormMap values) {
     values.forEach((tag, value) {
       if (value is FormMap) _nested[tag]?.fill(value);
-      if (value != null) setValue(tag, value.toString());
+      if (value != null) didChange(tag, value.toString());
     });
   }
 
@@ -337,7 +335,7 @@ class FormxState extends State<Formx> {
   void save() {
     _fields.forEach((tag, field) => field.save());
     _nested.forEach((tag, formx) => formx.save());
-    widget.onSaved?.call(form);
+    widget.onSaved?.call(this);
   }
 
   /// Silently sets [value] of the field by [tag]. Does not setState.
@@ -359,28 +357,66 @@ class FormxState extends State<Formx> {
   /// Reports a change to this [FormxState.form].
   @protected
   void onChanged(String tag, String value) {
-    widget.onChanged?.call(form);
+    widget.onChanged?.call(this);
 
     //If tag is present, callbacks to parent.
-    if (hasTag) parent?.widget.onChanged?.call(parent!.form);
+    if (hasTag) parent?.widget.onChanged?.call(parent!);
   }
 
   /// Reports a submit to this [FormxState.form].
   @protected
   void onSubmitted(String tag, String value) {
     // if (!validate()) return;
-    widget.onSubmitted?.call(form);
+    widget.onSubmitted?.call(this);
 
     //If tag is present, callbacks to parent.
-    if (hasTag) parent?.widget.onSubmitted?.call(parent!.form);
+    if (hasTag) parent?.widget.onSubmitted?.call(parent!);
   }
 
   @override
   Widget build(BuildContext context) {
     return _FormxScope(
       state: this,
-      child: widget.child,
+      child: widget.builder?.call(context, this) ?? widget.child!,
     );
+  }
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    final debugMessage = super.toString(minLevel: minLevel);
+    return '''
+$debugMessage
+tag: ${widget.tag}
+enabled: ${enabled ?? 'true (default)'}
+initialValues: ${initialValues.indented},
+form: ${form.indented},
+invalidTexts: ${debugInvalidTexts.indented},
+''';
+  }
+}
+
+extension on FormxState {
+  bool get debugValidating => [
+        _fields.values.any((field) => field.isValidating),
+        _nested.values.any((formx) => formx.hasError),
+      ].any((hasStarted) => hasStarted);
+
+  Map<String, String> get debugInvalidTexts {
+    if (!debugValidating) return {};
+
+    final errorTexts = <String, String>{};
+    _fields.forEach(
+      (t, f) => errorTexts[t] = f.widget.validator?.call(f.value) ?? '',
+    );
+    _nested.forEach((tag, formx) => errorTexts.addAll(formx.debugInvalidTexts));
+    return errorTexts..removeWhere((key, value) => value.isEmpty);
+  }
+}
+
+extension on Map<dynamic, dynamic> {
+  String get indented {
+    const json = JsonEncoder.withIndent('  ');
+    return json.convert(this);
   }
 }
 

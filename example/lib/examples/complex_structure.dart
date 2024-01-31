@@ -33,8 +33,8 @@ class ComplexStructureExample extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormxField('name'),
-                  TextFormxField('email'),
+                  TextFormxField(tag: 'name'),
+                  TextFormxField(tag: 'email'),
                 ],
               ),
             ),
@@ -48,12 +48,12 @@ class ComplexStructureExample extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextFormxField('street'),
-                        TextFormxField('number'),
+                        TextFormxField(tag: 'street'),
+                        TextFormxField(tag: 'number'),
                       ],
                     ),
                   ),
-                  TextFormxField('school'),
+                  TextFormxField(tag: 'school'),
                 ],
               ),
             ),

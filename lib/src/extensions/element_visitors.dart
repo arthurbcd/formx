@@ -5,13 +5,16 @@ extension ContextElementExtension on BuildContext {
   /// Returns the first [T] with [filter] below this [BuildContext], or null.
   ///
   /// If [last] is true, then it will return the last [Element] found.
-  /// Visiting last is O(N), avoid using [last] = true.
+  /// Visiting last is O(N). Limit it with [limit].
   ///
   T? visitElementOrNull<T extends Element>({
     bool last = false,
     bool Function(T element)? filter,
+    int limit = 10,
+    VoidCallback? onLimit,
   }) {
     T? found;
+    var count = 0;
 
     void visit(Element element) {
       if (element is T) {
@@ -20,7 +23,11 @@ extension ContextElementExtension on BuildContext {
           if (!last) return;
         }
       }
-      element.visitChildren(visit);
+      if (count++ < limit) {
+        element.visitChildren(visit);
+      } else {
+        onLimit?.call();
+      }
     }
 
     visitChildElements(visit);
@@ -30,15 +37,21 @@ extension ContextElementExtension on BuildContext {
   /// Returns the first [T] with [filter] below this [BuildContext].
   ///
   /// If [last] is true, then it will return the last [Element] found.
-  /// Visiting last is O(N), avoid using [last] = true.
+  /// Visiting last is O(N). Limit it with [limit].
   ///
   T visitElement<T extends Element>({
     bool last = false,
     bool Function(T element)? filter,
     String? assertType,
+    int limit = 10,
   }) {
     final list = <T>[];
     final element = visitElementOrNull<T>(
+      last: last,
+      limit: limit,
+      onLimit: () {
+        assert(false, 'No ${assertType ?? T} found. Limit of $limit reached.');
+      },
       filter: (element) {
         list.add(element);
         return filter?.call(element) ?? true;
@@ -52,31 +65,43 @@ extension ContextElementExtension on BuildContext {
   /// Returns the first [T] with [filter] below this [BuildContext], or null.
   ///
   /// If [last] is true, then it will return the last [Widget] found.
-  /// Visiting last is O(N), avoid using [last] = true.
+  /// Visiting last is O(N). Limit it with [limit].
   ///
   T? visitWidgetOrNull<T extends Widget>({
     bool last = false,
     bool Function(T widget)? filter,
+    int limit = 10,
+    VoidCallback? onLimit,
   }) {
     bool filterByT(Element e) =>
         e.widget is T && (filter?.call(e.widget as T) ?? true);
 
-    return visitElementOrNull(last: last, filter: filterByT)?.widget as T?;
+    return visitElementOrNull(
+      last: last,
+      limit: limit,
+      onLimit: onLimit,
+      filter: filterByT,
+    )?.widget as T?;
   }
 
   /// Returns the first [T] with [filter] below this [BuildContext].
   ///
   /// If [last] is true, then it will return the last [Widget] found.
-  /// Visiting last is O(N), avoid using [last] = true.
+  /// Visiting last is O(N). Limit it with [limit].
   ///
   T visitWidget<T extends Widget>({
     bool last = false,
     bool Function(T widget)? filter,
     String? assertType,
+    int limit = 10,
   }) {
     final list = <T>[];
     final widget = visitWidgetOrNull<T>(
       last: last,
+      limit: limit,
+      onLimit: () {
+        assert(false, 'No ${assertType ?? T} found. Limit of $limit reached.');
+      },
       filter: (widget) {
         list.add(widget);
         return filter?.call(widget) ?? true;
@@ -90,32 +115,44 @@ extension ContextElementExtension on BuildContext {
   /// Returns the first [T] with [filter] below this [BuildContext], or null.
   ///
   /// If [last] is true, then it will return the last [State] found.
-  /// Visiting last is O(N), avoid using [last] = true.
+  /// Visiting last is O(N). Limit it with [limit].
   ///
   T? visitStateOrNull<T extends State>({
     bool last = false,
     bool Function(T state)? filter,
+    int limit = 10,
+    VoidCallback? onLimit,
   }) {
     bool filterByT(StatefulElement e) =>
         e.state is T && (filter?.call(e.state as T) ?? true);
 
-    return visitElementOrNull(last: last, filter: filterByT)?.state as T?;
+    return visitElementOrNull(
+      last: last,
+      limit: limit,
+      onLimit: onLimit,
+      filter: filterByT,
+    )?.state as T?;
   }
 
   /// Returns the first [T] with [filter] below this [BuildContext].
   ///
   /// If [last] is true, then it will return the last [State] found.
-  /// Visiting last is O(N), avoid using [last] = true.
+  /// Visiting last is O(N). Limit it with [limit].
   ///
   /// The [assertType], replaces [T] on assert messages.
   T visitState<T extends State>({
     bool last = false,
     bool Function(T state)? filter,
     String? assertType,
+    int limit = 10,
   }) {
     final list = <T>[];
     final state = visitStateOrNull<T>(
       last: last,
+      limit: limit,
+      onLimit: () {
+        assert(false, 'No ${assertType ?? T} found. Limit of $limit reached.');
+      },
       filter: (state) {
         list.add(state);
         return filter?.call(state) ?? true;

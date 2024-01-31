@@ -14,7 +14,7 @@ void main() {
     expect(mainParams, copyParams);
   });
   group('TextFormxField.copyWith', () {
-    const widget = TextFormxField('tag');
+    const widget = TextFormxField(tag: 'tag');
 
     final newClass = Constructor(TextFormxField.new);
     final copyWith = Constructor(widget.copyWith);
@@ -28,15 +28,17 @@ void main() {
     });
 
     test('params have exactly same type (ignores nullability)', () {
-      final copyWithTypeNames = copyWith.namedParams.map((e) => e.typeName);
-      final newClassTypeNames = newClass.namedParams.map((e) => e.typeName);
+      final copyWithTypeNames = copyWith.optionalParams.map((e) => e.typeName);
+      final newClassTypeNames = newClass.optionalParams.map((e) => e.typeName);
 
       expect(copyWithTypeNames, newClassTypeNames);
     });
 
     test('params have same property name', () {
-      final copyWithPropNames = copyWith.namedParams.map((e) => e.named);
-      final newClassPropNames = newClass.namedParams.map((e) => e.named);
+      final copyWithPropNames =
+          copyWith.optionalParams.map((e) => (e as NamedParam).named);
+      final newClassPropNames =
+          newClass.optionalParams.map((e) => (e as NamedParam).named);
 
       expect(copyWithPropNames, newClassPropNames);
     });

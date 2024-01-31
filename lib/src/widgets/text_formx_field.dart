@@ -15,7 +15,8 @@ class TextFormxField extends TextFormFieldBase with FormxField<String> {
   ///
   /// The [tag] of this [TextFormxField], used as parameter key.
   const TextFormxField(
-    this.tag, {
+    {
+    required this.tag,
     super.key,
     super.controller,
     super.initialValue,
@@ -116,6 +117,13 @@ mixin FormxField<T> on StatefulWidget {
 abstract class FormxFieldState<T> extends State<FormxField<T>> {
   final _fieldKey = GlobalKey<FormFieldState<T>>();
   FormFieldState<T> get _state => _fieldKey.currentState!;
+  var _validated = false;
+
+  /// The [tag] of this [TextFormxField], used as parameter key.
+  String get tag => widget.tag;
+
+  /// True if this field is currently validating.
+  bool get isValidating => _validated;
 
   /// The current value of this [TextFormxField].
   T? get value => _state.value;
@@ -126,14 +134,20 @@ abstract class FormxFieldState<T> extends State<FormxField<T>> {
   /// True if this field has any validation errors.
   bool get hasError => _state.hasError;
 
-  /// Trus if the current value is valid.
+  /// True if the current value is valid.
   bool get isValid => _state.isValid;
+
+  /// Returns true if the user has modified the value of this field.
+  bool get hasInteractedByUser => _state.hasInteractedByUser;
 
   /// Calls the [FormField]'s onSaved method with the current value.
   void save() => _state.save();
 
   /// Resets this [TextFormxField] to its initial value.
-  void reset() => _state.reset();
+  void reset() {
+    _validated = false;
+    _state.reset();
+  }
 
   /// Validates this [TextFormxField] and returns its error text.
   bool validate() => _state.validate();
@@ -160,9 +174,6 @@ class TextFormxFieldState extends FormxFieldState<String> {
 
   @override
   TextFormxField get widget => super.widget as TextFormxField;
-
-  /// The [tag] of this [TextFormxField], used as parameter key.
-  String get tag => widget.tag;
 
   /// Updates this [TextFormxField] programmatically.
   void update(TextFormxField Function(TextFormxField field) onField) {
@@ -212,6 +223,8 @@ class TextFormxFieldState extends FormxFieldState<String> {
           decoration: _formx.decorationModifier?.call(tag, field.decoration) ??
               field.decoration,
           validator: (value) {
+            _validated = true;
+
             if ((field.autovalidateMode ?? _formx.autovalidateMode) == null) {
               update(
                 (field) =>

@@ -18,6 +18,8 @@ class Constructor {
 
   List<NamedParam> get namedParams => params.whereType<NamedParam>().toList();
 
+  List<Param> get optionalParams => params.where((e) => !e.isRequired).toList();
+
   List<PositionalParam> get positionalParams =>
       params.whereType<PositionalParam>().toList();
 
