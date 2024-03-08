@@ -289,6 +289,7 @@ class FormxState extends State<Formx> {
     // If unchanged, likely a new field was added; revisit needed. Ex: PageView.
     mapEquals(_oldForm, form) ? _visitFields() : _oldForm = Map.of(form);
 
+    // We callback the change.
     widget.onChanged?.call(this);
 
     if (parent case FormxState parent when hasValidKey) {
