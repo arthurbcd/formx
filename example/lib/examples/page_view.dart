@@ -28,12 +28,12 @@ class PageViewExample extends StatelessWidget {
       builder: (__, state, child) => Card(
         child: Scaffold(
           body: child,
-          // floatingActionButton: FloatingActionButton(
-          //   onPressed: () {
-          //     // This is a convenient [BuildContext] extension.
-          //     state.validate();
-          //   },
-          // ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              // This is a convenient [BuildContext] extension.
+              final name = state['name'];
+            },
+          ),
         ),
       ),
       child: PageView(
