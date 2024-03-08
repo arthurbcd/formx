@@ -25,23 +25,24 @@ class PageViewExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return Formx(
       onChanged: print,
-      onSubmitted: print,
-      fieldModifier: (tag, field) {
-        // makes all fields required
-        return field.required();
-      },
-      decorationModifier: (tag, decoration) {
-        return decoration?.copyWith(labelText: tag);
-      },
-      child: Card(
-        child: PageView(
-          controller: PageController(keepPage: true),
-          children: const [
-            Page1(),
-            Page2(),
-            Page3(),
-          ],
+      builder: (__, state, child) => Card(
+        child: Scaffold(
+          body: child,
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () {
+          //     // This is a convenient [BuildContext] extension.
+          //     state.validate();
+          //   },
+          // ),
         ),
+      ),
+      child: PageView(
+        controller: PageController(keepPage: true),
+        children: const [
+          Page1(),
+          Page2(),
+          Page3(),
+        ].keepAlive(),
       ),
     );
   }
@@ -53,11 +54,11 @@ class Page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Column(
+      body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormxField(tag: 'name', onSaved: print),
-          TextFormxField(tag: 'email', onSaved: print),
+          TextFormField(key: const Key('name'), onSaved: print),
+          TextFormField(key: const Key('email'), onSaved: print),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -76,11 +77,11 @@ class Page2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Column(
+      body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormxField(tag: 'street', onSaved: print),
-          TextFormxField(tag: 'number', onSaved: print),
+          TextFormField(key: const Key('street'), onSaved: print),
+          TextFormField(key: const Key('number'), onSaved: print),
         ],
       ),
       floatingActionButton: FloatingActionButton(onPressed: context.nextPage),
@@ -94,10 +95,10 @@ class Page3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Column(
+      body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormxField(tag: 'school', onSaved: print),
+          TextFormField(key: const Key('school'), onSaved: print),
         ],
       ),
       floatingActionButton: FloatingActionButton(

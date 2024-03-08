@@ -2,12 +2,26 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.6.0 - Jan 30, 2024
+## 0.7.0
+
+Completely simplification of the library. Now Formx works with any `FormField` Widget! No need to use custom fields anymore. You can use `TextFormField`, `DropdownButtonFormField` or wrap/extend any widget to a `FormField`. Just add a key to it and you are good to go!
+
+- Removed `TextFormxField`, `TextFormxFieldState` and it's extensions.
+
+We realized that using extensions and callback modifiers was misleading users to use only the "new" approach. Which introduces unnecessaries new api's. We want to make it easier for developers to use Formx, as well as for others to understand it.
+
+- Removed `errorTextModifier`, `fieldModifier`, `fieldWrapper`, `decorator`, `fieldWrapper`, `fieldModifier` and `valueModifier` callbacks.
+
+Formx is now a single widget that manages fields and their states.
+
+## 0.6.1 - Jan 30, 2024
 
 - Changes `TextFormxField` tag to named parameter.
-- Adds `FormxState.value` to get a field value by tag, no matter how deep it is.
+- Adds `FormxState.field` to get a field value by tag, no matter how deep it is.
 - Adds `Formx.builder` parameter for context and state access.
-- Removed `Formx.at` to access state below context.
+- Added `TextFormxFieldState.hasInteractedByUser`, same as `FormFieldState.hasInteractedByUser`.
+- Removed `Formx.at`.
+- Changed `decorationModifier` to `decorator`.
 
 ## 0.5.1 - Jan 23, 2024
 

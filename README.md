@@ -31,7 +31,7 @@ This package was made with Flutter in mind, and focus on having the simplest api
 
  // For TextFormField, add the `x` and your form `tag`. 
  // Your form value will be keyed to this tag.
- TextFormField(...) -> TextFormxField('tag', ...)
+ TextFormField(...) -> TextFormxField(tag: 'name', ...)
 
  // This also applies to states:
  final formxKey = GlobalKey<FormxState>();
@@ -46,8 +46,8 @@ This package was made with Flutter in mind, and focus on having the simplest api
         onChanged: print,
 
         // Called when all fields are valid and submitted via Enter key or .submit().
-        onSubmitted: (form) {
-          if (Formx.at(context).validate()) {
+        onSubmitted: (state) {
+          if (state.validate()) {
             print('all valid and ready to go: $form');
           }
         },
@@ -72,7 +72,7 @@ This package was made with Flutter in mind, and focus on having the simplest api
         fieldWrapper: (tag, widget) => Padding(padding: padding, child: widget),
 
         // [InputDecoration] callback. Tip: scope your form themes!
-        decorationModifier: (tag, decoration) {
+        decorator: (tag, decoration) {
           return decoration?.copyWith(
             labelText: tag,
             border: const OutlineInputBorder(),
@@ -95,17 +95,17 @@ This package was made with Flutter in mind, and focus on having the simplest api
               const Text('USER'),
 
               // Same as TextFormField but copiable and const.
-              const TextFormxField('name'),
+              const TextFormxField(tag: 'name'),
 
               /// Stack validators through extensions modifiers.
-              const TextFormxField('email')
+              const TextFormxField(tag: 'email')
                   .validate((value) => value.isNotEmpty) // same as .required()
                   .validate((value) => value.contains('form'))
                   .validate((value) => value.contains('x'), 'Missing x')
                   .validate((value) => value.contains('@'), 'Not an email'),
 
               /// Simple as one line.
-              const TextFormxField('password'), // adds suffixIcon
+              const TextFormxField(tag: 'password'), // adds suffixIcon
 
               /// Nested fields too!?
               Formx(
@@ -124,10 +124,10 @@ This package was made with Flutter in mind, and focus on having the simplest api
                     const Text('Address:'),
 
                     // Use copyWith to create your own extensions!
-                    const TextFormxField('street').copyWith(),
+                    const TextFormxField(tag: 'street').copyWith(),
 
                     // Like this cool num validator.
-                    const TextFormxField('number').validateNum((n) => n < 100),
+                    const TextFormxField(tag: 'number').validateNum((n) => n < 100),
                   ],
                 ),
               ),

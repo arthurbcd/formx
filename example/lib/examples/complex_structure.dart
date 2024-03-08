@@ -10,9 +10,9 @@ class ComplexStructureExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Formx(
-        initialValues: {
+        initialValues: const {
           'user': {
             'name': 'Big',
             'email': 'a@a',
@@ -29,31 +29,39 @@ class ComplexStructureExample extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Formx(
-              tag: 'user',
+              key: const Key('user'),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormxField(tag: 'name'),
-                  TextFormxField(tag: 'email'),
+                  TextFormField(key: const Key('name')),
+                  TextFormField(
+                    key: const Key('email'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return value.isEmail ? null : 'Invalid email';
+                    },
+                  ),
                 ],
               ),
             ),
             Formx(
-              tag: 'details',
+              key: const Key('details'),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+                children: [
                   Formx(
-                    tag: 'address',
+                    key: const Key('address'),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextFormxField(tag: 'street'),
-                        TextFormxField(tag: 'number'),
+                        TextFormField(key: const Key('street')),
+                        TextFormField(key: const Key('number')),
                       ],
                     ),
                   ),
-                  TextFormxField(tag: 'school'),
+                  TextFormField(key: const Key('school')),
                 ],
               ),
             ),
@@ -62,4 +70,8 @@ class ComplexStructureExample extends StatelessWidget {
       ),
     );
   }
+}
+
+extension on String {
+  bool get isEmail => contains('@');
 }
