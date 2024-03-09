@@ -1,10 +1,12 @@
 /// Build, validate and fill forms easily with extended Form and TextFormField.
 
+// ignore_for_file: invalid_use_of_protected_member
+
 library formx;
 
+import 'dart:collection';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 export 'package:formx/src/extensions/keep_alive_extension.dart';
@@ -50,9 +52,8 @@ class Formx extends StatefulWidget {
     this.onSaved,
     this.builder,
     this.child,
-    AutovalidateMode? autovalidateMode,
-  })  : autovalidateMode = autovalidateMode ?? AutovalidateMode.disabled,
-        assert(
+    this.autovalidateMode,
+  }) : assert(
           child != null || builder != null,
           'You must set child and/or builder',
         );
@@ -82,14 +83,22 @@ class Formx extends StatefulWidget {
   /// {@macro flutter.widgets.ProxyWidget.child}
   final Widget? child;
 
-  /// Callbacks `form` when one of the form fields changes.
+  /// Same as [Form.onChanged], but callbacks the [FormxState].
+  ///
+  /// If it is a nested [Formx], it will trigger the parent [onChanged] as well.
   final FormxCallback? onChanged;
 
   /// Called when [FormxState.save] is called.
   final FormxCallback? onSaved;
 
-  /// {@macro flutter.widgets.FormField.autovalidateMode}
-  final AutovalidateMode autovalidateMode;
+  /// The [Form.autovalidateMode] that fields will inherit.
+  ///
+  /// If null:
+  /// - [Formx] - starts with [AutovalidateMode.disabled] and then changes to
+  /// [AutovalidateMode.always] after the first validation.
+  ///
+  /// - [Form] - starts and stays with [AutovalidateMode.disabled].
+  final AutovalidateMode? autovalidateMode;
 
   /// Returns the first [FormxState] above [BuildContext].
   static FormxState of(BuildContext context) {
@@ -117,84 +126,59 @@ class FormxState extends State<Formx> {
     final state = Formx.maybeOf(context);
     if (widget.key?.value case String key) {
       assert(
-        state != null,
-        'This [Formx] has a valid key but no parent was found. '
-        'When [key] is valid, you must wrap this form '
-        'in a parent [Formx] widget',
-      );
+          state != null,
+          'This [Formx] has a valid key but no parent was found. '
+          'Only use a valid key if you are using a nested [Formx].');
       state?._nested[key] = this;
+      return state;
     }
-    return state;
+    return null;
   }();
+
+  final _fields = <String, FormFieldState>{};
+  final _nested = <String, FormxState>{};
+  bool? _hasInteractedByUser;
+  bool _hasValidated = false;
 
   /// Wheter this [Formx] has a valid [Key].
   bool get hasValidKey => widget.key?.value != null;
 
-  // /// The initial values for this [form]. Applied to [_fields] and [_nested].
-  // Map<String, dynamic> get initialValues => widget.initialValues != null
-  //     ? Map.of(widget.initialValues!)
-  //     : Map.from(parent?.initialValues[widget.key?.value] as Map? ?? {});
+  /// The [AutovalidateMode] for this [Formx].
+  AutovalidateMode? get autovalidateMode {
+    if (_hasInteractedByUser == null) return null;
+    final mode = widget.autovalidateMode ?? parent?.autovalidateMode;
 
-  // ignore: strict_raw_type
-  final _fields = <String, FormFieldState>{};
-  final _nested = <String, FormxState>{};
-  var _oldForm = <String, dynamic>{};
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _visitFields();
-      if (widget.initialValues != null) {
-        fill(widget.initialValues!);
-      }
-    });
+    return _hasValidated && mode == null ? AutovalidateMode.always : mode;
   }
 
-  @override
-  void reassemble() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _visitFields());
-    super.reassemble();
-  }
+  /// The initial value for each nested [FormField] or [Formx].
+  Map<String, dynamic>? get initialValues =>
+      widget.initialValues ??
+      parent?.initialValues?[widget.key?.value] as Map<String, dynamic>?;
 
-  void _visitFields() {
-    _fields.clear();
-    void visit(Element el) {
-      if ((el, el.widget.key?.value) case (StatefulElement el, String key)) {
-        // stop recursion if it's a nested form.
-        if (el.state is FormxState) return;
+  /// All attached [FormFieldState].
+  Map<String, FormFieldState> get fields => UnmodifiableMapView(_fields);
 
-        if (el.state case FormFieldState<dynamic> state) {
-          _fields[key] = state;
-        }
-      }
-      el.visitChildren(visit);
-    }
-
-    if (mounted) context.visitChildElements(visit);
-  }
+  /// All attached [FormxState] and nested [FormFieldState].
+  Map<String, FormxState> get nested => UnmodifiableMapView(_nested);
 
   /// A [Map] containaing all attached field values.
   Map<String, dynamic> get form {
     var form = <String, dynamic>{};
-    _nested.removeWhere((key, state) => !state.mounted);
-    _fields.removeWhere((key, state) => !state.mounted);
-    _nested.forEach((key, formx) => form[key] = formx.form);
     _fields.forEach((key, field) => form[key] = field.value);
+    _nested.forEach((key, formx) => form[key] = formx.form);
     return form;
   }
 
-  /// Returns true if [_fields] or [_nested] have errors. Doesn't set ui state.
-  bool get hasError => [
-        _fields.values.any((field) => field.hasError),
-        _nested.values.any((formx) => formx.hasError),
-      ].any((hasError) => hasError);
+  /// Returns true if [fields] or [nested] have errors. Doesn't set ui state.
+  bool get hasError =>
+      _fields.values.any((field) => field.hasError) ||
+      _nested.values.any((formx) => formx.hasError);
 
-  /// Returns true if [_fields] and [_nested] are valid. Doesn't set ui state.
-  bool get isValid => [
-        _fields.values.every((field) => field.isValid),
-        _nested.values.every((formx) => formx.isValid),
-      ].every((isValid) => isValid);
+  /// Returns true if [fields] and [nested] are valid. Doesn't set ui state.
+  bool get isValid =>
+      _fields.values.every((field) => field.isValid) &&
+      _nested.values.every((formx) => formx.isValid);
 
   /// Returns a flat [Map] of all [_fields] and [_nested] errorTexts.
   ///
@@ -206,96 +190,137 @@ class FormxState extends State<Formx> {
     return errorTexts..removeWhere((key, value) => value.isEmpty);
   }
 
-  /// Validates all fields.
-  ///
-  /// Optionally, you can set [keys] to validate only specific fields.
-  bool validate([List<String> keys = const []]) {
-    final validations = <String, bool>{};
+  /// Gets either a [FormFieldState.value] or [FormxState.form] by [key].
+  Object? operator [](String key) {
+    final state = stateWhere((e) => e.key == key);
 
-    for (final key in keys) {
-      final state = stateWhere((k, v) => k == key);
-      if (state is FormFieldState) validations[key] = state.validate();
-      if (state is FormxState) validations[key] = state.validate();
-      assert(validations.containsKey(key), 'Formx.validate key $key not found');
+    if (state is FormFieldState) return state.value;
+    if (state is FormxState) return state.form;
+    return null;
+  }
+
+  /// Sets either a [FormFieldState.value] or [FormxState.form] value by [key].
+  void operator []=(String key, Object? value) {
+    final state = stateWhere((e) => e.key == key);
+
+    if (state is FormFieldState) state.didChange(value);
+    if (state is FormxState && value is Map) state.fill(value.cast());
+  }
+
+  void _visitFields() {
+    _fields.clear();
+    void visit(Element el) {
+      if ((el, el.widget.key) case (StatefulElement el, Key key)) {
+        // stop recursion, the nested form will handle it.
+        if (el.state is FormxState) return;
+
+        if (el.state case FormFieldState state) {
+          if (key.value case String value) {
+            _fields[value] = state;
+            return;
+          }
+          assert(
+            true,
+            'FormField.key.value is not a String: $key.\n'
+            'You must set a valid key for this FormField:\n\n'
+            'Ex: `TextFormField(key: const Key("name"))`',
+          );
+        }
+      }
+      el.visitChildren(visit); // continue recursion
     }
 
-    // if any tag/key validations were called, returns if all are valid.
-    if (validations.isNotEmpty) {
-      return validations.values.every((isValid) => isValid);
+    if (mounted) context.visitChildElements(visit);
+  }
+
+  void _onChanged() {
+    // still waiting for the first build.
+    if (_hasInteractedByUser == null) return;
+
+    // ready to go.
+    if (_hasInteractedByUser == false) {
+      setState(() => _hasInteractedByUser = true);
+    }
+    _visitFields();
+
+    // We callback the change.
+    widget.onChanged?.call(this);
+
+    if (parent case FormxState parent when hasValidKey) {
+      // If this is a nested form, we callback the parent as well.
+      parent._onChanged();
     }
 
-    // otherwise, validates all fields and nested.
-    _fields.forEach((tag, field) => field.validate());
-    _nested.forEach((tag, formx) => formx.validate());
-    return !hasError;
+    if (hasError && !_hasValidated) {
+      setState(() => _hasValidated = true);
+    }
   }
 
   /// Fills this [FormxState.form] with new [values].
   void fill(Map<String, dynamic> values) {
     values.forEach((key, value) {
-      if (value is Map<String, dynamic>) _nested[key]?.fill(value);
-      if (value != null) _fields[key]?.didChange(value);
+      if (value case Map<String, dynamic> form) return _nested[key]?.fill(form);
+
+      _fields[key]?.didChange(value);
     });
-  }
-
-  /// Gets the value of any field by [key].
-  T? get<T>(String key) => fieldOrNull<T>(key)?.value;
-
-  /// Sets the value of any field by [key].
-  void set<T>(String key, T value) => fieldOrNull<T>(key)?.didChange(value);
-
-  /// Updates the value of any field by [key].
-  void update<T>(String key, T? Function(T? value) updater) {
-    set(key, updater(get<T>(key)));
-  }
-
-  /// Attempts to find the [FormFieldState] by [key], or returns null.
-  FormFieldState<T>? fieldOrNull<T>(String key) {
-    final state = stateWhere(
-      (t, state) => t == key && state is FormFieldState<T>,
-    );
-    return state as FormFieldState<T>?;
-  }
-
-  /// Attempts to find the [FormFieldState] by [key], or throws.
-  FormFieldState<T> field<T>(String key) {
-    final state = fieldOrNull<T>(key);
-    assert(state != null, 'Formx.field $key not found for type $T');
-    return state!;
   }
 
   /// Resets all fields.
   ///
   /// Optionally, you can set [keys] to reset only specific fields.
   void reset([List<String> keys = const []]) {
-    _nested.forEach((key, formx) => formx.reset(keys));
-    _fields.forEach((key, field) => keys.contains(key) ? field.reset() : null);
-    if (widget.initialValues != null) {
-      fill(widget.initialValues!);
+    _hasInteractedByUser = null;
+
+    for (final e in _fields.entries) {
+      if (keys.isEmpty || keys.contains(e.key)) {
+        e.value.reset();
+        if (initialValues?[e.key] case Object value) e.value.didChange(value);
+      }
     }
+    _nested.forEach((key, formx) => formx.reset(keys));
+    setState(() => _hasInteractedByUser = false);
   }
 
   /// Saves all fields.
   ///
   /// Optionally, you can set [keys] to save only specific fields.
   void save([List<String> keys = const []]) {
+    for (final e in _fields.entries) {
+      if (keys.isEmpty || keys.contains(e.key)) e.value.save();
+    }
     _nested.forEach((key, formx) => formx.save(keys));
-    _fields.forEach((key, field) => keys.contains(key) ? field.save() : null);
     widget.onSaved?.call(this);
   }
 
-  /// Reports a change to this [FormxState.form].
-  void _onChanged() {
-    // If unchanged, likely a new field was added; revisit needed. Ex: PageView.
-    mapEquals(_oldForm, form) ? _visitFields() : _oldForm = Map.of(form);
+  /// Validates this and nested fields.
+  ///
+  /// Optionally, you can set [keys] to validate only specific fields.
+  bool validate([List<String> keys = const []]) {
+    final isValid = _fields.entries
+        .where((e) => keys.isEmpty || keys.contains(e.key))
+        .fold(true, (p, e) => e.value.validate() && p);
 
-    // We callback the change.
-    widget.onChanged?.call(this);
+    final areValid = _nested.values.fold(true, (p, e) => e.validate(keys) && p);
+    return isValid && areValid;
+  }
 
-    if (parent case FormxState parent when hasValidKey) {
-    // If this is a nested form, we callback the parent as well.
-      parent.widget.onChanged?.call(parent);
-    }
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _visitFields();
+      if (initialValues case Map<String, dynamic> map) fill(map);
+
+      // unlock autovalidateMode after the first build.
+      setState(() => _hasInteractedByUser = false);
+    });
+  }
+
+  @override
+  void reassemble() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _visitFields());
+    super.reassemble();
   }
 
   @override
@@ -303,7 +328,7 @@ class FormxState extends State<Formx> {
     return _Form2Scope(
       state: this,
       child: Form(
-        autovalidateMode: widget.autovalidateMode,
+        autovalidateMode: autovalidateMode,
         onChanged: _onChanged,
         child: Builder(
           builder: (context) {
@@ -328,6 +353,14 @@ form: ${form.indented},
   }
 }
 
+class _Form2Scope extends InheritedWidget {
+  const _Form2Scope({required this.state, required super.child});
+  final FormxState state;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
+}
+
 extension on Key {
   String? get value {
     try {
@@ -337,31 +370,31 @@ extension on Key {
   }
 }
 
-/// Extension for [Map] to convert it to a indented [String].
-extension IndentedFormExtension on Map<dynamic, dynamic> {
-  /// Converts this [Map] to a indented [String].
-  String get indented => const JsonEncoder.withIndent('  ').convert(this);
-}
-
 extension on FormxState {
-  State? stateWhere(bool Function(String key, State state) visitor) {
+  State? stateWhere(bool Function(MapEntry<String, State> e) visitor) {
     for (final e in _fields.entries) {
-      if (visitor(e.key, e.value)) return e.value;
+      if (visitor(e)) return e.value;
     }
     for (final e in _nested.entries) {
-      if (visitor(e.key, e.value)) return e.value;
-    }
-    for (final e in _nested.entries) {
-      if (e.value.stateWhere(visitor) != null) return e.value;
+      if (visitor(e)) return e.value.stateWhere(visitor);
     }
     return null;
   }
 }
 
-class _Form2Scope extends InheritedWidget {
-  const _Form2Scope({required this.state, required super.child});
-  final FormxState state;
+/// Extension for [Map] to convert it to an indented [String].
+extension FormxIndentedExtension on Map<dynamic, dynamic> {
+  /// Converts this [Map] to a indented [String].
+  String get indented {
+    return JsonEncoder.withIndent('  ', (e) => e.toString()).convert(this);
+  }
+}
 
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
+/// Extension to enable Object inference casting by type.
+extension FormxObjectExtension on Object {
+  /// Returns this as [T].
+  T cast<T>() => this as T;
+
+  /// Returns this as [T] if it is [T], otherwise null.
+  T? tryCast<T>() => this is T ? this as T : null;
 }

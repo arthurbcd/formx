@@ -23,26 +23,35 @@ class PageViewExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // print(context.formx.indented);
     return Formx(
-      onChanged: print,
-      builder: (__, state, child) => Card(
+      onChanged: (state) {
+        final a = state.form;
+
+        // you can access the fields directly
+        state.fields['name']?.didChange('new value');
+        state.fields['name']?.value;
+
+        // access specific nested fields
+        state.nested['address']?.nested['street']?.fields['number']?.value;
+
+        // shortcuts (key must be unique)
+        final number = state['number']; // get value or form
+        state['number'] = 42; // set value or form
+
+        print(a.indented);
+      },
+      child: Card(
         child: Scaffold(
-          body: child,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // This is a convenient [BuildContext] extension.
-              final name = state['name'];
-            },
+          body: PageView(
+            controller: PageController(keepPage: true),
+            children: const [
+              Page1(),
+              Page2(),
+              Page3(),
+            ].keepAlive(),
           ),
         ),
-      ),
-      child: PageView(
-        controller: PageController(keepPage: true),
-        children: const [
-          Page1(),
-          Page2(),
-          Page3(),
-        ].keepAlive(),
       ),
     );
   }
@@ -57,8 +66,35 @@ class Page1 extends StatelessWidget {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextFormField(key: const Key('name'), onSaved: print),
-          TextFormField(key: const Key('email'), onSaved: print),
+          TextFormField(key: const Key('name')),
+          TextFormField(key: const Key('email')),
+          Form(
+            key: const Key('nested'),
+            onChanged: () {
+              // final a = context.form;
+              // print(a.indented);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(key: const Key('password')),
+                TextFormField(key: const Key('confirm')),
+              ],
+            ),
+          ),
+          Form(
+            key: const Key('nested2'),
+            onChanged: () {
+              Form.of(context).widget.onChanged!();
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(key: const Key('password')),
+                TextFormField(key: const Key('confirm')),
+              ],
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

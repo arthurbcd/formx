@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.7.1
+
+- Added smart AutovalidateMode to Formx. If null, starts with `AutovalidateMode.disabled` and changes to `AutovalidateMode.always` when validated.
+- Added smart operators to FormxState, to get and set fields/nesteds.
+- Added reset to FormxState, to reset all fields to their initial values.
+
 ## 0.7.0
 
 Completely simplification of the library. Now Formx works with any `FormField` Widget! No need to use custom fields anymore. You can use `TextFormField`, `DropdownButtonFormField` or wrap/extend any widget to a `FormField`. Just add a key to it and you are good to go!
