@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 0.7.1
 
+- Added `Validator` class to simplify the creation of custom validators.
+- Added `Validator.modifier` to modify the errorText of a validator.
+- Added `FormFieldState.setErrorText` to set `errorText` programmatically.
 - Added smart AutovalidateMode to Formx. If null, starts with `AutovalidateMode.disabled` and changes to `AutovalidateMode.always` when validated.
 - Added smart operators to FormxState, to get and set fields/nesteds.
 - Added reset to FormxState, to reset all fields to their initial values.

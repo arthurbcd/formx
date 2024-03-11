@@ -36,6 +36,7 @@ class PageViewExample extends StatelessWidget {
         state.nested['address']?.nested['street']?.fields['number']?.value;
 
         // shortcuts (key must be unique)
+        // ignore: unused_local_variable
         final number = state['number']; // get value or form
         state['number'] = 42; // set value or form
 

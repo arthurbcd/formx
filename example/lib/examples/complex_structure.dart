@@ -7,7 +7,6 @@ void main() {
       home: Scaffold(
         body: Center(
           child: SizedBox(
-            height: 400,
             width: 300,
             child: ComplexStructureExample(),
           ),
@@ -22,6 +21,14 @@ class ComplexStructureExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Validator.defaultRequiredText = 'form.required';
+    Validator.defaultInvalidText = 'form.invalid';
+    Validator.modifier = (validator, errorText) {
+      if (!errorText.contains('form.')) return errorText;
+
+      return '$errorText.${validator.key}';
+    };
+
     return Center(
       child: Formx(
         onChanged: print,
@@ -49,15 +56,23 @@ class ComplexStructureExample extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextFormField(key: const Key('name')),
+                    TextFormField(
+                      key: const Key('name'),
+                      // validator: Validator(),
+                    ),
                     TextFormField(
                       key: const Key('email'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return value.isEmail ? null : 'Invalid email';
-                      },
+                      validator: Validator<String>()
+                          .required()
+                          .test((value) => value.isEmail)
+                          .notEquals('123', 'form.not_equals_123')
+                          .notEquals('abc', 'form.not_equals_abc')
+                          .min(6)
+                          .max(9),
+                    ),
+                    TextFormField(
+                      key: const Key('password'),
+                      validator: Validator(),
                     ),
                   ],
                 ),
@@ -67,6 +82,13 @@ class ComplexStructureExample extends StatelessWidget {
                   state.validate();
                 },
                 child: const Text('validate'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  state.nested['user']?.fields['email']
+                      ?.setErrorText('errorText');
+                },
+                child: const Text('setErrorText'),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -90,7 +112,7 @@ class ComplexStructureExample extends StatelessWidget {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter some text';
                               }
-                              return value.isEmail ? null : 'Invalid email';
+                              return value.isCnpj ? null : 'Invalid email';
                             },
                           ),
                           TextFormField(
@@ -99,7 +121,7 @@ class ComplexStructureExample extends StatelessWidget {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter some text';
                               }
-                              return value.isEmail ? null : 'Invalid email';
+                              return value.isCnpj ? null : 'Invalid email';
                             },
                           ),
                         ],
@@ -115,8 +137,4 @@ class ComplexStructureExample extends StatelessWidget {
       ),
     );
   }
-}
-
-extension on String {
-  bool get isEmail => contains('@');
 }
