@@ -15,11 +15,7 @@ import 'package:flutter/widgets.dart';
 export 'package:formx/src/extensions/keep_alive_extension.dart';
 
 /// Signature for [Formx.builder].
-typedef FormxBuilder = Widget Function(
-  BuildContext context,
-  FormxState state,
-  Widget? child,
-);
+typedef FormxBuilder = Widget Function(FormxState state);
 
 /// Signature for [Formx.onChanged].
 typedef FormxCallback = void Function(FormxState state);
@@ -57,8 +53,8 @@ class Formx extends StatefulWidget {
     this.child,
     this.autovalidateMode,
   }) : assert(
-          child != null || builder != null,
-          'You must set child and/or builder',
+          (child != null) != (builder != null),
+          'You must set either child or builder, but not both.',
         );
 
   /// The initial value for each nested [FormField] or [Formx], that has a
@@ -340,7 +336,7 @@ class FormxState extends State<Formx> {
         child: Builder(
           builder: (context) {
             if (widget.builder case FormxBuilder builder) {
-              return builder(context, this, widget.child);
+              return builder(this);
             }
             return widget.child ?? (throw StateError('No child or builder'));
           },
@@ -392,7 +388,9 @@ extension on FormxState {
 /// Extends [FormFieldState] with a programatic way to set [errorText].
 extension FormFieldExtension on FormFieldState {
   /// Sets the [errorText] programatically.
-  void setErrorText(String errorText) {
+  ///
+  /// You need to set a [Validator] to use this method.
+  void setErrorText(String? errorText) {
     _attachToValidator(errorText: errorText);
     validate();
   }
@@ -435,22 +433,32 @@ extension FormxIndentedExtension on Map<dynamic, dynamic> {
   String get indented {
     return JsonEncoder.withIndent('  ', (e) => e.toString()).convert(this);
   }
+
+  /// Removes all null or empty values from this [Map] and nesteds.
+  void clean() {
+    // ignore: avoid_types_on_closure_parameters
+    removeWhere((key, Object? value) {
+      if (value is Map) value.clean();
+
+      return value == null || value.isEmpty;
+    });
+  }
 }
 
 /// Extension to enable Object inference casting by type.
-extension FormxObjectExtension on Object {
+extension FormxCastExtension on Object? {
   /// Returns this as [T].
   T cast<T>() => this as T;
 
   /// Returns this as [T] if it is [T], otherwise null.
   T? tryCast<T>() => this is T ? this as T : null;
+}
 
-  /// Checks if this object is empty.
+extension on Object {
   bool get isEmpty {
     if (this case Iterable e) return e.isEmpty;
     if (this case String e) return e.isEmpty;
     if (this case Map e) return e.isEmpty;
-    if (this case num e) return e == 0;
     return false;
   }
 }
@@ -471,7 +479,17 @@ class Validator<T> {
     this.isRequired = false,
     this.requiredText,
     this.invalidText,
+    this.validators = const [],
   }) : _test = test;
+
+  /// Shorthand to [Validator.new] with a [test] and an optional [invalidText].
+  Validator.test(
+    ValidatorTest<T> test, [
+    this.invalidText,
+  ])  : _test = test,
+        isRequired = false,
+        requiredText = null,
+        validators = [];
 
   /// The test to check if the value is valid.
   ///
@@ -491,6 +509,9 @@ class Validator<T> {
   /// Defaults to [Validator.defaultInvalidText].
   final String? invalidText;
 
+  /// Additional validators to be merged with this one.
+  final List<Validator<T>> validators;
+
   /// The default required text.
   static String defaultRequiredText = 'Required value';
 
@@ -503,25 +524,12 @@ class Validator<T> {
   /// Modifies the `errorText` returned by [Validator].
   static ValidatorModifier modifier = (validator, errorText) => errorText;
 
-  /// Merges multiple [FormFieldValidator] into a single [Validator].
-  static Validator merge(List<FormFieldValidator> validators) {
-    final validator = Validator<Object>();
-    validators.forEach(validator.add);
-    return validator;
-  }
-
   // States
   String? _errorText;
   FormFieldState? _state;
-  final _validators = <FormFieldValidator>[];
 
   /// The [Key] value of the [FormField] that this [Validator] is attached.
-  String? get key => _state?.widget.key?.value;
-
-  /// Adds a [FormFieldValidator], merging it with the current one.
-  void add(FormFieldValidator validator) {
-    _validators.add(validator);
-  }
+  late final String? key = _state?.widget.key?.value;
 
   /// Caller for [validator].
   ///
@@ -547,11 +555,14 @@ class Validator<T> {
       if (Validator.disableOnDebug && kDebugMode) return null;
 
       // 1. Check if errorText was set programatically.
-      if (_errorText != null) return _errorText;
+      if (_errorText case String errorText) {
+        _errorText = null;
+        return errorText;
+      }
 
       // 2. Check if it is required.
       if (value == null || value.isEmpty) {
-        if (isRequired) return requiredText ?? defaultRequiredText;
+        return isRequired ? requiredText ?? defaultRequiredText : null;
       }
 
       // 3. Check if it passes the test.
@@ -560,8 +571,8 @@ class Validator<T> {
       }
 
       // 4. Check if any other merged validator are valid.
-      for (final validator in _validators) {
-        if (validator(value) case String text) return text;
+      for (final validator in validators) {
+        if (validator(value) case String errorText) return errorText;
       }
 
       return null;
@@ -581,93 +592,95 @@ typedef ValidatorModifier = String Function(
 /// Extension for [Validator] to add syntactic sugar.
 extension ValidatorExtension<T> on Validator<T> {
   /// Returns a copy of this [Validator] with the new values.
-  Validator<T> copyWith({
-    ValidatorTest<T>? test,
-    bool? isRequired,
-    String? requiredText,
-    String? invalidText,
-  }) {
-    return Validator(
-      test: test ?? _test,
-      isRequired: isRequired ?? this.isRequired,
-      requiredText: requiredText ?? this.requiredText,
-      invalidText: invalidText ?? this.invalidText,
-    );
-  }
+  // Validator<T> copyWith({
+  //   ValidatorTest<T>? test,
+  //   bool? isRequired,
+  //   String? requiredText,
+  //   String? invalidText,
+  // }) {
+  //   return Validator(
+  //     test: test ?? _test,
+  //     isRequired: isRequired ?? this.isRequired,
+  //     requiredText: requiredText ?? this.requiredText,
+  //     invalidText: invalidText ?? this.invalidText,
+  //   );
+  // }
 
   /// Sets [Validator.isRequired] to `true`.
-  Validator<T> required([String? requiredText]) {
-    return copyWith(isRequired: true, requiredText: requiredText);
-  }
+  // Validator<T> required([String? requiredText]) {
+  //   return copyWith(isRequired: true, requiredText: requiredText);
+  // }
 
   /// Sets [ValidatorTest]. Optionally, you can set [invalidText].
-  Validator<T> test(ValidatorTest<T> test, [String? invalidText]) {
-    return this..add(copyWith(test: test, invalidText: invalidText).validator);
-  }
+  // Validator<T> test(ValidatorTest<T> test, [String? invalidText]) {
+  //   return this..add(copyWith(test: test, invalidText: invalidText).validat);
+  // }
 
-  /// Sets [ValidatorTest] that callbacks the value as a [num].
-  Validator<T> number(ValidatorTest<num> fn, [String? invalidText]) {
-    return test(
-      (value) {
-        if (value is num) return fn(value);
-        if (value is String) return fn(num.tryParse(value) ?? 0);
-        return true;
-      },
-      invalidText,
-    );
-  }
+  // /// Sets [ValidatorTest] that callbacks the value as a [num].
+  // Validator<T> number(ValidatorTest<num> test, [String? invalidText]) {
+  //   return this.test(
+  //     (value) {
+  //       if (value is num) return test(value);
+  //       if (num.tryParse('$value') case num number) return test(number);
+  //       return true;
+  //     },
+  //     invalidText,
+  //   );
+  // }
 
-  /// Sets [ValidatorTest] to check if the value is not null or empty.
-  Validator<T> notEquals(Object value, [String? invalidText]) {
-    return test((val) => val != value, invalidText);
-  }
+  // /// Sets [ValidatorTest] to check if the value is not null or empty.
+  // Validator<T> notEquals(Object value, [String? invalidText]) {
+  //   return test((val) => val != value, invalidText);
+  // }
 
-  /// Sets [ValidatorTest] to check if the value is equals to [value].
-  Validator<T> equals(Object value, [String? invalidText]) {
-    return test((val) => val == value, invalidText);
-  }
+  // /// Sets [ValidatorTest] to check if the value is equals to [value].
+  // Validator<T> equals(Object value, [String? invalidText]) {
+  //   return test((val) => val == value, invalidText);
+  // }
 
-  /// Sets [ValidatorTest] to check if the value is greater than [value].
-  Validator<T> contains(Object value, [String? invalidText]) {
-    return test((val) => '$val'.contains('$value'), invalidText);
-  }
+  // /// Sets [ValidatorTest] to check if the value is greater than [value].
+  // Validator<T> contains(Object value, [String? invalidText]) {
+  //   return test((val) => '$val'.contains('$value'), invalidText);
+  // }
 
-  /// Validates the minimum length of the value.
-  Validator<T> min(int length, [String? invalidText]) {
-    return test((value) => '$value'.length >= length, invalidText);
-  }
+  // /// Validates the minimum length of the value.
+  // Validator<T> min(int length, [String? invalidText]) {
+  //   return test((value) => '$value'.length >= length, invalidText);
+  // }
 
-  /// Validates the maximum length of the value.
-  Validator<T> max(int length, [String? invalidText]) {
-    return test((value) => '$value'.length <= length, invalidText);
-  }
+  // /// Validates the maximum length of the value.
+  // Validator<T> max(int length, [String? invalidText]) {
+  //   return test((value) => '$value'.length <= length, invalidText);
+  // }
 
-  /// Validates the length range of the value.
-  Validator<T> range(int min, int max, [String? invalidText]) {
-    return test(
-      (value) => '$value'.length >= min && '$value'.length <= max,
-      invalidText,
-    );
-  }
+  // /// Validates the length range of the value.
+  // Validator<T> range(int min, int max, [String? invalidText]) {
+  //   return test(
+  //     (value) => '$value'.length >= min && '$value'.length <= max,
+  //     invalidText,
+  //   );
+  // }
 
-  /// Validates [RegExp] pattern.
-  Validator<T> pattern(RegExp pattern, [String? invalidText]) {
-    return test((val) => pattern.hasMatch('$val'), invalidText);
-  }
+  // /// Validates [RegExp] pattern.
+  // Validator<T> pattern(RegExp pattern, [String? invalidText]) {
+  //   return test((val) => pattern.hasMatch('$val'), invalidText);
+  // }
 
-  /// Validates if the value is one of the [list].
-  Validator<T> oneOf(List<T> list, [String? invalidText]) {
-    return test((val) => list.contains(val), invalidText);
-  }
+  // /// Validates if the value is one of the [list].
+  // Validator<T> oneOf(List<T> list, [String? invalidText]) {
+  //   return test((val) => list.contains(val), invalidText);
+  // }
 
-  /// Validates if the value is not one of the [list].
-  Validator<T> notOneOf(List<T> list, [String? invalidText]) {
-    return test((val) => !list.contains(val), invalidText);
-  }
+  // /// Validates if the value is not one of the [list].
+  // Validator<T> notOneOf(List<T> list, [String? invalidText]) {
+  //   return test((val) => !list.contains(val), invalidText);
+  // }
 }
 
+extension on String {}
+
 /// Extension for [String] for validations.
-extension FormxStringExtension on String {
+extension on String {
   /// Whether is a valid email. Special characters are ignored.
   bool get isCnpj {
     final numbers = replaceAll(RegExp(r'\D'), '');

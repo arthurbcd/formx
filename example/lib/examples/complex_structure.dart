@@ -32,7 +32,6 @@ class ComplexStructureExample extends StatelessWidget {
     return Center(
       child: Formx(
         onChanged: print,
-        // autovalidateMode: AutovalidateMode.always,
         initialValues: const {
           'user': {
             'name': 'Big',
@@ -46,7 +45,7 @@ class ComplexStructureExample extends StatelessWidget {
             'school': 'Sesame School',
           },
         },
-        builder: (_, state, __) => Builder(builder: (context) {
+        builder: (state) => Builder(builder: (context) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -62,17 +61,17 @@ class ComplexStructureExample extends StatelessWidget {
                     ),
                     TextFormField(
                       key: const Key('email'),
-                      validator: Validator<String>()
-                          .required()
-                          .test((value) => value.isEmail)
-                          .notEquals('123', 'form.not_equals_123')
-                          .notEquals('abc', 'form.not_equals_abc')
-                          .min(6)
-                          .max(9),
+                      validator: Validator<String>(),
                     ),
                     TextFormField(
                       key: const Key('password'),
-                      validator: Validator(),
+                      validator: Validator<String>(
+                        validators: [
+                          Validator(
+                            test: (value) => value.length > 5,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -108,21 +107,9 @@ class ComplexStructureExample extends StatelessWidget {
                         children: [
                           TextFormField(
                             key: const Key('street'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return value.isCnpj ? null : 'Invalid email';
-                            },
                           ),
                           TextFormField(
                             key: const Key('number'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter some text';
-                              }
-                              return value.isCnpj ? null : 'Invalid email';
-                            },
                           ),
                         ],
                       ),

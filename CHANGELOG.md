@@ -2,6 +2,31 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.9.2
+
+- Added `Validator.test` shorthand constructor with positional parameters.
+- Added `Map.clean` extension to remove null and empty values.
+- Fixed `FormState.setErrorText` that was never reseting on validation.
+- Changed `FormState.setErrorText` to accept null to remove the errorText.
+- Updated examples and README.
+
+## 0.9.1
+
+- Fixed validation priority order.
+
+## 0.9.0
+
+- Changed `FormxBuilder` typedef to follow `FormFieldBuilder` signature from Flutter.
+- Added `FormxCastExtension` with `cast` and `tryCast`.
+
+## 0.8.0
+
+`Validator` was cleaned up and simplified. Now it's a declarative class that can be used to create custom validators.
+
+- Added `validators` property to `Validator` class.
+- Removed `Validator.merge` constructor, use `Validator.validators` instead.
+- Removed `Validator` modifiers to make it excluively declarative. Use `Validator.validators` instead.
+
 ## 0.7.1
 
 - Added `Validator` class to simplify the creation of custom validators.
