@@ -30,97 +30,82 @@ class ComplexStructureExample extends StatelessWidget {
     };
 
     return Center(
-      child: Formx(
-        onChanged: print,
-        initialValues: const {
-          'user': {
-            'name': 'Big',
-            // 'email': 'a',
-          },
-          'details': {
-            'address': {
-              // 'street': 'Sesame Street',
-              'number': '42',
-            },
-            'school': 'Sesame School',
-          },
-        },
-        builder: (state) => Builder(builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Formx(
-                key: const Key('user'),
-                // autovalidateMode: AutovalidateMode.disabled,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      key: const Key('name'),
-                      // validator: Validator(),
+      child: Form(
+        onChanged: () => print(context.formx().initialValues),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Form(
+              key: const Key('user'),
+              onChanged: context.onFormChanged,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    key: const Key('name'),
+                    // validator: Validator(),
+                  ),
+                  TextFormField(
+                    key: const Key('email'),
+                    validator: Validator<String>(),
+                  ),
+                  TextFormField(
+                    key: const Key('password'),
+                    validator: Validator<String>(
+                      validators: [
+                        Validator(
+                          test: (value) => value.length > 5,
+                        ),
+                      ],
                     ),
-                    TextFormField(
-                      key: const Key('email'),
-                      validator: Validator<String>(),
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.formx().validate();
+              },
+              child: const Text('validate'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // state.nested['user']?.fields['email']
+                //     ?.setErrorText('errorText');
+              },
+              child: const Text('setErrorText'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.formx().reset();
+              },
+              child: const Text('reset'),
+            ),
+            Form(
+              key: const Key('details'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Form(
+                    key: const Key('address'),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          key: const Key('street'),
+                        ),
+                        TextFormField(
+                          key: const Key('number'),
+                        ),
+                      ],
                     ),
-                    TextFormField(
-                      key: const Key('password'),
-                      validator: Validator<String>(
-                        validators: [
-                          Validator(
-                            test: (value) => value.length > 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  TextFormField(key: const Key('school')),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  state.validate();
-                },
-                child: const Text('validate'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  state.nested['user']?.fields['email']
-                      ?.setErrorText('errorText');
-                },
-                child: const Text('setErrorText'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  state.reset();
-                },
-                child: const Text('reset'),
-              ),
-              Formx(
-                key: const Key('details'),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Formx(
-                      key: const Key('address'),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextFormField(
-                            key: const Key('street'),
-                          ),
-                          TextFormField(
-                            key: const Key('number'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextFormField(key: const Key('school')),
-                  ],
-                ),
-              ),
-            ],
-          );
-        }),
+            ),
+          ],
+        ),
       ),
     );
   }

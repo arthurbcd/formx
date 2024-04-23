@@ -1,10 +1,15 @@
 import 'package:flutter/widgets.dart';
 
 /// Extension for [List] to keep alive its children.
-extension ListAliveExtension<T extends Widget> on List<T> {
+extension ListWidgetExtension<T extends Widget> on List<T> {
+  /// Wraps each child with a [Expanded] widget.
+  List<Widget> expanded() {
+    return map((e) => Expanded(child: e)).toList();
+  }
+
   /// Wraps each child with a [_KeepAlive] widget.
   ///
-  /// Useful for [PageView] children.
+  /// Useful for using [Form] with [PageView] children.
   List<Widget> keepAlive() {
     return map((e) => _KeepAlive(child: e)).toList();
   }
@@ -15,10 +20,10 @@ class _KeepAlive extends StatefulWidget {
   final Widget child;
 
   @override
-  State<_KeepAlive> createState() => __KeepAliveState();
+  State<_KeepAlive> createState() => _KeepAliveState();
 }
 
-class __KeepAliveState extends State<_KeepAlive>
+class _KeepAliveState extends State<_KeepAlive>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;

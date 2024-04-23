@@ -24,23 +24,17 @@ class PageViewExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print(context.formx.indented);
-    return Formx(
-      onChanged: (state) {
-        final a = state.form;
+    return Form(
+      onChanged: () {
+        final state = context.formx();
 
         // you can access the fields directly
-        state.fields['name']?.didChange('new value');
-        state.fields['name']?.value;
+        state['name'] = 'new value';
 
-        // access specific nested fields
-        state.nested['address']?.nested['street']?.fields['number']?.value;
+        final name = state['name'];
+        state['name'] = 'Juan'; // set value or form
 
-        // shortcuts (key must be unique)
-        // ignore: unused_local_variable
-        final number = state['number']; // get value or form
-        state['number'] = 42; // set value or form
-
-        print(a.indented);
+        print(name);
       },
       child: Card(
         child: Scaffold(
@@ -85,9 +79,7 @@ class Page1 extends StatelessWidget {
           ),
           Form(
             key: const Key('nested2'),
-            onChanged: () {
-              Form.of(context).widget.onChanged!();
-            },
+            onChanged: context.onFormChanged,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -141,7 +133,7 @@ class Page3 extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // This is a convenient [BuildContext] extension.
-          Formx.of(context).validate();
+          context.formx().validate();
         },
       ),
     );

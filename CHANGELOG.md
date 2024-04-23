@@ -2,6 +2,13 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 - Apr 23, 2024
+
+Huge update.
+
+- Removed `Formx` widget in favor o `context.formx()`.
+- Added new `README.md`.
+
 ## 0.9.2
 
 - Added `Validator.test` shorthand constructor with positional parameters.

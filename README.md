@@ -1,168 +1,107 @@
 # Formx
 
-`formx` is a dynamic and robust Flutter package for building and managing forms. With an emphasis on ease of use and customizability, `formx` provides a powerful way to handle form inputs, validations, and submissions without the boilerplate.
+<!-- markdownlint-disable no-inline-html -->
+<p align="center">
+  <img src="image-1.png" alt="Image 1" height="600"/>
+  <img src="image-2.png" alt="Image 2" height="600"/>
+</p>
+<!-- markdownlint-enable no-inline-html -->
 
-## Key Features
+## Acessing the state
 
-- **Live State Management**: Tracks changes to form fields in real-time, providing immediate feedback and interaction capabilities.
-- **Initial Values Setup**: Initialize form fields with default values, making edit forms and persisted states a breeze.
-- **Nested Forms Support**: Easily manage complex forms with nested fields, allowing for structured data input and validation.
-- **Declarative Validation**: Enforces field requirements and custom validation logic, ensuring data integrity before submission.
-
-## Getting Started
-
-To integrate `formx` into your Flutter project, add the following dependency to your `pubspec.yaml` file:
-
-```yaml
-dependencies:
-  formx: ^latest_version
-```
-
-This package was made with Flutter in mind, and focus on having the simplest api as possible:
-
-### Form api
+`BuildContext.formx([String? key])` automatically retrieves the appropriate `FormState` for you, though you can specify a key if necessary.
 
 ```dart
-  Form(
-    child: Column(
-      children: [
-        TextFormField(
-          controller: nameController,
-          onChanged: print,
-        ),
-        TextFormField(
-          controller: emailController,
-          onChangd: print,
-        ),
-      ],
-    ),
-  )
+final state = context.formx();
+final addressState = context.formx('address');
+
+final email = context.field('email').value;
 ```
 
-### Formx api
+> Alternatively, use `Formx.of(context)` for a traditional approach without visitors, which also rebuilds the widget on form state changes, similar to `Form.of(context)`.
+
+## FormState extensions
+
+- `.value<T>(String key)`, gets the [FormFieldState.value] of a specific field.
+- `.values`, a structured `Map` with all the values of the form.
+- `.initialValues`, a structured `Map` with all the initial values of the form.
+- `.hasInteractedByUser`, whether any nested [FormFieldState.hasInteractedByUser].
+- `.hasError`, whether any nested [FormFieldState.hasError].
+- `.isValid`, whether all nested [FormFieldState.isValid].
+- `.errorTexts`, a flat `Map` with all nested [FormFieldState.errorText].
+- `operator [key]`, operator to get a specific [FormFieldState] by it's key value.
+- `operator [key] = value`, operator to set any nested form/field value(s) directly.
+
+## FormxState extension type
+
+`FormxState` is an inline-class that redeclares some of the `FormState` methods:
+
+- `.validate([List<String>? keys])`
+- `.save([List<String>? keys])`
+- `.reset([List<String>? keys])`
+
+These methods function identically to their original counterparts but extend their effects to nested forms. Using `FormState.validate` only validates the top-level form, whereas `FormxState.validate` also validates any nested forms.
+
+You have the option to specify a list of `keys` with these methods to target specific forms or fields for validation, saving, or resetting.
+
+You can redeclare any `FormState` to a `FormxState` by using `FormxState(formState)` type extension.
+
+## FormFieldState extensions
+
+- `.setErrorText(String? errorText)`, sets the field errorText programmatically. Requires `Validator`.
+
+## Validator class
+
+Ever wish to build validators more declaratively? `Validator` is a class that allows you to define your validation rules in a more readable way.
 
 ```dart
-  Formx(
-    onChanged: print,
-    child: const Column(
-      children: [
-        TextFormField(
-          key: const Key('name'),
-        ),
-        TextFormField(
-          key: const Key('email'),
-        ),
-      ],
-    ),
-  );
+TextFormField(
+  validator: Validator<String>(
+    isRequired: true,
+    test: (value) => value.isEmail,
+  ),
+),
 ```
 
-## Code example
+## Validators, Sanitizers & Helpers extensions
 
-```dart
-Widget build(BuildContext context) {
-    return Scaffold(
-      body: Formx(
-        // Check your console and type, it's alive!
-        onChanged: print,
+Formx comes bundled with a set of built-in validators and sanitizers, which you can use to validate and sanitize your form fields.
 
-        // Optional initial values for all fields. Tip: Model.toMap().
-        initialValues: const {
-          'name': 'Big',
-          'email': 'some@email',
-          'address': {
-            'street': 'Sesame Street',
-            'number': '42',
-          },
-        },
+### `String`
 
-        // Builder shortcut to access the form state.
-        builder: (state) => Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('USER'),
+- `.isEmail`
+- `.isNumeric`
+- `.isAlpha`
+- `.isAlphaNumeric`
+- `.isPhone`
+- `.isCpf`
+- `.isCnpj`
 
-                // Just add a key to your fields and you're good to go.
-                TextFormField(
-                  key: const Key('name'),
-                ),
-                TextFormField(
-                  key: const Key('email'),
-                ),
+### `Map`
 
-                /// You can nest [Formx] to create complex structures.
-                Formx(
-                  key: const Key('address'),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Address:'),
-                      TextFormField(
-                        key: const Key('street'),
-                      ),
-                      TextFormField(
-                        key: const Key('number'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          floatingActionButton: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FloatingActionButton(
-                onPressed: () {
-                  // reset to initial values.
-                  state.reset();
-                },
-                child: const Icon(Icons.refresh),
-              ),
-              FloatingActionButton(
-                onPressed: () {
-                  // programatically fill all fields.
-                  state.fill({
-                    'name': 'Biggy',
-                    'email': 'z@z',
-                    'address': {
-                      'street': 'Lalala Street',
-                      'number': '43',
-                    },
-                  });
+- `.indented` for a map view that indents when printed.
+- `.indentedText` for getting an indented text.
+- `.deepMap` for mapping nested maps.
+- `.clean` for values that are `null` or empty string/iterable/map.
 
-                  // or the shorthand:
-                  state['name'] = 'Biggy';
-                  state['email'] = 'z@z';
-                  state['address'] = {
-                    'street': 'Lalala Street',
-                    'number': '43',
-                  };
-                },
-                child: const Icon(Icons.edit),
-              ),
-              FloatingActionButton(
-                onPressed: () {
-                  // Validate all fields. Just like `Form.validate()`.
-                  final isValid = state.validate();
-                  print('isValid: $isValid');
+Deeply recases all your map keys:
 
-                  // You can also validate a single field.
-                  final isEmailValid = state.validate(['email']);
-                  print('isEmailValid: $isEmailValid');
-                },
-                child: const Icon(Icons.check),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-```
+- `.camelCase` "camelCase"
+- `.constantCase` "CONSTANT_CASE"
+- `.sentenceCase` "Sentence case"
+- `.snakeCase` "snake_case"
+- `.dotCase` "dot.case"
+- `.paramCase` "param-case"
+- `.pathCase` "path/case"
+- `.pascalCase` "PascalCase"
+- `.headerCase` "Header-Case"
+- `.titleCase` "Title Case"
+
+### `List<Widgets>`
+
+- `.keepAlive` usually needed for building forms with [PageView.children].
+- `.expanded` usually needed for building forms with [Column.children] or [Row.children].
 
 ## Contributing
 
-Contributions to formx are welcome! Whether it's bug reports, feature requests, or pull requests, all forms of collaboration can help make formx better for everyone.
+Contributions to formx are welcome! Whether it's bug reports, feature requests, or pull requests, all "forms" of collaboration can help make formx better for everyone.
