@@ -13,7 +13,7 @@ Breaking Update.
 - Removed `Formx` widget in favor o `context.formx()`.
 - Added new `README.md`.
 
-## 0.9.2
+## 0.9.2 - Mar 25, 2024
 
 - Added `Validator.test` shorthand constructor with positional parameters.
 - Added `Map.clean` extension to remove null and empty values.
@@ -21,16 +21,16 @@ Breaking Update.
 - Changed `FormState.setErrorText` to accept null to remove the errorText.
 - Updated examples and README.
 
-## 0.9.1
+## 0.9.1 - Mar 22, 2024
 
 - Fixed validation priority order.
 
-## 0.9.0
+## 0.9.0 - Mar 21, 2024
 
 - Changed `FormxBuilder` typedef to follow `FormFieldBuilder` signature from Flutter.
 - Added `FormxCastExtension` with `cast` and `tryCast`.
 
-## 0.8.0
+## 0.8.0 - Feb 24, 2024
 
 `Validator` was cleaned up and simplified. Now it's a declarative class that can be used to create custom validators.
 
@@ -38,7 +38,7 @@ Breaking Update.
 - Removed `Validator.merge` constructor, use `Validator.validators` instead.
 - Removed `Validator` modifiers to make it excluively declarative. Use `Validator.validators` instead.
 
-## 0.7.1
+## 0.7.1 - Feb 12, 2024
 
 - Added `Validator` class to simplify the creation of custom validators.
 - Added `Validator.modifier` to modify the errorText of a validator.
@@ -47,7 +47,7 @@ Breaking Update.
 - Added smart operators to FormxState, to get and set fields/nesteds.
 - Added reset to FormxState, to reset all fields to their initial values.
 
-## 0.7.0
+## 0.7.0 - Feb 10, 2024
 
 Completely simplification of the library. Now Formx works with any `FormField` Widget! No need to use custom fields anymore. You can use `TextFormField`, `DropdownButtonFormField` or wrap/extend any widget to a `FormField`. Just add a key to it and you are good to go!
 
