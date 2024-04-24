@@ -2,9 +2,13 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.1 - Apr 24, 2024
+
+- Refactor: removed all `if case when` as they're not working on flutter web.
+
 ## 0.10.0 - Apr 23, 2024
 
-Huge update.
+Breaking Update.
 
 - Removed `Formx` widget in favor o `context.formx()`.
 - Added new `README.md`.

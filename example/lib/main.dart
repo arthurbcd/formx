@@ -50,8 +50,8 @@ class FormxExample extends StatelessWidget {
                     key: const Key('email'),
                     initialValue: 'some@email',
                     validator: Validator<String>(
-                        // test: isEmail,
-                        ),
+                      isRequired: true,
+                    ),
                   ),
 
                   /// You can nest [Formx] to create complex structures.
@@ -114,13 +114,13 @@ class FormxExample extends StatelessWidget {
                 onPressed: () {
                   final state = context.formx();
                   // Validate all fields. Just like `Form.validate()`.
-                  final isValid = state.validate();
+                  final isValid = state.validate(['name']);
                   print('isValid: $isValid');
 
-                  state['address'] = {
-                    'street': 'Lalala',
-                    'number': '42',
-                  };
+                  // state['address'] = {
+                  //   'street': 'Lalala',
+                  //   'number': '42',
+                  // };
 
                   // You can also validate a single field.
                   // final isEmailValid = state.validate(['email']);

@@ -108,19 +108,20 @@ extension FormStateExtension on FormState {
   /// - [shouldStop] can be used to stop the recursion.
   @protected
   void visit({
-    void Function(String key, FormxState state)? onForm,
+    void Function(String key, FormState state)? onForm,
     void Function(String key, FormFieldState state)? onField,
     bool Function(String key, State state)? shouldStop,
   }) {
     var didFind = false;
     void visit(Element el) {
-      if ((el, el.widget.key) case (StatefulElement el, Key(:String value))) {
-        if (el.state case FormState s) onForm?.call(value, FormxState(s));
-        if (el.state case FormFieldState state) onField?.call(value, state);
+      if (el is StatefulElement && el.widget.key?.value != null) {
+        final key = el.widget.key!.value!;
 
         if (el.state is FormState || el.state is FormFieldState) {
           didFind = true;
-          if (shouldStop?.call(value, el.state) ?? false) return;
+          if (el.state case FormState state) onForm?.call(key, state);
+          if (el.state case FormFieldState state) onField?.call(key, state);
+          if (shouldStop?.call(key, el.state) ?? false) return;
         }
       }
       el.visitChildren(visit);

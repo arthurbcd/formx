@@ -2,6 +2,7 @@
 library formx;
 
 export 'package:formx/src/extensions/widgets_extension.dart';
+export 'package:recase/recase.dart';
 
 export 'src/extensions/context_extension.dart';
 export 'src/extensions/form_field_state_extension.dart' hide FormFieldData;
