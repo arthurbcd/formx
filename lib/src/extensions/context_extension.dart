@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-import '../../formx.dart';
+import '../formx_state.dart';
+import 'form_field_state_extension.dart';
+import 'form_state_extension.dart';
 
 /// Extension for [BuildContext] to access the main [FormState].
 extension FormxContextExtension on BuildContext {

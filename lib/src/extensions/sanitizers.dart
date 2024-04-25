@@ -133,3 +133,15 @@ class IndentedMap<K, V> extends MapBase<K, V> {
     return JsonEncoder.withIndent('  ', (e) => e.toString()).convert(_map);
   }
 }
+
+/// A set of extensions to sanitize strings.
+extension StringSanitizerExtension on String {
+  /// Extracts only the alpha characters from a string.
+  String get onlyAlpha => replaceAll(RegExp('[^0-9]'), '');
+
+  /// Extracts only the numeric characters from a string.
+  String get onlyNumeric => replaceAll(RegExp('[^a-zA-Z]'), '');
+
+  /// Extracts only the alphanumeric characters from a string.
+  String get onlyAlphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
+}

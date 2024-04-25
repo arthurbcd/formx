@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../formx.dart';
+import '../validator/validator.dart';
+import 'form_field_state_extension.dart';
+import 'sanitizers.dart';
 
 /// Extension for [BuildContext] to access the [FormState].
 extension FormStateExtension on FormState {
@@ -120,7 +122,9 @@ extension FormStateExtension on FormState {
         if (el.state is FormState || el.state is FormFieldState) {
           didFind = true;
           if (el.state case FormState state) onForm?.call(key, state);
-          if (el.state case FormFieldState state) onField?.call(key, state);
+          if (el.state case FormFieldState state) {
+            onField?.call(key, state..attachToValidator());
+          }
           if (shouldStop?.call(key, el.state) ?? false) return;
         }
       }

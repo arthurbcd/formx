@@ -63,6 +63,58 @@ TextFormField(
 ),
 ```
 
+You can also use it with modifiers:
+
+```dart
+TextFormField(
+  validator: Validator().required().email(),
+),
+```
+
+You can set a default `requiredText`/`invalidText` for all validators:
+
+```dart
+Validator.defaultRequiredText = 'This field is required';
+Validator.defaultInvalidText = 'This field is invalid';
+
+// You can also modify the errorText of a validator:
+Validator.modifier = (validator, errorText) => errorText; // good for translations
+
+// And disable them all:
+Validator.disableOnDebug = true; // only works on debug mode
+```
+
+### Modifiers
+
+- `.test(bool Function(T value) test)`
+- `.number(bool Function(num value) test)`
+- `.datetime(bool Function(DateTime value) test)`
+- `.required`
+- `.email`
+- `.url`
+- `.phone`
+- `.creditCard`
+- `.cpf`
+- `.cnpj`
+- `.date`
+- `.alpha`
+- `.numeric`
+- `.alphaNumeric`
+- `.hasAlpha`
+- `.hasNumeric`
+- `.hasAlphanumeric`
+- `.hasUppercase`
+- `.hasLowercase`
+- `.hasSpecialCharacter`
+- `.minLength(int length)`
+- `.maxLength(int length)`
+- `.minWords(int words)`
+- `.maxWords(int words)`
+- `.minNumber(num number)`
+- `.maxNumber(num number)`
+- `.isAfter(DateTime date)`
+- `.isBefore(DateTime date)`
+
 ## Validators, Sanitizers & Helpers extensions
 
 Formx comes bundled with a set of built-in validators and sanitizers, which you can use to validate and sanitize your form fields.
@@ -70,12 +122,25 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 ### `String`
 
 - `.isEmail`
+- `.isPhone`
+- `.isUrl`
+- `.isDate`
+- `.isCreditCard`
+- `.isCpf`
+- `.isCnpj`
 - `.isNumeric`
 - `.isAlpha`
 - `.isAlphaNumeric`
-- `.isPhone`
-- `.isCpf`
-- `.isCnpj`
+- `.onlyNumeric`
+- `.onlyAlpha`
+- `.onlyAlphaNumeric`
+- `.hasAlpha`
+- `.hasNumeric`
+- `.hasAlphanumeric`
+- `.hasUppercase`
+- `.hasLowercase`
+- `.hasSpecialCharacters`
+- `.equalsIgnoreCase(String)`
 
 ### `Map`
 
@@ -97,7 +162,7 @@ Deeply recases all your map keys:
 - `.headerCase` "Header-Case"
 - `.titleCase` "Title Case"
 
-### `List<Widgets>`
+### `List<Widget>`
 
 - `.keepAlive` usually needed for building forms with [PageView.children].
 - `.expanded` usually needed for building forms with [Column.children] or [Row.children].

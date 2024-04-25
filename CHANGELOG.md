@@ -2,6 +2,11 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.2 - Apr 25, 2024
+
+- Added several `Validator` extensions.
+- Updated `README.md`.
+
 ## 0.10.1 - Apr 24, 2024
 
 - Refactor: removed all `if case when` as they're not working on flutter web.

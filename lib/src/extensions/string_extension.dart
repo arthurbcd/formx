@@ -23,6 +23,24 @@ extension StringValidatorExtension on String {
   /// Whether is a valid URL.
   bool get isUrl => lib.isURL(this);
 
+  /// Check if the string has at least one number
+  bool get hasNumeric => contains(RegExp(r'\d'));
+
+  /// Check if the string has at least one letter
+  bool get hasAlpha => contains(RegExp('[a-zA-Z]'));
+
+  /// Check if the string has at least one alphanumeric character
+  bool get hasAlphanumeric => contains(RegExp('[a-zA-Z0-9]'));
+
+  /// Check if the string has at least one uppercase letter
+  bool get hasUppercase => contains(RegExp('[A-Z]'));
+
+  /// Check if the string has at least one lowercase letter
+  bool get hasLowercase => contains(RegExp('[a-z]'));
+
+  /// Check if the string has at least one special character
+  bool get hasSpecialCharacter => contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
   /// Whether is a valid phone number.
   ///
   /// International phone numbers are supported.
@@ -85,4 +103,14 @@ extension StringValidatorExtension on String {
     var digit2 = (sum2 % 11 < 2) ? 0 : 11 - (sum2 % 11);
     return int.parse(cpf[9]) == digit1 && int.parse(cpf[10]) == digit2;
   }
+
+  /// Whether this is equals to [other], ignoring case.
+  bool equalsIgnoreCase(String other) => toLowerCase() == other.toLowerCase();
+}
+
+/// Extension for [List<String>] for validations.
+extension ListStringValidatorExtension on List<String> {
+  /// Whether this list contains [value], ignoring case.
+  bool containsIgnoreCase(String value) =>
+      any((e) => e.equalsIgnoreCase(value));
 }

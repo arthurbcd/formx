@@ -11,11 +11,16 @@ extension FormFieldStateExtension on FormFieldState {
   ///
   /// You need to set a [Validator] to use this method.
   void setErrorText(String? errorText) {
-    _attachToValidator(errorText: errorText);
+    attachToValidator(errorText: errorText);
     validate();
   }
+}
 
-  void _attachToValidator({String? errorText}) {
+/// Attaches a [FormFieldState] to a [Validator].
+extension FormFieldStateAttacher on FormFieldState {
+  /// Attaches this [FormFieldState] to the [Validator].
+  @protected
+  void attachToValidator({String? errorText}) {
     final FormFieldData data;
     try {
       data = (

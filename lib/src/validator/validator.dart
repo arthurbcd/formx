@@ -20,9 +20,11 @@ class Validator<T> {
     this.isRequired = false,
     this.requiredText,
     this.invalidText,
-    this.validators = const [],
+    List<Validator<T>>? validators,
   })  : _key = key,
-        _test = test;
+        _test = test {
+    if (validators != null) this.validators.addAll(validators);
+  }
 
   /// Shorthand to [Validator.new] with a [test] and an optional [invalidText].
   Validator.test(
@@ -31,8 +33,7 @@ class Validator<T> {
   ])  : _key = null,
         _test = test,
         isRequired = false,
-        requiredText = null,
-        validators = [];
+        requiredText = null;
 
   /// The test to check if the value is valid.
   ///
@@ -53,7 +54,7 @@ class Validator<T> {
   final String? invalidText;
 
   /// Additional validators to be merged with this one.
-  final List<Validator<T>> validators;
+  final List<Validator<T>> validators = [];
 
   /// The default required text.
   static String defaultRequiredText = 'Required value';
@@ -74,23 +75,6 @@ class Validator<T> {
 
   /// The [Key] value of the [FormField] that this [Validator] is attached.
   String? get key => _key ?? _state?.widget.key?.value;
-
-  /// Caller for [validator].
-  ///
-  /// Applies the [Validator.modifier] before calling it.
-  String? call(Object? value) {
-    if (value case FormFieldData data) {
-      if (data.errorText != null) _errorText = data.errorText;
-      _state = data.state;
-      return null;
-    }
-
-    if (validator(value) case String errorText) {
-      return modifier(this, errorText);
-    }
-
-    return null;
-  }
 
   /// The resolved [FormField.validator] for this [Validator].
   FormFieldValidator<Object> get validator {
@@ -121,6 +105,23 @@ class Validator<T> {
 
       return null;
     };
+  }
+
+  /// Caller for [validator].
+  ///
+  /// Applies the [Validator.modifier] before calling it.
+  String? call(Object? value) {
+    if (value case FormFieldData data) {
+      if (data.errorText != null) _errorText = data.errorText;
+      _state = data.state;
+      return null;
+    }
+
+    if (validator(value) case String errorText) {
+      return modifier(this, errorText);
+    }
+
+    return null;
   }
 }
 
