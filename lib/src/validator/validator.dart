@@ -65,8 +65,8 @@ class Validator<T> {
   /// Whether to disable all [Validator]'s on debug mode.
   static bool disableOnDebug = false;
 
-  /// Modifies the `errorText` returned by [Validator].
-  static ValidatorModifier modifier = (validator, errorText) => errorText;
+  /// Modifies the `errorText` returned by [Validator], if not manually set.
+  static ValidatorModifier translator = (key, errorText) => errorText;
 
   // States
   String? _errorText;
@@ -90,7 +90,8 @@ class Validator<T> {
 
       // 2. Check if it is required.
       if (value == null || value.isEmpty) {
-        return isRequired ? requiredText ?? defaultRequiredText : null;
+        var e = validators.firstWhere((e) => e.isRequired, orElse: () => this);
+        return e.isRequired ? e.requiredText ?? defaultRequiredText : null;
       }
 
       // 3. Check if it passes the test.
@@ -99,8 +100,8 @@ class Validator<T> {
       }
 
       // 4. Check if any other merged validator are valid.
-      for (final validator in validators) {
-        if (validator(value) case String errorText) return errorText;
+      for (final e in validators) {
+        if (e.validator(value) case String errorText) return errorText;
       }
 
       return null;
@@ -109,7 +110,7 @@ class Validator<T> {
 
   /// Caller for [validator].
   ///
-  /// Applies the [Validator.modifier] before calling it.
+  /// Applies the [Validator.translator] before calling it.
   String? call(Object? value) {
     if (value case FormFieldData data) {
       if (data.errorText != null) _errorText = data.errorText;
@@ -118,7 +119,9 @@ class Validator<T> {
     }
 
     if (validator(value) case String errorText) {
-      return modifier(this, errorText);
+      if (defaultInvalidText == errorText) return translator(key, errorText);
+      if (defaultRequiredText == errorText) return translator(key, errorText);
+      return errorText;
     }
 
     return null;
@@ -130,7 +133,7 @@ typedef ValidatorTest<T> = bool Function(T value);
 
 /// Signature for modifying a [Validator] behavior.
 typedef ValidatorModifier = String Function(
-  Validator validator,
+  String? key,
   String errorText,
 );
 

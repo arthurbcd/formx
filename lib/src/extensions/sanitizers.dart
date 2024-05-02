@@ -77,16 +77,57 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
 
   /// Returns a view of this [Map] that is indented when printed.
   Map<K, V> get indented => IndentedMap(this);
+}
 
+/// A map extension that removes all null or empty values.
+extension FormxCleanExtension<K, V> on Map<K, V?> {
   /// Removes all null or empty values from this [Map] and nesteds.
-  void clean() {
+  void clean({
+    bool emptyMap = true,
+    bool emptyString = true,
+    bool emptyIterable = false,
+  }) {
     // ignore: avoid_types_on_closure_parameters
-    removeWhere((key, Object? value) {
+    removeWhere((key, value) {
       if (value is Map) value.clean();
 
-      return value == null || value.isEmpty;
+      return switch (value) {
+        null => true,
+        Map e => e.isEmpty && emptyMap,
+        String e => e.isEmpty && emptyString,
+        Iterable e => e.isEmpty && emptyIterable,
+        _ => false,
+      };
     });
   }
+
+  /// Returns a new [Map] with all null or empty values removed.
+  Map<K, V> cleaned({
+    bool emptyMap = true,
+    bool emptyString = true,
+    bool emptyIterable = false,
+  }) {
+    final map = Map<K, V?>.of(this)
+      ..clean(
+        emptyMap: emptyMap,
+        emptyString: emptyString,
+        emptyIterable: emptyIterable,
+      );
+    return Map<K, V>.from(map);
+  }
+}
+
+// TODO(liz): add tests for String.onlyAlpha, String.onlyAlphaNumeric, String.onlyNumeric
+/// A set of extensions to sanitize strings.
+extension StringSanitizerExtension on String {
+  /// Extracts only the alpha characters from a string.
+  String get onlyAlpha => replaceAll(RegExp('[^0-9]'), '');
+
+  /// Extracts only the numeric characters from a string.
+  String get onlyNumeric => replaceAll(RegExp('[^a-zA-Z]'), '');
+
+  /// Extracts only the alphanumeric characters from a string.
+  String get onlyAlphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
 }
 
 extension on Object {
@@ -132,16 +173,4 @@ class IndentedMap<K, V> extends MapBase<K, V> {
   String toString() {
     return JsonEncoder.withIndent('  ', (e) => e.toString()).convert(_map);
   }
-}
-
-/// A set of extensions to sanitize strings.
-extension StringSanitizerExtension on String {
-  /// Extracts only the alpha characters from a string.
-  String get onlyAlpha => replaceAll(RegExp('[^0-9]'), '');
-
-  /// Extracts only the numeric characters from a string.
-  String get onlyNumeric => replaceAll(RegExp('[^a-zA-Z]'), '');
-
-  /// Extracts only the alphanumeric characters from a string.
-  String get onlyAlphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
 }

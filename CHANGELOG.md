@@ -2,10 +2,19 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.10.2 - Apr 25, 2024
+## 0.11.0 - May 2, 2024
+
+- Added `Validator.translator` for translating error messages.
+- Removed `Validator.modifier`.
+
+Thanks to `lizandraquaresma` for the `translator` feature!
+
+## 0.10.4 - Apr 25, 2024
 
 - Added several `Validator` extensions.
+- Updated `Map.clean` and added `Map.cleaned` extension.
 - Updated `README.md`.
+- Updated tests.
 
 ## 0.10.1 - Apr 24, 2024
 

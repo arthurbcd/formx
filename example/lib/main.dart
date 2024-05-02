@@ -10,6 +10,10 @@ class FormxExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Validator.defaultRequiredText = 'form.required';
+    Validator.defaultInvalidText = 'form.invalid';
+    Validator.translator = (key, errorText) => '$errorText.$key';
+
     return Scaffold(
       floatingActionButton: const MyWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
@@ -50,7 +54,7 @@ class FormxExample extends StatelessWidget {
                   TextFormField(
                     key: const Key('email'),
                     initialValue: 'some@email',
-                    validator: Validator().required().email(),
+                    validator: Validator().required().email('Email inválido'),
                   ),
 
                   /// You can nest [Formx] to create complex structures.
@@ -113,7 +117,7 @@ class FormxExample extends StatelessWidget {
                 onPressed: () {
                   final state = context.formx();
                   // Validate all fields. Just like `Form.validate()`.
-                  final isValid = state.validate(['name']);
+                  final isValid = state.validate();
                   print('isValid: $isValid');
 
                   // state['address'] = {

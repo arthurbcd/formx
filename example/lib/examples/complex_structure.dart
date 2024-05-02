@@ -23,11 +23,7 @@ class ComplexStructureExample extends StatelessWidget {
   Widget build(BuildContext context) {
     Validator.defaultRequiredText = 'form.required';
     Validator.defaultInvalidText = 'form.invalid';
-    Validator.modifier = (validator, errorText) {
-      if (!errorText.contains('form.')) return errorText;
-
-      return '$errorText.${validator.key}';
-    };
+    Validator.translator = (key, errorText) => '$errorText.$key';
 
     return Center(
       child: Form(

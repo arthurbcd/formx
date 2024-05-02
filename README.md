@@ -52,7 +52,7 @@ You can redeclare any `FormState` to a `FormxState` by using `FormxState(formSta
 
 ## Validator class
 
-Ever wish to build validators more declaratively? `Validator` is a class that allows you to define your validation rules in a more readable way.
+Looking for a way to create validators declaratively? The `Validator` class provides a readable and declarative approach to defining validation rules for your Dart applications.
 
 ```dart
 TextFormField(
@@ -63,7 +63,7 @@ TextFormField(
 ),
 ```
 
-You can also use it with modifiers:
+For the one-liners, the modifiers allows you to chain your validators.
 
 ```dart
 TextFormField(
@@ -71,9 +71,20 @@ TextFormField(
 ),
 ```
 
-You can set a default `requiredText`/`invalidText` for all validators:
+You can also easily create custom validators:
 
 ```dart
+extension CustomValidators on Validator<T> {
+  Validator<T> myValidator([String? requiredText]) {
+    return test((value) => /* your logic here */, requiredText);
+  }
+}
+```
+
+### Customizing
+
+```dart
+// You can set a default `requiredText`/`invalidText` for all validators:
 Validator.defaultRequiredText = 'This field is required';
 Validator.defaultInvalidText = 'This field is invalid';
 
@@ -99,7 +110,7 @@ Validator.disableOnDebug = true; // only works on debug mode
 - `.date`
 - `.alpha`
 - `.numeric`
-- `.alphaNumeric`
+- `.alphanumeric`
 - `.hasAlpha`
 - `.hasNumeric`
 - `.hasAlphanumeric`
@@ -130,10 +141,7 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.isCnpj`
 - `.isNumeric`
 - `.isAlpha`
-- `.isAlphaNumeric`
-- `.onlyNumeric`
-- `.onlyAlpha`
-- `.onlyAlphaNumeric`
+- `.isAlphanumeric`
 - `.hasAlpha`
 - `.hasNumeric`
 - `.hasAlphanumeric`
@@ -141,6 +149,9 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.hasLowercase`
 - `.hasSpecialCharacters`
 - `.equalsIgnoreCase(String)`
+- `.onlyNumeric` (removes all non-numeric characters)
+- `.onlyAlpha` (removes all non-alphabetic characters)
+- `.onlyAlphanumeric` (removes all non-alphanumeric characters)
 
 ### `Map`
 
@@ -148,6 +159,7 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.indentedText` for getting an indented text.
 - `.deepMap` for mapping nested maps.
 - `.clean` for values that are `null` or empty string/iterable/map.
+- `.cleaned` for a new map with all `null` or empty values removed.
 
 Deeply recases all your map keys:
 
