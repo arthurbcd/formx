@@ -3,9 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../validator/validator.dart';
+import '../../formx.dart';
 import 'form_field_state_extension.dart';
-import 'sanitizers.dart';
 
 /// Extension for [BuildContext] to access the [FormState].
 extension FormStateExtension on FormState {
@@ -103,6 +102,12 @@ extension FormStateExtension on FormState {
   /// Gets the [FormFieldState.value] by [key] as [T].
   T value<T>(String key) => this[key].value as T;
 
+  /// Gets the [FormFieldState.value] by [key] as [String].
+  String string(String key) => this[key].string;
+
+  /// Gets the [FormFieldState.value] by [key] as [num].
+  num number(String key) => this[key].number;
+
   /// Visits all [FormFieldState] and [FormState] of this [Form] tree.
   ///
   /// - [onForm] is called for each [FormState].
@@ -147,21 +152,8 @@ extension FormStateExtension on FormState {
     );
   }
 
-  /// Gets either a [FormFieldState] or [FormState] by [key].
-  FormFieldState operator [](String key) {
-    assertKeys([key], 'get');
-    FormFieldState? field;
-
-    visit(
-      onField: (k, state) {
-        if (k == key) field = state;
-      },
-      shouldStop: (k, state) => k == key,
-    );
-
-    assert(field != null, 'No field found. key: $key');
-    return field!;
-  }
+  /// Gets a [FormFieldState] by [key] in this [FormState.context].
+  FormFieldState operator [](String key) => context.field(key);
 
   /// Sets either a [FormFieldState.value] or [values] by [key].
   ///

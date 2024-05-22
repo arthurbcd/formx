@@ -57,10 +57,10 @@ class Validator<T> {
   final List<Validator<T>> validators = [];
 
   /// The default required text.
-  static String defaultRequiredText = 'Required value';
+  static String defaultRequiredText = 'form.required';
 
   /// The default invalid text.
-  static String defaultInvalidText = 'Invalid value';
+  static String defaultInvalidText = 'form.invalid';
 
   /// Whether to disable all [Validator]'s on debug mode.
   static bool disableOnDebug = false;

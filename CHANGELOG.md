@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.12.0 - May 22, 2024
+
+- Improved sanitizers and validators.
+
 ## 0.11.0 - May 2, 2024
 
 - Added `Validator.translator` for translating error messages.

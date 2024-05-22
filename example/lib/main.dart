@@ -54,7 +54,7 @@ class FormxExample extends StatelessWidget {
                   TextFormField(
                     key: const Key('email'),
                     initialValue: 'some@email',
-                    validator: Validator().required().email('Email inválido'),
+                    validator: Validator().required().email(),
                   ),
 
                   /// You can nest [Formx] to create complex structures.

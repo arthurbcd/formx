@@ -1,9 +1,11 @@
+// ignore_for_file: cast_nullable_to_non_nullable
+
 import 'package:flutter/cupertino.dart';
 
 import '../../formx.dart';
 
 /// Extends [FormFieldState] with a programatic way to set [errorText].
-extension FormFieldStateExtension on FormFieldState {
+extension FormFieldStateExtension<T> on FormFieldState<T> {
   /// The [Key] `value` of this [FormFieldState].
   String? get key => widget.key?.value;
 
@@ -14,6 +16,12 @@ extension FormFieldStateExtension on FormFieldState {
     attachToValidator(errorText: errorText);
     validate();
   }
+
+  /// Returns the [FormFieldState.value] as a [String].
+  String get string => value?.toString() ?? '';
+
+  /// Returns the [FormFieldState.value] as a [num].
+  num get number => value is num ? value as num : num.tryParse(string) ?? 0;
 }
 
 /// Attaches a [FormFieldState] to a [Validator].

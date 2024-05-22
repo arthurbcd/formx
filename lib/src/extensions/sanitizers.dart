@@ -63,6 +63,15 @@ extension MapSanitizerExtension on Map<String, dynamic> {
       if (value is Map && value.keys.every((e) => e is String)) {
         return convert(key, value.cast<String, dynamic>().deepMap(convert));
       }
+      if (value is List && value.every((e) => e is Map)) {
+        return convert(
+          key,
+          value
+              .cast<Map>()
+              .map((e) => e.cast<String, dynamic>().deepMap(convert))
+              .toList(),
+        );
+      }
       return convert(key, value);
     });
   }
@@ -79,8 +88,69 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
   Map<K, V> get indented => IndentedMap(this);
 }
 
+/// Extension for casting lists.
+extension FormxCastListExtension<T> on List<T> {
+  /// Returns a new [List] with values casted as `Map<String, dynamic>`.
+  List<Map<String, dynamic>> asJson() => [
+        for (final item in this) Map.castFrom(item as Map),
+      ];
+}
+
+/// A list extension that removes all null or empty values.
+extension FormxListExtension<T> on List<T?> {
+  /// Removes all null or empty values from this [List] and nesteds.
+  void clean({
+    bool emptyMap = true,
+    bool emptyString = true,
+    bool emptyIterable = false,
+  }) {
+    removeWhere((value) {
+      if (value is Map) {
+        value.clean(
+          emptyMap: emptyMap,
+          emptyString: emptyString,
+          emptyIterable: emptyIterable,
+        );
+      }
+      if (value is List) {
+        value.clean(
+          emptyMap: emptyMap,
+          emptyString: emptyString,
+          emptyIterable: emptyIterable,
+        );
+      }
+
+      return switch (value) {
+        null => true,
+        Map e => e.isEmpty && emptyMap,
+        String e => e.isEmpty && emptyString,
+        Iterable e => e.isEmpty && emptyIterable,
+        _ => false,
+      };
+    });
+  }
+
+  /// Returns a new [List] with all null or empty values removed.
+  List<T> cleaned({
+    bool emptyMap = true,
+    bool emptyString = true,
+    bool emptyIterable = false,
+  }) {
+    final list = List.of(this)
+      ..clean(
+        emptyMap: emptyMap,
+        emptyString: emptyString,
+        emptyIterable: emptyIterable,
+      );
+    return list.cast();
+  }
+}
+
 /// A map extension that removes all null or empty values.
-extension FormxCleanExtension<K, V> on Map<K, V?> {
+extension FormxMapExtension<K, V> on Map<K, V?> {
+  /// Returns a new [Map] casted as `Map<String, dynamic>`.
+  Map<String, dynamic> asJson() => Map.castFrom(this);
+
   /// Removes all null or empty values from this [Map] and nesteds.
   void clean({
     bool emptyMap = true,
@@ -89,7 +159,20 @@ extension FormxCleanExtension<K, V> on Map<K, V?> {
   }) {
     // ignore: avoid_types_on_closure_parameters
     removeWhere((key, value) {
-      if (value is Map) value.clean();
+      if (value is Map) {
+        value.clean(
+          emptyMap: emptyMap,
+          emptyString: emptyString,
+          emptyIterable: emptyIterable,
+        );
+      }
+      if (value is List) {
+        value.clean(
+          emptyMap: emptyMap,
+          emptyString: emptyString,
+          emptyIterable: emptyIterable,
+        );
+      }
 
       return switch (value) {
         null => true,
@@ -107,13 +190,13 @@ extension FormxCleanExtension<K, V> on Map<K, V?> {
     bool emptyString = true,
     bool emptyIterable = false,
   }) {
-    final map = Map<K, V?>.of(this)
+    final map = Map.of(this)
       ..clean(
         emptyMap: emptyMap,
         emptyString: emptyString,
         emptyIterable: emptyIterable,
       );
-    return Map<K, V>.from(map);
+    return map.cast();
   }
 }
 
@@ -130,17 +213,8 @@ extension StringSanitizerExtension on String {
   String get onlyAlphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
 }
 
-extension on Object {
-  bool get isEmpty {
-    if (this case Iterable e) return e.isEmpty;
-    if (this case String e) return e.isEmpty;
-    if (this case Map e) return e.isEmpty;
-    return false;
-  }
-}
-
 /// Extension to enable Object inference casting by type.
-extension FormxCastExtension on Object? {
+extension FormxCastExtension on Object {
   /// Returns this as [T].
   T cast<T>() => this as T;
 
