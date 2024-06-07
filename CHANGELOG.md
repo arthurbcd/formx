@@ -2,7 +2,11 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.12.0 - May 22, 2024
+## 0.12.2 - May 22, 2024
+
+- Added `List.mapJson` extension.
+
+## 0.12.1 - May 22, 2024
 
 - Improved sanitizers and validators.
 

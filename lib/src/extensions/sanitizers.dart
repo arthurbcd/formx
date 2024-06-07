@@ -91,9 +91,16 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
 /// Extension for casting lists.
 extension FormxCastListExtension<T> on List<T> {
   /// Returns a new [List] with values casted as `Map<String, dynamic>`.
-  List<Map<String, dynamic>> asJson() => [
+  List<Map<String, dynamic>> castJson() => [
         for (final item in this) Map.castFrom(item as Map),
       ];
+
+  /// Returns a new [List] with values casted as `Map<String, dynamic>`.
+  List<R> mapJson<R>(R Function(Map<String, dynamic>) toElement) {
+    return [
+      for (final item in this) toElement(Map.castFrom(item as Map)),
+    ];
+  }
 }
 
 /// A list extension that removes all null or empty values.
@@ -104,21 +111,23 @@ extension FormxListExtension<T> on List<T?> {
     bool emptyString = true,
     bool emptyIterable = false,
   }) {
+    var index = 0;
     removeWhere((value) {
       if (value is Map) {
-        value.clean(
+        this[index] = value.cleaned(
           emptyMap: emptyMap,
           emptyString: emptyString,
           emptyIterable: emptyIterable,
-        );
+        ) as T;
       }
       if (value is List) {
-        value.clean(
+        this[index] = value.cleaned(
           emptyMap: emptyMap,
           emptyString: emptyString,
           emptyIterable: emptyIterable,
-        );
+        ) as T;
       }
+      index++;
 
       return switch (value) {
         null => true,
@@ -157,21 +166,20 @@ extension FormxMapExtension<K, V> on Map<K, V?> {
     bool emptyString = true,
     bool emptyIterable = false,
   }) {
-    // ignore: avoid_types_on_closure_parameters
     removeWhere((key, value) {
       if (value is Map) {
-        value.clean(
+        this[key] = value.cleaned(
           emptyMap: emptyMap,
           emptyString: emptyString,
           emptyIterable: emptyIterable,
-        );
+        ) as V;
       }
       if (value is List) {
-        value.clean(
+        this[key] = value.cleaned(
           emptyMap: emptyMap,
           emptyString: emptyString,
           emptyIterable: emptyIterable,
-        );
+        ) as V;
       }
 
       return switch (value) {
