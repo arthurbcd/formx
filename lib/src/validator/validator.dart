@@ -89,7 +89,7 @@ class Validator<T> {
       }
 
       // 2. Check if it is required.
-      if (value == null || value.isEmpty) {
+      if (value == null || value.isEmpty || value == false) {
         var e = validators.firstWhere((e) => e.isRequired, orElse: () => this);
         return e.isRequired ? e.requiredText ?? defaultRequiredText : null;
       }

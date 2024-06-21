@@ -1,27 +1,7 @@
-import 'package:string_validator/string_validator.dart' as lib;
+
 
 /// Extension for [String] for validations.
 extension StringValidatorExtension on String {
-  /// Whether is a valid email.
-  bool get isEmail => lib.isEmail(this);
-
-  /// Where it contains only letters.
-  bool get isAlpha => lib.isAlpha(this);
-
-  /// Where it contains only numbers.
-  bool get isNumeric => lib.isNumeric(this);
-
-  /// Where it contains only letters and numbers.
-  bool get isAlphanumeric => lib.isAlphanumeric(this);
-
-  /// Whether is a valid parseable DateTime.
-  bool get isDate => lib.isDate(this);
-
-  /// Whether is a valid credit card number.
-  bool get isCreditCard => lib.isCreditCard(this);
-
-  /// Whether is a valid URL.
-  bool get isUrl => lib.isURL(this);
 
   /// Check if the string has at least one number
   bool get hasNumeric => contains(RegExp(r'\d'));

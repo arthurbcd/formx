@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.14.0 - Jun 21, 2024
+
+- Added `RadioListFormField`.
+
+## 0.13.0 - Jun 19, 2024
+
+- Added `CheckboxFormField`.
+- Added `CheckboxListFormField`.
+- Bump `string_validator` to 1.1.0.
+
 ## 0.12.2 - May 22, 2024
 
 - Added `List.mapJson` extension.

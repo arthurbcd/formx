@@ -8,10 +8,10 @@ void main() {
 class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
 
+  List<String> get items => ['name1', 'name2', 'name3'];
+
   @override
   Widget build(BuildContext context) {
-    Validator.defaultRequiredText = 'form.required';
-    Validator.defaultInvalidText = 'form.invalid';
     Validator.translator = (key, errorText) => '$errorText.$key';
 
     return Scaffold(
@@ -72,7 +72,21 @@ class FormxExample extends StatelessWidget {
                         ),
                         TextFormField(
                           key: const Key('number'),
-                          initialValue: '42',
+                        ),
+                        RadioListFormField(
+                          key: const Key('names'),
+                          items: const ['Arthur', 'Iran', 'Juan'],
+                          validator: Validator().required(),
+                        ),
+                        CheckboxListFormField(
+                          key: const Key('friends'),
+                          items: const ['Arthur', 'Iran', 'Juan'],
+                          validator: Validator().minLength(2),
+                        ),
+                        CheckboxFormField(
+                          key: const Key('terms'),
+                          title: const Text('I agree to the terms'),
+                          validator: Validator().required(),
                         ),
                       ],
                     ),
@@ -147,7 +161,7 @@ class MyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        print(context.formx().values.indented);
+        print(context.formx().values);
       },
       child: const Text('Print Form'),
     );

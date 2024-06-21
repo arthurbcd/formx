@@ -1,3 +1,5 @@
+import 'package:string_validator/string_validator.dart';
+
 import '../validator/validator.dart';
 import 'string_extension.dart';
 
@@ -52,7 +54,7 @@ extension ValidatorExtension<T> on Validator<T> {
 
   /// Tests if the value is a valid URL.
   Validator<T> url([String? invalidText]) {
-    return test((value) => '$value'.isUrl, invalidText);
+    return test((value) => '$value'.isURL(), invalidText);
   }
 
   /// Tests if the value is a valid phone number.
@@ -127,12 +129,12 @@ extension ValidatorExtension<T> on Validator<T> {
 
   /// Validates the minimum length of the value.
   Validator<T> minLength(int length, [String? invalidText]) {
-    return test((value) => '$value'.length >= length, invalidText);
+    return test((value) => value.length >= length, invalidText);
   }
 
   /// Validates the maximum length of the value.
   Validator<T> maxLength(int length, [String? invalidText]) {
-    return test((value) => '$value'.length <= length, invalidText);
+    return test((value) => value.length <= length, invalidText);
   }
 
   /// Validates the minimum length of the value in words.
@@ -164,4 +166,12 @@ extension ValidatorExtension<T> on Validator<T> {
   Validator<T> isBefore(DateTime date, [String? invalidText]) {
     return datetime((value) => value.isBefore(date), invalidText);
   }
+}
+
+extension<T> on T {
+  int get length => switch (this) {
+        Iterable iterable => iterable.length,
+        Map map => map.length,
+        _ => this.toString().length,
+      };
 }
