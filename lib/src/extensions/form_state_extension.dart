@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../formx.dart';
 import 'form_field_state_extension.dart';
@@ -17,8 +17,8 @@ extension FormStateExtension on FormState {
   /// The [Key] `value` of this [FormState].
   String? get key => widget.key?.value;
 
-  /// Returns a structured map with all keyed [FormFieldState.value].
-  Map<String, dynamic> get values {
+  /// Returns a structured map with all keyed raw [FormFieldState.value].
+  Map<String, dynamic> get rawValues {
     final map = <String, dynamic>{};
     visit(
       onField: (key, state) => map[key] = state.value,
@@ -26,6 +26,74 @@ extension FormStateExtension on FormState {
       shouldStop: (key, state) => state is FormState,
     );
     return IndentedMap(map);
+  }
+
+  /// Returns a structured map with all keyed custom [FormFieldState.value].
+  ///
+  /// The custom values are processed by [Formx.options].
+  Map<String, dynamic> get values {
+    return customValues(
+      trim: Formx.options.trim,
+      unmask: Formx.options.unmask,
+      nonNulls: Formx.options.nonNulls,
+      nonEmptyMaps: Formx.options.nonEmptyMaps,
+      nonEmptyStrings: Formx.options.nonEmptyStrings,
+      nonEmptyIterables: Formx.options.nonEmptyIterables,
+    );
+  }
+
+  /// Returns a structured map with all keyed [FormFieldState.value].
+  ///
+  /// The custom values are processed by the provided options.
+  /// - [trim] trims all string values.
+  /// - [unmask] gets the unmasked value of [MaskTextInputFormatter], if any.
+  /// - [nonNulls] removes all null values.
+  /// - [nonEmptyMaps] removes all empty maps.
+  /// - [nonEmptyStrings] removes all empty strings.
+  /// - [nonEmptyIterables] removes all empty iterables.
+  ///
+  Map<String, dynamic> customValues({
+    bool trim = false,
+    bool unmask = false,
+    bool nonNulls = false,
+    bool nonEmptyMaps = false,
+    bool nonEmptyStrings = false,
+    bool nonEmptyIterables = false,
+  }) {
+    final map = <String, dynamic>{};
+    visit(
+      onField: (key, state) {
+        var value = state.value;
+
+        if (state.widget case TextFormField field when unmask) {
+          final scope = field.builder(state.cast());
+          final tf = (scope as dynamic).child as TextField;
+          final list = tf.inputFormatters?.whereType<MaskTextInputFormatter>();
+          value = list?.firstOrNull?.getUnmaskedText() ?? state.value;
+        }
+
+        map[key] = switch (value) {
+          String e => trim ? e.trim() : e,
+          _ => value,
+        };
+      },
+      onForm: (key, state) => map[key] = state.customValues(
+        trim: trim,
+        unmask: unmask,
+        nonNulls: nonNulls,
+        nonEmptyMaps: nonEmptyMaps,
+        nonEmptyStrings: nonEmptyStrings,
+        nonEmptyIterables: nonEmptyIterables,
+      ),
+      shouldStop: (key, state) => state is FormState,
+    );
+
+    return map.cleaned(
+      nonNulls: nonNulls,
+      nonEmptyMaps: nonEmptyMaps,
+      nonEmptyStrings: nonEmptyStrings,
+      nonEmptyIterables: nonEmptyIterables,
+    );
   }
 
   /// Returns a structured map with all keyed [FormField.initialValue].
@@ -63,17 +131,19 @@ extension FormStateExtension on FormState {
     return hasError;
   }
 
-  /// Returns true if all nested [FormFieldState.isValid].
-  bool get isValid {
-    var isValid = true;
+  /// Returns all the invalid keys of this [FormState].
+  List<String> get invalids {
+    final list = <String>[];
     visit(
       onField: (key, state) {
-        if (!state.isValid) isValid = false;
+        if (!state.isValid) list.add(key);
       },
-      shouldStop: (key, state) => state is FormFieldState && !state.isValid,
     );
-    return isValid;
+    return list;
   }
+
+  /// Returns true if all nested [FormFieldState.isValid].
+  bool get isValid => invalids.isEmpty;
 
   /// Returns a flat [Map] with all nested [FormFieldState.errorText].
   Map<String, String> get errorTexts {
@@ -107,6 +177,19 @@ extension FormStateExtension on FormState {
 
   /// Gets the [FormFieldState.value] by [key] as [num].
   num number(String key) => this[key].number;
+
+  /// Logs the current state of this [FormState].
+  void debug() {
+    final keys = rawValues.keys;
+
+    log(
+      name: 'Formx',
+      'keys (${keys.length}): ${rawValues.keys}\n'
+      'initialValues: ${initialValues.cleaned()}\n'
+      'values: $values\n'
+      'invalids: $invalids\n',
+    );
+  }
 
   /// Visits all [FormFieldState] and [FormState] of this [Form] tree.
   ///

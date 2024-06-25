@@ -73,9 +73,59 @@ extension type FormxState(FormState state) implements FormState {
 
 /// Syntactic sugar for [Form.of].
 mixin Formx {
-  /// Behaves like [Form.of] but returns a [FormxState] instead.
+  /// Behaves like [Form.of], but returns a [FormxState] instead.
   ///
-  /// This will not search the tree like `context.formx` does, and will also
-  /// rebuild the widget tree when the form changes.
+  /// This will not scan the widget tree like `context.formx`, but will create
+  /// a dependency on the nearest [Form] ancestor, like [Form.of].
   static FormxState of(BuildContext context) => FormxState(Form.of(context));
+
+  /// Global options for all [FormxState] instances.
+  static FormxOptions options = const FormxOptions();
+}
+
+/// Global options for all [FormxState] instances.
+class FormxOptions {
+  /// Creates a new [FormxOptions] instance.
+  ///
+  /// By default, all options are enabled, except for [nonEmptyIterables].
+  ///
+  /// `FormxState.rawValues` will always return the raw values, regardless of
+  /// any option.
+  ///
+  const FormxOptions({
+    this.trim = true,
+    this.unmask = true,
+    this.nonNulls = true,
+    this.nonEmptyMaps = true,
+    this.nonEmptyStrings = true,
+    this.nonEmptyIterables = false,
+  });
+
+  /// Creates a new [FormxOptions] instance with all options disabled.
+  const FormxOptions.none({
+    this.trim = false,
+    this.unmask = false,
+    this.nonNulls = false,
+    this.nonEmptyMaps = false,
+    this.nonEmptyStrings = false,
+    this.nonEmptyIterables = false,
+  });
+
+  /// Whether to trim all string values.
+  final bool trim;
+
+  /// Whether to unmask all masked text fields.
+  final bool unmask;
+
+  /// Whether to remove all null values.
+  final bool nonNulls;
+
+  /// Whether to remove all empty maps.
+  final bool nonEmptyMaps;
+
+  /// Whether to remove all empty strings.
+  final bool nonEmptyStrings;
+
+  /// Whether to remove all empty iterables.
+  final bool nonEmptyIterables;
 }

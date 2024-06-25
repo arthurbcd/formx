@@ -73,7 +73,7 @@ extension MapSanitizerExtension on Map<String, dynamic> {
         );
       }
       return convert(key, value);
-    });
+    }).indented;
   }
 }
 
@@ -104,89 +104,100 @@ extension FormxCastListExtension<T> on List<T> {
 }
 
 /// A list extension that removes all null or empty values.
-extension FormxListExtension<T> on List<T?> {
+extension FormxListExtension<T> on List<T> {
   /// Removes all null or empty values from this [List] and nesteds.
+  ///
+  /// Empty iterables are allowed by default.
   void clean({
-    bool emptyMap = true,
-    bool emptyString = true,
-    bool emptyIterable = false,
+    bool nonNulls = true,
+    bool nonEmptyMaps = true,
+    bool nonEmptyStrings = true,
+    bool nonEmptyIterables = false,
   }) {
     var index = 0;
     removeWhere((value) {
       if (value is Map) {
         this[index] = value.cleaned(
-          emptyMap: emptyMap,
-          emptyString: emptyString,
-          emptyIterable: emptyIterable,
+          nonNulls: nonNulls,
+          nonEmptyMaps: nonEmptyMaps,
+          nonEmptyStrings: nonEmptyStrings,
+          nonEmptyIterables: nonEmptyIterables,
         ) as T;
       }
       if (value is List) {
         this[index] = value.cleaned(
-          emptyMap: emptyMap,
-          emptyString: emptyString,
-          emptyIterable: emptyIterable,
+          nonNulls: nonNulls,
+          nonEmptyMaps: nonEmptyMaps,
+          nonEmptyStrings: nonEmptyStrings,
+          nonEmptyIterables: nonEmptyIterables,
         ) as T;
       }
-      index++;
-
-      return switch (value) {
-        null => true,
-        Map e => e.isEmpty && emptyMap,
-        String e => e.isEmpty && emptyString,
-        Iterable e => e.isEmpty && emptyIterable,
+      return switch (this[index++]) {
+        null => nonNulls,
+        Map e => e.isEmpty && nonEmptyMaps,
+        String e => e.isEmpty && nonEmptyStrings,
+        Iterable e => e.isEmpty && nonEmptyIterables,
         _ => false,
       };
     });
   }
 
   /// Returns a new [List] with all null or empty values removed.
+  ///
+  /// Empty iterables are allowed by default.
   List<T> cleaned({
-    bool emptyMap = true,
-    bool emptyString = true,
-    bool emptyIterable = false,
+    bool nonNulls = true,
+    bool nonEmptyMaps = true,
+    bool nonEmptyStrings = true,
+    bool nonEmptyIterables = false,
   }) {
     final list = List.of(this)
       ..clean(
-        emptyMap: emptyMap,
-        emptyString: emptyString,
-        emptyIterable: emptyIterable,
+        nonNulls: nonNulls,
+        nonEmptyMaps: nonEmptyMaps,
+        nonEmptyStrings: nonEmptyStrings,
+        nonEmptyIterables: nonEmptyIterables,
       );
-    return list.cast();
+    return list;
   }
 }
 
 /// A map extension that removes all null or empty values.
-extension FormxMapExtension<K, V> on Map<K, V?> {
+extension FormxMapExtension<K, V> on Map<K, V> {
   /// Returns a new [Map] casted as `Map<String, dynamic>`.
-  Map<String, dynamic> asJson() => Map.castFrom(this);
+  Map<String, dynamic> castJson() => Map.castFrom(this);
 
   /// Removes all null or empty values from this [Map] and nesteds.
+  ///
+  /// Empty iterables are allowed by default.
   void clean({
-    bool emptyMap = true,
-    bool emptyString = true,
-    bool emptyIterable = false,
+    bool nonNulls = true,
+    bool nonEmptyMaps = true,
+    bool nonEmptyStrings = true,
+    bool nonEmptyIterables = false,
   }) {
     removeWhere((key, value) {
       if (value is Map) {
         this[key] = value.cleaned(
-          emptyMap: emptyMap,
-          emptyString: emptyString,
-          emptyIterable: emptyIterable,
+          nonNulls: nonNulls,
+          nonEmptyMaps: nonEmptyMaps,
+          nonEmptyStrings: nonEmptyStrings,
+          nonEmptyIterables: nonEmptyIterables,
         ) as V;
       }
       if (value is List) {
         this[key] = value.cleaned(
-          emptyMap: emptyMap,
-          emptyString: emptyString,
-          emptyIterable: emptyIterable,
+          nonNulls: nonNulls,
+          nonEmptyMaps: nonEmptyMaps,
+          nonEmptyStrings: nonEmptyStrings,
+          nonEmptyIterables: nonEmptyIterables,
         ) as V;
       }
-
-      return switch (value) {
-        null => true,
-        Map e => e.isEmpty && emptyMap,
-        String e => e.isEmpty && emptyString,
-        Iterable e => e.isEmpty && emptyIterable,
+      return switch (this[key]) {
+        null => nonNulls,
+        Map e => e.isEmpty && nonEmptyMaps,
+        String e => e.isEmpty && nonEmptyStrings,
+        Iterable e => e.isEmpty && nonEmptyIterables,
         _ => false,
       };
     });
@@ -194,30 +205,44 @@ extension FormxMapExtension<K, V> on Map<K, V?> {
 
   /// Returns a new [Map] with all null or empty values removed.
   Map<K, V> cleaned({
-    bool emptyMap = true,
-    bool emptyString = true,
-    bool emptyIterable = false,
+    bool nonNulls = true,
+    bool nonEmptyMaps = true,
+    bool nonEmptyStrings = true,
+    bool nonEmptyIterables = false,
   }) {
-    final map = Map.of(this)
+    final map = IndentedMap.of(this)
       ..clean(
-        emptyMap: emptyMap,
-        emptyString: emptyString,
-        emptyIterable: emptyIterable,
+        nonNulls: nonNulls,
+        nonEmptyMaps: nonEmptyMaps,
+        nonEmptyStrings: nonEmptyStrings,
+        nonEmptyIterables: nonEmptyIterables,
       );
-    return map.cast();
+    return map;
   }
 }
 
-// TODO(liz): add tests for String.onlyAlpha, String.onlyAlphaNumeric, String.onlyNumeric
+// TODO(liz): add tests for String.alpha, String.alphaNumeric, String.numeric
 /// A set of extensions to sanitize strings.
 extension StringSanitizerExtension on String {
+  /// Returns the alpha characters of this [String].
+  String get alpha => replaceAll(RegExp('[^a-zA-Z]'), '');
+
+  /// Returns the numeric characters of this [String].
+  String get numeric => replaceAll(RegExp('[^0-9]'), '');
+
+  /// Returns the alphanumeric characters of this [String].
+  String get alphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
+
   /// Extracts only the alpha characters from a string.
+  @Deprecated('Use alpha instead.')
   String get onlyAlpha => replaceAll(RegExp('[^0-9]'), '');
 
   /// Extracts only the numeric characters from a string.
+  @Deprecated('Use numeric instead.')
   String get onlyNumeric => replaceAll(RegExp('[^a-zA-Z]'), '');
 
   /// Extracts only the alphanumeric characters from a string.
+  @Deprecated('Use alphanumeric instead.')
   String get onlyAlphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
 }
 
@@ -232,8 +257,11 @@ extension FormxCastExtension on Object {
 
 /// An indented view of a [Map].
 class IndentedMap<K, V> extends MapBase<K, V> {
-  /// Creates a new [IndentedMap] from a [Map].
+  /// Creates a [IndentedMap] with this [Map].
   const IndentedMap(this._map);
+
+  /// Creates a new [IndentedMap] of a [Map].
+  factory IndentedMap.of(Map<K, V> map) => IndentedMap(Map.of(map));
   final Map<K, V> _map;
 
   @override

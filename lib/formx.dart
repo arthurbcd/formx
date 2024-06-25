@@ -2,7 +2,9 @@
 library formx;
 
 export 'package:formx/src/extensions/widgets_extension.dart';
+export 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 export 'package:recase/recase.dart';
+export 'package:string_validator/string_validator.dart';
 
 export 'src/extensions/context_extension.dart';
 export 'src/extensions/form_field_state_extension.dart'

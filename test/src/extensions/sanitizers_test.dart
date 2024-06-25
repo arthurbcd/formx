@@ -21,7 +21,7 @@ void main() {
 
     test('does not remove empty strings if emptyString is false', () {
       var map = {'key1': '', 'key2': 'value2'};
-      map.clean(emptyString: false);
+      map.clean(nonEmptyStrings: false);
       expect(map.containsKey('key1'), isTrue);
       expect(map, {'key1': '', 'key2': 'value2'});
     });
@@ -35,14 +35,14 @@ void main() {
 
     test('does not remove empty maps if emptyMap is false', () {
       var map = {'key1': {}, 'key2': 'value2'};
-      map.clean(emptyMap: false);
+      map.clean(nonEmptyMaps: false);
       expect(map.containsKey('key1'), isTrue);
       expect(map, {'key1': {}, 'key2': 'value2'});
     });
 
     test('removes empty iterables if emptyIterable is true', () {
       var map = {'key1': [], 'key2': 'value2'};
-      map.clean(emptyIterable: true);
+      map.clean(nonEmptyIterables: true);
       expect(map.containsKey('key1'), isFalse);
       expect(map, {'key2': 'value2'});
     });
@@ -83,7 +83,7 @@ void main() {
 
     test('returns a new map with empty strings removed if emptyString', () {
       var originalMap = {'key1': '', 'key2': 'value2'};
-      var cleanedMap = originalMap.cleaned(emptyString: true);
+      var cleanedMap = originalMap.cleaned(nonEmptyStrings: true);
       expect(cleanedMap.containsKey('key1'), isFalse);
       expect(cleanedMap, {'key2': 'value2'});
     });
@@ -91,28 +91,28 @@ void main() {
     test('returns a new map with empty strings kept if emptyString is false',
         () {
       var originalMap = {'key1': '', 'key2': 'value2'};
-      var cleanedMap = originalMap.cleaned(emptyString: false);
+      var cleanedMap = originalMap.cleaned(nonEmptyStrings: false);
       expect(cleanedMap.containsKey('key1'), isTrue);
       expect(cleanedMap, {'key1': '', 'key2': 'value2'});
     });
 
     test('returns a new map with empty maps removed if emptyMap is true', () {
       var originalMap = {'key1': <String, dynamic>{}, 'key2': 'value2'};
-      var cleanedMap = originalMap.cleaned(emptyMap: true);
+      var cleanedMap = originalMap.cleaned(nonEmptyMaps: true);
       expect(cleanedMap.containsKey('key1'), isFalse);
       expect(cleanedMap, {'key2': 'value2'});
     });
 
     test('returns a new map with empty maps kept if emptyMap is false', () {
       var originalMap = {'key1': <String, dynamic>{}, 'key2': 'value2'};
-      var cleanedMap = originalMap.cleaned(emptyMap: false);
+      var cleanedMap = originalMap.cleaned(nonEmptyMaps: false);
       expect(cleanedMap.containsKey('key1'), isTrue);
       expect(cleanedMap, {'key1': <String, dynamic>{}, 'key2': 'value2'});
     });
 
     test('returns a new map with empty iterables removed if emptyIterable', () {
       var originalMap = {'key1': [], 'key2': 'value2'};
-      var cleanedMap = originalMap.cleaned(emptyIterable: true);
+      var cleanedMap = originalMap.cleaned(nonEmptyIterables: true);
       expect(cleanedMap.containsKey('key1'), isFalse);
       expect(cleanedMap, {'key2': 'value2'});
     });
@@ -121,7 +121,7 @@ void main() {
         'returns a new map with empty iterables kept if emptyIterable is false',
         () {
       var originalMap = {'key1': [], 'key2': 'value2'};
-      var cleanedMap = originalMap.cleaned(emptyIterable: false);
+      var cleanedMap = originalMap.cleaned(nonEmptyIterables: false);
       expect(cleanedMap.containsKey('key1'), isTrue);
       expect(cleanedMap, {'key1': [], 'key2': 'value2'});
     });

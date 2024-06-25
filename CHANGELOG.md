@@ -2,6 +2,19 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.15.0 - Jun 24, 2024
+
+- Added `FormxOptions` class.
+- Added `Formx.options` static variable.
+- Added `FormState.rawValues` getter.
+- Updated `FormState.values` getter.
+- Added `FormState.customValues` method.
+- Added `FormState.debug` method.
+- Added `context.debugForm` method extension.
+- Added `IndentedMap.of` factory constructor.
+- Included `mask_text_input_formatter`.
+- Updated docs & README.
+
 ## 0.14.0 - Jun 21, 2024
 
 - Added `RadioListFormField`.

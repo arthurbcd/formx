@@ -39,7 +39,7 @@ class FormxExample extends StatelessWidget {
         child: Scaffold(
           body: Center(
             child: Form(
-              onChanged: context.onFormChanged,
+              onChanged: context.debugForm,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -60,7 +60,7 @@ class FormxExample extends StatelessWidget {
                   /// You can nest [Formx] to create complex structures.
                   Form(
                     key: const Key('address'),
-                    onChanged: context.onFormChanged,
+                    onChanged: context.debugForm,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

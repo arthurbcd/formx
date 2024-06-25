@@ -1,8 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../formx_state.dart';
-import 'form_field_state_extension.dart';
-import 'form_state_extension.dart';
+import '../../formx.dart';
 
 /// Extension for [BuildContext] to access the main [FormState].
 extension FormxContextExtension on BuildContext {
@@ -51,24 +50,14 @@ extension FormxContextExtension on BuildContext {
     return formState;
   }
 
-  /// Shortcut to call parent [FormState]'s [Form.onChanged] method.
-  ///
-  /// This is useful when you have nested forms and you want to centralize all
-  /// changes in the root [Form.onChanged] method.
-  ///
-  /// ```dart
-  /// Form(
-  ///   onChanged: () => print(context.form().values),
-  ///   child: Column(
-  ///     children: [
-  ///       Form(
-  ///         onChanged: context.onFormChanged, // <-- call parent onChanged.
-  ///       ),
-  ///     ],
-  ///   ),
-  /// );
-  /// ```
-  VoidCallback get onFormChanged => () => _form().widget.onChanged?.call();
+  @Deprecated('Use `context.debugForm` instead.')
+  // ignore: public_member_api_docs
+  VoidCallback get onFormChanged => debugForm;
+
+  /// Debugs the [FormState] of this [BuildContext].
+  void debugForm([String? key]) {
+    if (kDebugMode) formx(key).debug();
+  }
 
   /// Gets the [FormFieldState] of type [T] by [key].
   FormFieldState<T> field<T>(String key) {

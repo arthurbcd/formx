@@ -18,16 +18,21 @@ final addressState = context.formx('address');
 final email = context.field('email').value;
 ```
 
-> Alternatively, use `Formx.of(context)` for a traditional approach without visitors, which also rebuilds the widget on form state changes, similar to `Form.of(context)`.
+Alternatively, use `Formx.of(context)` for a traditional approach without visitors.
+
+> ⚠️ Be careful, as using it will also rebuild the widget tree on any field change, just as `Form.of(context)`.
 
 ## FormState extensions
 
 - `.value<T>(String key)`, gets the [FormFieldState.value] of a specific field.
-- `.values`, a structured `Map` with all the values of the form.
+- `.rawValues`, a structured `Map` with all raw [FormField.value] of the form.
+- `.values`, same as `rawValues`, but with global [FormxOptions] applied.
+- `.customValues()`, same as `rawValues`, but with explicit options applied.
 - `.initialValues`, a structured `Map` with all the initial values of the form.
 - `.hasInteractedByUser`, whether any nested [FormFieldState.hasInteractedByUser].
 - `.hasError`, whether any nested [FormFieldState.hasError].
 - `.isValid`, whether all nested [FormFieldState.isValid].
+- `.invalids`, a list with all invalid field keys, regardless if validated.
 - `.errorTexts`, a flat `Map` with all nested [FormFieldState.errorText].
 - `operator [key]`, operator to get a specific [FormFieldState] by it's key value.
 - `operator [key] = value`, operator to set any nested form/field value(s) directly.
@@ -49,6 +54,23 @@ You can redeclare any `FormState` to a `FormxState` by using `FormxState(formSta
 ## FormFieldState extensions
 
 - `.setErrorText(String? errorText)`, sets the field errorText programmatically. Requires `Validator`.
+
+## FormxOptions
+
+You can use `Formx.options` to modify `FormState.values` output.
+
+- `trim` removes leading and trailing whitespaces.
+- `unmask` removes all [MaskTextInputFormatter] masks.
+- `nonNull` removes all `null` values.
+- `nonEmptyMaps` removes all empty maps.
+- `nonEmptyStrings` removes all empty strings.
+- `nonEmptyIterables` removes all empty iterables.
+
+By default, all options are enabled, except for [nonEmptyIterables].
+
+> To get the unmodified values, use `FormState.rawValues`.
+
+To understand how masks are applied, see [mask_text_input_formatter](https://pub.dev/packages/mask_text_input_formatter) library, also exported by this package.
 
 ## Validator class
 
@@ -89,7 +111,7 @@ Validator.defaultRequiredText = 'This field is required';
 Validator.defaultInvalidText = 'This field is invalid';
 
 // You can also modify the errorText of a validator:
-Validator.modifier = (validator, errorText) => errorText; // good for translations
+Validator.translator = (key, errorText) => errorText; // good for translations
 
 // And disable them all:
 Validator.disableOnDebug = true; // only works on debug mode
@@ -132,16 +154,12 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 
 ### `String`
 
-- `.isEmail`
 - `.isPhone`
-- `.isUrl`
-- `.isDate`
-- `.isCreditCard`
 - `.isCpf`
 - `.isCnpj`
-- `.isNumeric`
-- `.isAlpha`
-- `.isAlphanumeric`
+- `.numeric` (returns the numbers)
+- `.alpha` (returns the letters)
+- `.alphanumeric` (returns numbers/letters)
 - `.hasAlpha`
 - `.hasNumeric`
 - `.hasAlphanumeric`
@@ -149,17 +167,16 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.hasLowercase`
 - `.hasSpecialCharacters`
 - `.equalsIgnoreCase(String)`
-- `.onlyNumeric` (removes all non-numeric characters)
-- `.onlyAlpha` (removes all non-alphabetic characters)
-- `.onlyAlphanumeric` (removes all non-alphanumeric characters)
+
+Additionally exports [string_validator](https://pub.dev/packages/string_validator) library. See it for complete list of extensions.
 
 ### `Map`
 
 - `.indented` for a map view that indents when printed.
 - `.indentedText` for getting an indented text.
-- `.deepMap` for mapping nested maps.
-- `.clean` for values that are `null` or empty string/iterable/map.
-- `.cleaned` for a new map with all `null` or empty values removed.
+- `.deepMap()` for mapping nested maps.
+- `.clean()` for values that are `null` or empty string/iterable/map.
+- `.cleaned()` for a new map with all `null` or empty values removed.
 
 Deeply recases all your map keys:
 
@@ -173,6 +190,8 @@ Deeply recases all your map keys:
 - `.pascalCase` "PascalCase"
 - `.headerCase` "Header-Case"
 - `.titleCase` "Title Case"
+
+Additionally exports [recase](https://pub.dev/packages/recase) library. See it for complete list of extensions.
 
 ### `List<Widget>`
 
