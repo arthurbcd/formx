@@ -15,6 +15,7 @@ export 'src/extensions/string_extension.dart';
 export 'src/extensions/validator_extension.dart';
 export 'src/fields/checkbox_form_field.dart';
 export 'src/fields/checkbox_list_form_field.dart';
+export 'src/fields/date_form_field.dart';
 export 'src/fields/radio_list_form_field.dart';
 export 'src/formx_state.dart';
 export 'src/validator/validator.dart';

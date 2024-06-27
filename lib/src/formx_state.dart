@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
+import '../formx.dart';
 import 'extensions/form_state_extension.dart';
 
 /// Inline-class for [FormState] to add syntactic sugar.
@@ -99,6 +100,7 @@ class FormxOptions {
     this.nonEmptyMaps = true,
     this.nonEmptyStrings = true,
     this.nonEmptyIterables = false,
+    this.dateAdapter = _defaultDateAdapter,
   });
 
   /// Creates a new [FormxOptions] instance with all options disabled.
@@ -109,7 +111,12 @@ class FormxOptions {
     this.nonEmptyMaps = false,
     this.nonEmptyStrings = false,
     this.nonEmptyIterables = false,
+    this.dateAdapter = _defaultDateAdapter,
   });
+
+  static String? _defaultDateAdapter(DateTime? value) {
+    return value?.toUtc().toIso8601String();
+  }
 
   /// Whether to trim all string values.
   final bool trim;
@@ -128,4 +135,7 @@ class FormxOptions {
 
   /// Whether to remove all empty iterables.
   final bool nonEmptyIterables;
+
+  /// Global adapter for [DateFormField] values.
+  final FieldAdapter<DateTime> dateAdapter;
 }

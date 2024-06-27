@@ -24,7 +24,6 @@ Alternatively, use `Formx.of(context)` for a traditional approach without visito
 
 ## FormState extensions
 
-- `.value<T>(String key)`, gets the [FormFieldState.value] of a specific field.
 - `.rawValues`, a structured `Map` with all raw [FormField.value] of the form.
 - `.values`, same as `rawValues`, but with global [FormxOptions] applied.
 - `.customValues()`, same as `rawValues`, but with explicit options applied.
@@ -34,8 +33,7 @@ Alternatively, use `Formx.of(context)` for a traditional approach without visito
 - `.isValid`, whether all nested [FormFieldState.isValid].
 - `.invalids`, a list with all invalid field keys, regardless if validated.
 - `.errorTexts`, a flat `Map` with all nested [FormFieldState.errorText].
-- `operator [key]`, operator to get a specific [FormFieldState] by it's key value.
-- `operator [key] = value`, operator to set any nested form/field value(s) directly.
+- `.fill(Map<String, dynamic> values)`, to fill the form with values.
 
 ## FormxState extension type
 
@@ -65,12 +63,38 @@ You can use `Formx.options` to modify `FormState.values` output.
 - `nonEmptyMaps` removes all empty maps.
 - `nonEmptyStrings` removes all empty strings.
 - `nonEmptyIterables` removes all empty iterables.
+- `dateAdapter` to format date in `FormState.values`.
 
 By default, all options are enabled, except for [nonEmptyIterables].
 
 > To get the unmodified values, use `FormState.rawValues`.
 
 To understand how masks are applied, see [mask_text_input_formatter](https://pub.dev/packages/mask_text_input_formatter) library, also exported by this package.
+
+## FieldKey class
+
+A shortcut for `GlobalKey<FormFieldState<T>>` that allows you to control the form fields directly. Additionally, you can modify the field behavior, with:
+
+- `.adapter` to format the field value.
+- `.unmask` to (un)mask the field value, regardless of the form global options.
+
+```dart
+TextFormField(
+  key: FieldKey('phone', unmask: true),
+),
+TextFormField(
+  key: FieldKey('age', adapter: (value) => value?.toInt()),
+),
+```
+
+You can also use extension modifiers:
+
+```dart
+TextFormField(
+  // Use `text()` as this is a TextFormField.
+  key: const Key('phone').text().toInt().unmasked();
+),
+```
 
 ## Validator class
 

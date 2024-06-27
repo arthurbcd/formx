@@ -145,14 +145,3 @@ extension on Object {
     return false;
   }
 }
-
-/// Extension for [Key] value.
-extension StringValueKeyExtension on Key {
-  /// Attempts to get the [value] of this [Key] if it is an [String].
-  String? get value {
-    if (this case ValueKey(:String value)) return value;
-    if (this case ObjectKey(:String value)) return value;
-    if (this case GlobalObjectKey(:String value)) return value;
-    return null;
-  }
-}

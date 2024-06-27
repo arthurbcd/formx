@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:formx/formx.dart';
 
 void main() {
-  runApp(const MaterialApp(home: Material(child: FormxExample())));
+  runApp(
+    const MaterialApp(
+      locale: Locale('pt', 'BR'),
+      supportedLocales: [Locale('pt', 'BR')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      home: Material(
+        child: FormxExample(),
+      ),
+    ),
+  );
 }
 
 class FormxExample extends StatelessWidget {
@@ -44,6 +54,9 @@ class FormxExample extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('USER'),
+                  const DateFormField(
+                    key: Key('date'),
+                  ),
 
                   // Just add a key to your fields and you're good to go.
                   TextFormField(
@@ -71,11 +84,12 @@ class FormxExample extends StatelessWidget {
                           initialValue: 'Sesame Street',
                         ),
                         TextFormField(
-                          key: const Key('number'),
+                          key: const Key('age'),
                         ),
                         RadioListFormField(
                           key: const Key('names'),
                           items: const ['Arthur', 'Iran', 'Juan'],
+                          
                           validator: Validator().required(),
                         ),
                         CheckboxListFormField(

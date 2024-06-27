@@ -11,6 +11,34 @@ extension FormxContextExtension on BuildContext {
   /// the root [Form] is returned.
   FormxState formx([String? key]) => FormxState(_form(key));
 
+  /// Gets the [FormFieldState] of type [T] by [key].
+  FormFieldState<T> field<T>(String key) {
+    assert(
+      !debugDoingBuild,
+      'Called `context.field` during build, which is not allowed.\n'
+      'This shortcut can only be used outside the build method, like\n'
+      'onChanged, onPressed, etc.\n\n'
+      'Ex:\n'
+      '```dart\n'
+      'void submit() {\n'
+      "  final state = context.field('email');\n"
+      '  if (state.validate()) print(state.value);\n'
+      '}\n'
+      '```',
+    );
+
+    final fieldState = _visitField<T>(key) ??
+        Navigator.maybeOf(this)?.context._visitField<T>(key);
+
+    assert(fieldState != null, 'No [FormFieldState<$T>] found. key: $key');
+    return fieldState!;
+  }
+
+  /// Debugs the [FormState] of this [BuildContext].
+  void debugForm([String? key]) {
+    if (kDebugMode) formx(key).debug();
+  }
+
   FormState _form([String? key]) {
     assert(
       !debugDoingBuild,
@@ -53,34 +81,6 @@ extension FormxContextExtension on BuildContext {
   @Deprecated('Use `context.debugForm` instead.')
   // ignore: public_member_api_docs
   VoidCallback get onFormChanged => debugForm;
-
-  /// Debugs the [FormState] of this [BuildContext].
-  void debugForm([String? key]) {
-    if (kDebugMode) formx(key).debug();
-  }
-
-  /// Gets the [FormFieldState] of type [T] by [key].
-  FormFieldState<T> field<T>(String key) {
-    assert(
-      !debugDoingBuild,
-      'Called `context.field` during build, which is not allowed.\n'
-      'This shortcut can only be used outside the build method, like\n'
-      'onChanged, onPressed, etc.\n\n'
-      'Ex:\n'
-      '```dart\n'
-      'void submit() {\n'
-      "  final state = context.field('email');\n"
-      '  if (state.validate()) print(state.value);\n'
-      '}\n'
-      '```',
-    );
-
-    final fieldState = _visitField<T>(key) ??
-        Navigator.maybeOf(this)?.context._visitField<T>(key);
-
-    assert(fieldState != null, 'No [FormFieldState<$T>] found. key: $key');
-    return fieldState!;
-  }
 
   FormFieldState<T>? _visitField<T>(String key) {
     FormFieldState<T>? fieldState;

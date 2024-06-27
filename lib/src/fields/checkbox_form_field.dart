@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 /// A [FormField] that contains a single [CheckboxListTile].
 class CheckboxFormField extends FormField<bool> {
@@ -15,7 +16,11 @@ class CheckboxFormField extends FormField<bool> {
     super.onSaved,
     super.validator,
     super.restorationId,
-  }) : super(builder: _CheckboxFormField.new);
+  }) : super(builder: _builder);
+
+  static Widget _builder(FormFieldState<bool> state) {
+    return _CheckboxFormField(CheckboxFormFieldState(state));
+  }
 
   /// The callback that is called when the value changes.
   final ValueChanged<bool?>? onChanged;
@@ -32,13 +37,12 @@ class CheckboxFormField extends FormField<bool> {
 
 class _CheckboxFormField extends StatelessWidget {
   const _CheckboxFormField(this.state);
-  final FormFieldState<bool> state;
-
-  CheckboxFormField get widget => state.widget as CheckboxFormField;
+  final CheckboxFormFieldState state;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final widget = state.widget;
 
     return CheckboxListTile(
       value: state.value,
@@ -58,4 +62,11 @@ class _CheckboxFormField extends StatelessWidget {
       },
     );
   }
+}
+
+/// The state of a [CheckboxFormField].
+extension type CheckboxFormFieldState(FormFieldState<bool> state)
+    implements FormFieldState<bool> {
+  @redeclare
+  CheckboxFormField get widget => state.widget as CheckboxFormField;
 }

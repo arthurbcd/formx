@@ -8,14 +8,14 @@ import 'form_field_state_extension.dart';
 
 /// Extension for [BuildContext] to access the [FormState].
 extension FormStateExtension on FormState {
+  /// The [Key] `value` of this [FormState].
+  String? get key => widget.key?.value;
+
   /// The parent [FormState] of this [Form] node.
   FormState? get parent => Form.maybeOf(context);
 
   /// The root [FormState] of this [Form] tree. Can be itself.
   FormState get root => parent?.root ?? this;
-
-  /// The [Key] `value` of this [FormState].
-  String? get key => widget.key?.value;
 
   /// Returns a structured map with all keyed raw [FormFieldState.value].
   Map<String, dynamic> get rawValues {
@@ -65,17 +65,30 @@ extension FormStateExtension on FormState {
       onField: (key, state) {
         var value = state.value;
 
+        // ignore: parameter_assignments
+        if (state.fieldKey?.unmask case bool value) unmask = value;
+
+        // trim
+        if (value case String text when trim) value = text.trim();
+
+        // unmask
         if (state.widget case TextFormField field when unmask) {
           final scope = field.builder(state.cast());
           final tf = (scope as dynamic).child as TextField;
           final list = tf.inputFormatters?.whereType<MaskTextInputFormatter>();
-          value = list?.firstOrNull?.getUnmaskedText() ?? state.value;
+
+          if (list?.firstOrNull case var formatter?) {
+            value = formatter.unmaskText(value.toString());
+          }
         }
 
-        map[key] = switch (value) {
-          String e => trim ? e.trim() : e,
-          _ => value,
-        };
+        // adapter
+        if (state.fieldKey?.maybeAdapt case var adapter?) {
+          map[key] = adapter(value);
+        } else if (value is DateTime) {
+          map[key] = Formx.options.dateAdapter(value);
+        } else {
+          map[key] = value;
       },
       onForm: (key, state) => map[key] = state.customValues(
         trim: trim,
@@ -170,13 +183,20 @@ extension FormStateExtension on FormState {
   }
 
   /// Gets the [FormFieldState.value] by [key] as [T].
-  T value<T>(String key) => this[key].value as T;
+  @Deprecated('Use `context.field().value` instead.')
+  T? value<T>(String key) => this[key].value as T?;
 
   /// Gets the [FormFieldState.value] by [key] as [String].
+  @Deprecated('Use `context.field().text` instead.')
   String string(String key) => this[key].string;
 
   /// Gets the [FormFieldState.value] by [key] as [num].
-  num number(String key) => this[key].number;
+  @Deprecated('Use `context.field().number` instead.')
+  num? number(String key) => this[key].number;
+
+  /// Gets the [FormFieldState.value] by [key] as [DateTime].
+  @Deprecated('Use `context.field().date` instead.')
+  DateTime? date(String key) => this[key].date;
 
   /// Logs the current state of this [FormState].
   void debug() {
@@ -236,6 +256,7 @@ extension FormStateExtension on FormState {
   }
 
   /// Gets a [FormFieldState] by [key] in this [FormState.context].
+  @Deprecated('Use `context.field()` instead')
   FormFieldState operator [](String key) => context.field(key);
 
   /// Sets either a [FormFieldState.value] or [values] by [key].
@@ -256,6 +277,7 @@ extension FormStateExtension on FormState {
   /// };
   /// ```
   ///
+  @Deprecated('Use `context.formx().fill()` instead')
   void operator []=(String key, Object value) {
     assertKeys([key], 'set');
     visit(

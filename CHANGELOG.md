@@ -2,6 +2,14 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.0 - Jun 27, 2024
+
+- Added `FieldKey` class and `Key` adapter & modifiers extensions.
+- Make `unmask` feature independant of `mask_text_input_formatter` internal state.
+- Deprecated all field apis inside `FormState`. Use `context.field` instead.
+- Added `DateFormField` widget.
+- Added `FormxOption.dateAdapter` to format date in `FormState.values`.
+
 ## 0.15.0 - Jun 24, 2024
 
 - Added `FormxOptions` class.

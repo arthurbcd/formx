@@ -29,12 +29,12 @@ class PageViewExample extends StatelessWidget {
         final state = context.formx();
 
         // you can access the fields directly
-        state['name'] = 'new value';
+        final nameState = context.field('name');
+        final isNameValid = nameState.validate();
 
-        final name = state['name'];
-        state['name'] = 'Juan'; // set value or form
-
-        print(name);
+        // and modify them
+        state.fill({'name': 'John Doe'});
+        nameState.didChange('John Doe');
       },
       child: Card(
         child: Scaffold(
@@ -65,10 +65,7 @@ class Page1 extends StatelessWidget {
           TextFormField(key: const Key('email')),
           Form(
             key: const Key('nested'),
-            onChanged: () {
-              // final a = context.form;
-              // print(a.indented);
-            },
+            onChanged: context.debugForm,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
