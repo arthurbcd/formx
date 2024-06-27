@@ -89,6 +89,7 @@ extension FormStateExtension on FormState {
           map[key] = Formx.options.dateAdapter(value);
         } else {
           map[key] = value;
+        }
       },
       onForm: (key, state) => map[key] = state.customValues(
         trim: trim,
