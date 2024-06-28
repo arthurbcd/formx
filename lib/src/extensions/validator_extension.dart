@@ -3,8 +3,6 @@ import 'package:string_validator/string_validator.dart';
 import '../validator/validator.dart';
 import 'string_extension.dart';
 
-/// Extension for [Map] to convert it to an indented [String].
-
 /// Extension for [Validator] to add syntactic sugar.
 extension ValidatorExtension<T> on Validator<T> {
   /// Sets [Validator.isRequired] to `true`.

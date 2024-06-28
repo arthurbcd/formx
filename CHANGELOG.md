@@ -2,6 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.1 - Jun 28, 2024
+
+- Improved `FieldKey` class null safety.
+- Added `Key.list<T>` extension.
+- Added `FieldKey<T>.toMap` adapter.
+- Added `FieldKey<T>.toJson` adapter.
+- Added `FieldKey<List<T>>.map` adapter.
+- Added `FieldKey<Enum>.toName` adapter.
+- Added `FieldKey<Enum>.toIndex` adapter.
+- Added `FieldKey<String>.toColor` adapter.
+
 ## 0.16.0 - Jun 27, 2024
 
 - Added `FieldKey` class and `Key` adapter & modifiers extensions.

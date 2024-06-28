@@ -63,7 +63,8 @@ extension FormStateExtension on FormState {
     final map = <String, dynamic>{};
     visit(
       onField: (key, state) {
-        var value = state.value;
+        Object? value = state.value;
+        if (value == null) return map[key] = null;
 
         // ignore: parameter_assignments
         if (state.fieldKey?.unmask case bool value) unmask = value;
@@ -73,12 +74,11 @@ extension FormStateExtension on FormState {
 
         // unmask
         if (state.widget case TextFormField field when unmask) {
-          final scope = field.builder(state.cast());
-          final tf = (scope as dynamic).child as TextField;
-          final list = tf.inputFormatters?.whereType<MaskTextInputFormatter>();
+          final f = (field.builder(state.cast()) as dynamic).child as TextField;
+          final list = f.inputFormatters?.whereType<MaskTextInputFormatter>();
 
           if (list?.firstOrNull case var formatter?) {
-            value = formatter.unmaskText(value.toString());
+            value = formatter.unmaskText(value.cast());
           }
         }
 
