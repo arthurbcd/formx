@@ -87,6 +87,8 @@ extension FormStateExtension on FormState {
           map[key] = adapter(value);
         } else if (value is DateTime) {
           map[key] = Formx.options.dateAdapter(value);
+        } else if (value is Enum) {
+          map[key] = Formx.options.enumAdapter(value);
         } else {
           map[key] = value;
         }

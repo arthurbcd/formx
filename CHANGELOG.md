@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.2 - Jul 2, 2024
+
+- Added `FormxOption.enumAdapter` to format enum in `FormState.values`.
+
 ## 0.16.1 - Jun 28, 2024
 
 - Improved `FieldKey` class null safety.

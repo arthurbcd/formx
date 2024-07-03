@@ -89,7 +89,6 @@ class FormxExample extends StatelessWidget {
                         RadioListFormField(
                           key: const Key('names'),
                           items: const ['Arthur', 'Iran', 'Juan'],
-                          
                           validator: Validator().required(),
                         ),
                         CheckboxListFormField(
