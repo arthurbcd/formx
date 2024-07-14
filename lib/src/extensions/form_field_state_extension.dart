@@ -34,6 +34,9 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
     if (value is DateTime) {
       return Formx.options.dateAdapter(value as DateTime)?.toString() ?? '';
     }
+    if (value is Enum) {
+      return Formx.options.enumAdapter(value as Enum)?.toString() ?? '';
+    }
     return value?.toString() ?? '';
   }
 
