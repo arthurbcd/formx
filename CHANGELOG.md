@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.16.3 - Jul 31, 2024
+
+- Added `Key.adapt`, shorthand for adding an adapter.
+
 ## 0.16.2 - Jul 2, 2024
 
 - Added `FormxOption.enumAdapter` to format enum in `FormState.values`.

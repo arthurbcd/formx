@@ -131,6 +131,11 @@ extension FormFieldKeyExtension on Key {
   FieldKey<List<T>> list<T>([FieldAdapter<List<T>>? adapter]) {
     return field(adapter: adapter);
   }
+
+  /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter function.
+  ///
+  /// This is a shorthand for `field(adapter: adapter)`.
+  FieldKey<T> adapt<T>(dynamic Function(T value) adapter) => field(adapter: adapter);
 }
 
 /// Extension for `FieldKey<T>`.
