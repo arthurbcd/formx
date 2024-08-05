@@ -33,7 +33,7 @@ class ComplexStructureExample extends StatelessWidget {
           children: [
             Form(
               key: const Key('user'),
-              onChanged: context.onFormChanged,
+              onChanged: context.debugForm,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

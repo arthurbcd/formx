@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+/// Extensions for [ScrollPosition].
 extension FormxScrollExtension on ScrollPosition {
   /// Scrolls the view to the [maxScrollExtent].
   Future<void> animateToMax({

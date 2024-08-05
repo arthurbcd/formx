@@ -31,6 +31,7 @@ class PageViewExample extends StatelessWidget {
         // you can access the fields directly
         final nameState = context.field('name');
         final isNameValid = nameState.validate();
+        print("isNameValid $isNameValid");
 
         // and modify them
         state.fill({'name': 'John Doe'});
@@ -76,7 +77,7 @@ class Page1 extends StatelessWidget {
           ),
           Form(
             key: const Key('nested2'),
-            onChanged: context.onFormChanged,
+            onChanged: context.debugForm,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

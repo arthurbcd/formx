@@ -69,8 +69,6 @@ void main() {
         'key2': 'value2',
       });
     });
-
-    // TODO(liz): add tests for String.onlyAlpha, String.onlyAlphaNumeric, String.onlyNumeric
   });
 
   group('FormxCleanExtension.cleaned', () {

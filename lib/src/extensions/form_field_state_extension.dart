@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_dynamic_calls
+
 import 'package:flutter/material.dart';
 
 import '../../formx.dart';
@@ -132,7 +134,7 @@ extension FormFieldKeyExtension on Key {
   /// - [unmask] overrides [FormxOptions.unmask].
   ///
   /// The type [T] must be the same type defined in the associated [FormField].
-  /// This [Key] value must be a [String]. Otherwise, an [ArgumentError] is thrown.
+  /// This [Key] value must be a [String]. Otherwise, [ArgumentError] is thrown.
   FieldKey<T> field<T>({
     FieldAdapter<T>? adapter,
     bool? unmask,
@@ -158,11 +160,12 @@ extension FormFieldKeyExtension on Key {
     return field(adapter: adapter);
   }
 
-  /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter function.
+  /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter.
   ///
   /// This is a shorthand for `field(adapter: adapter)`.
-  FieldKey<T> adapt<T>(dynamic Function(T value) adapter) =>
-      field(adapter: adapter);
+  FieldKey<T> adapt<T>(dynamic Function(T value) adapter) {
+    return field(adapter: adapter);
+  }
 }
 
 /// Attaches a [FormFieldState] to a [Validator].
