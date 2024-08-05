@@ -18,7 +18,17 @@ void main() {
 class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
 
-  List<String> get items => ['name1', 'name2', 'name3'];
+  List<String> get items => [
+        'name1',
+        'name2',
+        'name3',
+        'name4',
+        'name5',
+        'name6',
+        'name7',
+        'name8',
+        'name9',
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +39,7 @@ class FormxExample extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Form(
         key: const Key('user'),
+
         // Check your console and type, it's alive!
         onChanged: () {
           final state = context.formx();
@@ -53,6 +64,20 @@ class FormxExample extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  SizedBox(
+                    width: 300,
+                    child: AutocompleteFormField.paged(
+                      key: const Key('autocomplete'),
+                      search: search,
+                      onResults: print,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 200,
+                    child: SearchFormField.paged(
+                      search: search,
+                    ),
+                  ),
                   const Text('USER'),
                   const DateFormField(
                     key: Key('date'),
@@ -164,6 +189,12 @@ class FormxExample extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<List<String>> search(int page, String query) async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return List.generate(10, (index) => '${10 * page + ++index}');
   }
 }
 

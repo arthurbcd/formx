@@ -102,6 +102,7 @@ class FormxOptions {
     this.nonEmptyIterables = false,
     this.dateAdapter = _defaultDateAdapter,
     this.enumAdapter = _defaultEnumAdapter,
+    this.defaultTitle = _defaultTitle,
   });
 
   /// Creates a new [FormxOptions] instance with all options disabled.
@@ -114,6 +115,7 @@ class FormxOptions {
     this.nonEmptyIterables = false,
     this.dateAdapter = _defaultDateAdapter,
     this.enumAdapter = _defaultEnumAdapter,
+    this.defaultTitle = _defaultTitle,
   });
 
   static String _defaultDateAdapter(DateTime value) {
@@ -122,6 +124,19 @@ class FormxOptions {
 
   static String _defaultEnumAdapter(Enum value) {
     return value.name;
+  }
+
+  static String _defaultTitle(Object value) {
+    if (value is String) return value;
+
+    try {
+      return (value as dynamic).title as String;
+    } catch (_) {}
+    try {
+      return (value as dynamic).name as String;
+    } catch (_) {}
+
+    return value.toString();
   }
 
   /// Whether to trim all string values.
@@ -147,4 +162,7 @@ class FormxOptions {
 
   /// Global adapter for [Enum] values.
   final FieldAdapter<Enum> enumAdapter;
+
+  /// The default title for all fields.
+  final String Function(Object value) defaultTitle;
 }

@@ -24,6 +24,8 @@ analyzer:
     # Allow self-reference to deprecated members. This is done because otherwise we have
     # to annotate every member in every test, assert, etc. when we deprecate something.
     deprecated_member_use_from_same_package: ignore
+    use_function_type_syntax_for_parameters: ignore
+    discarded_futures: ignore
     # strict_raw_type: ignore
 linter:
   rules:

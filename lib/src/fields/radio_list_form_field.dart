@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+import '../../formx.dart';
+
 /// A `FormField<T>` that builds a list of [RadioListTile].
-class RadioListFormField<T> extends FormField<T> {
+class RadioListFormField<T extends Object> extends FormField<T> {
   /// Creates a `FormField<T>` that builds a list of [RadioListTile].
   ///
   /// The [items] are the list of items to be displayed.
@@ -39,13 +41,16 @@ class RadioListFormField<T> extends FormField<T> {
   }) : super(builder: _builder);
 
   // Default implementations
-  static Widget _defaultTitle(item) => Text('$item');
+  static Widget _defaultTitle(Object item) {
+    return Text(Formx.options.defaultTitle(item));
+  }
+
   static Widget _defaultItemBuilder(state, item, Widget child) => child;
   static Widget _defaultListBuilder(state, List<Widget> children) {
     return Wrap(children: children);
   }
 
-  static Widget _builder<T>(FormFieldState<T> state) {
+  static Widget _builder<T extends Object>(FormFieldState<T> state) {
     return _RadioListFormField<T>(RadioListFormFieldState(state));
   }
 
@@ -84,7 +89,7 @@ class RadioListFormField<T> extends FormField<T> {
   final ListTileControlAffinity controlAffinity;
 }
 
-class _RadioListFormField<T> extends StatelessWidget {
+class _RadioListFormField<T extends Object> extends StatelessWidget {
   const _RadioListFormField(this.state);
   final RadioListFormFieldState<T> state;
 
@@ -128,8 +133,8 @@ class _RadioListFormField<T> extends StatelessWidget {
 }
 
 /// The state of a [RadioListFormField].
-extension type RadioListFormFieldState<T>(FormFieldState<T> state)
-    implements FormFieldState<T> {
+extension type RadioListFormFieldState<T extends Object>(
+    FormFieldState<T> state) implements FormFieldState<T> {
   /// The [RadioListFormField] of this [FormFieldState].
   @redeclare
   RadioListFormField<T> get widget => state.widget as RadioListFormField<T>;

@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+import '../../formx.dart';
+
 /// A `FormField<List<T>>` that builds a list of [CheckboxListTile].
-class CheckboxListFormField<T> extends FormField<List<T>> {
+class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
   /// Creates a `FormField<List<T>>` that builds a list of [CheckboxListTile].
   ///
   /// The [items] are the list of items to be displayed.
@@ -39,13 +41,16 @@ class CheckboxListFormField<T> extends FormField<List<T>> {
     super.restorationId,
   }) : super(builder: _builder);
 
-  static Widget _defaultTitle(item) => Text('$item');
+  static Widget _defaultTitle(Object item) {
+    return Text(Formx.options.defaultTitle(item));
+  }
+
   static Widget _defaultItemBuilder(state, item, Widget child) => child;
   static Widget _defaultListBuilder(state, List<Widget> children) {
     return Wrap(children: children);
   }
 
-  static Widget _builder<T>(FormFieldState<List<T>> state) {
+  static Widget _builder<T extends Object>(FormFieldState<List<T>> state) {
     return _CheckboxListFormField<T>(CheckboxListFormFieldState(state));
   }
 
@@ -87,7 +92,7 @@ class CheckboxListFormField<T> extends FormField<List<T>> {
   final ListTileControlAffinity controlAffinity;
 }
 
-class _CheckboxListFormField<T> extends StatelessWidget {
+class _CheckboxListFormField<T extends Object> extends StatelessWidget {
   const _CheckboxListFormField(this.state);
   final CheckboxListFormFieldState<T> state;
 
@@ -139,8 +144,8 @@ class _CheckboxListFormField<T> extends StatelessWidget {
 }
 
 /// The state of a [CheckboxListFormField].
-extension type CheckboxListFormFieldState<T>(FormFieldState<List<T>> state)
-    implements FormFieldState<List<T>> {
+extension type CheckboxListFormFieldState<T extends Object>(
+    FormFieldState<List<T>> state) implements FormFieldState<List<T>> {
   /// The [CheckboxListFormField] of this [FormFieldState].
   @redeclare
   CheckboxListFormField<T> get widget =>
