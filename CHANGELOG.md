@@ -2,9 +2,13 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.17.0 - Jul 19, 2024
+## 0.17.0 - Jul 31, 2024
 
 - Added `FormxOptions.defaultTitle`. Which applies a default String title for all collection fields.
+
+## 0.16.3 - Jul 19, 2024
+
+- Added `Key.adapt`, shorthand for adding an adapter.
 
 ## 0.16.2 - Jul 2, 2024
 
