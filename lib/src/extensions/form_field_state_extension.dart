@@ -5,15 +5,17 @@ import '../../formx.dart';
 /// A function to adapt a [Object] value to any value.
 typedef FieldAdapter<T extends Object?> = dynamic Function(T value);
 
-typedef FieldAdapterTo<T extends Object?, To> = To Function(T? value);
-
 /// Signature for binding a [FormFieldState] to a [FormFieldValidator].
 typedef FormFieldData = ({FormFieldState state, String? errorText});
 
 /// A [Key] for a [FormField].
 @immutable
 class FieldKey<T> extends GlobalObjectKey<FormFieldState<T>> {
+  /// Creates a [FieldKey] with a [value].
+  const FieldKey(this.value, {this.adapter, this.unmask}) : super(value);
+
   @override
+  // ignore: overridden_fields
   final String value;
 
   /// The adapter function to convert the [T] to any value.
@@ -21,9 +23,6 @@ class FieldKey<T> extends GlobalObjectKey<FormFieldState<T>> {
 
   /// Whether to unmask the value. Overrides [FormxOptions.unmask].
   final bool? unmask;
-
-  /// Creates a [FieldKey] with a [value].
-  const FieldKey(this.value, {this.adapter, this.unmask}) : super(value);
 
   /// Creates a new [FieldKey] with values from this [FieldKey].
   FieldKey<T> copyWith({
