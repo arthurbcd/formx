@@ -161,6 +161,9 @@ extension FormStateExtension on FormState {
   /// Returns true if all nested [FormFieldState.isValid].
   bool get isValid => invalids.isEmpty;
 
+  /// Returns true if all nested [FormFieldState.isInitial].
+  bool get isInitial => rawValues == initialValues;
+
   /// Returns a flat [Map] with all nested [FormFieldState.errorText].
   Map<String, String> get errorTexts {
     final errorTexts = <String, String>{};

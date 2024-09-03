@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.17.2 - Ago 9, 2024
+
+- Added `adapter` extension for `List`.
+
 ## 0.17.1 - Ago 5, 2024
 
 - Updated docs & linting.

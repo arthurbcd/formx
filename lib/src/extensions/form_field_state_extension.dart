@@ -83,6 +83,13 @@ extension FieldKeyExtension<T> on FieldKey<T> {
   /// Whether to mask the value. Overrides [FormxOptions.unmask].
   FieldKey<T> masked() => copyWith(unmask: false);
 
+  /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter.
+  ///
+  /// This is a shorthand for `field(adapter: adapter)`.
+  FieldKey<T> adapt(dynamic Function(T value) adapter) {
+    return field(adapter: adapter);
+  }
+
   /// Adapts [T] `value` to `Object.toJson()` in `FormState.values`.
   ///
   /// If [T] is an [Iterable], it will map each element to `Object.toJson()`.
@@ -109,6 +116,18 @@ extension FieldKeyExtension<T> on FieldKey<T> {
 
   /// Whether to unmask the value. Overrides [FormxOptions.unmask].
   FieldKey<T> unmasked() => copyWith(unmask: true);
+}
+
+/// Extension for `FieldKey<List<T>>`.
+extension FieldKeyListExtension<T> on FieldKey<List<T>> {
+  /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter.
+  ///
+  /// This is a shorthand for `field(adapter: adapter)`.
+  FieldKey<List<T>> adapt(dynamic Function(T value) adapter) {
+    return field(
+      adapter: (value) => value.map(adapter).toList(),
+    );
+  }
 }
 
 /// Extension for [Key] value.
@@ -149,8 +168,10 @@ extension FormFieldKeyExtension on Key {
   /// Creates a `FieldKey<List<T>>` of this [Key] value.
   ///
   /// Use with a [FormField] of type [List]. Ex: [CheckboxListFormField].
-  FieldKey<List<T>> list<T>([FieldAdapter<List<T>>? adapter]) {
-    return field(adapter: adapter);
+  FieldKey<List<T>> list<T>([FieldAdapter<T>? adapter]) {
+    if (adapter == null) return field();
+
+    return field(adapter: (list) => list.map(adapter).toList());
   }
 
   /// Creates a `FieldKey<String>` with this [Key] value.

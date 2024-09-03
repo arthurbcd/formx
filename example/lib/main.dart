@@ -90,6 +90,11 @@ class FormxExample extends StatelessWidget {
                     validator: Validator().minWords(2),
                   ),
                   TextFormField(
+                    key: const Key('age').text().toInt(),
+                    initialValue: '1',
+                    validator: Validator(),
+                  ),
+                  TextFormField(
                     key: const Key('email'),
                     initialValue: 'some@email',
                     validator: Validator().required().email(),
@@ -117,7 +122,8 @@ class FormxExample extends StatelessWidget {
                           validator: Validator().required(),
                         ),
                         CheckboxListFormField(
-                          key: const Key('friends'),
+                          key:
+                              const Key('friends').list<Expertise>((v) => v.id),
                           items: const ['Arthur', 'Iran', 'Juan'],
                           validator: Validator().minLength(2),
                         ),
@@ -196,6 +202,12 @@ class FormxExample extends StatelessWidget {
 
     return List.generate(10, (index) => '${10 * page + ++index}');
   }
+}
+
+class Expertise {
+  final String id;
+
+  Expertise(this.id);
 }
 
 class MyWidget extends StatelessWidget {
