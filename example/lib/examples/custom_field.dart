@@ -24,7 +24,7 @@ class CustomFieldExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Form(
-      onChanged: () => print(context.formx().values),
+      onChanged: () => print(context.formx().toMap()),
       child: Card(
         child: Scaffold(
           body: FormField(

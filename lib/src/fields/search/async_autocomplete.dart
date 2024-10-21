@@ -1,7 +1,7 @@
-// ignore_for_file: avoid_non_null_assertion, public_member_api_docs
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 
-// import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 
 import '../../extensions/scroll_extension.dart';

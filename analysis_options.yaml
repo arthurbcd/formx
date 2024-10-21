@@ -26,6 +26,7 @@ analyzer:
     deprecated_member_use_from_same_package: ignore
     use_function_type_syntax_for_parameters: ignore
     discarded_futures: ignore
+    depend_on_referenced_packages: ignore
     # strict_raw_type: ignore
 linter:
   rules:

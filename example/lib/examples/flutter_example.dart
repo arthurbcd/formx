@@ -159,9 +159,17 @@ class FormxExample extends StatelessWidget {
     final state = context.formx();
 
     if (state.validate()) {
-      print('Form is valid: ${state.values}');
+      print('Form is valid: ${state.toMap()}');
     } else {
       print('Form is invalid: ${state.errorTexts}');
+    }
+
+    // Or simply.
+    try {
+      final map = context.submit();
+      print('Form is valid: $map');
+    } on FormxException catch (e) {
+      print('Form is invalid: ${e.errorTexts}');
     }
   }
 

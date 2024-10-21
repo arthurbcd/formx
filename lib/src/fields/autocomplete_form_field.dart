@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../formx_state.dart';
+import '../extensions/formx_extension.dart';
 import 'search/async_autocomplete.dart';
 import 'search/async_search_base.dart';
 
@@ -58,7 +58,7 @@ class AutocompleteFormField<T extends Object> extends FormField<T> {
         pagedSearch = search,
         super(builder: _builder);
 
-  static String _defaultTitle(Object item) => Formx.options.defaultTitle(item);
+  static String _defaultTitle(Object item) => Formx.setup.defaultTitle(item);
 
   /// The search function to call when the user types in the search field.
   final AsyncSearchCallback<T>? search;

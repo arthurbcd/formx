@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../formx_state.dart';
+import '../extensions/formx_extension.dart';
 import 'search/async_autocomplete.dart';
 import 'search/async_search.dart';
 import 'search/async_search_base.dart';
@@ -99,7 +99,7 @@ class SearchFormField<T extends Object> extends FormField<T> {
     return _AutocompleteFormField(SearchFormFieldState(state));
   }
 
-  static String _defaultTitle(Object item) => Formx.options.defaultTitle(item);
+  static String _defaultTitle(Object item) => Formx.setup.defaultTitle(item);
 }
 
 class _AutocompleteFormField<T extends Object> extends StatelessWidget {
@@ -142,6 +142,7 @@ class _AutocompleteFormField<T extends Object> extends StatelessWidget {
 /// A [FormFieldState] that exposes the [SearchFormField] instance.
 extension type SearchFormFieldState<T extends Object>(FormFieldState<T> state)
     implements FormFieldState<T> {
+  @redeclare
   @redeclare
   SearchFormField<T> get widget => state.widget as SearchFormField<T>;
 }

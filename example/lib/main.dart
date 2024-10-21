@@ -43,7 +43,7 @@ class FormxExample extends StatelessWidget {
         // Check your console and type, it's alive!
         onChanged: () {
           final state = context.formx();
-          print(state.values);
+          print(state.toMap());
         },
 
         // Optional initial values for all fields. Tip: Model.toMap().
@@ -217,7 +217,7 @@ class MyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        print(context.formx().values);
+        print(context.formx().toMap());
       },
       child: const Text('Print Form'),
     );

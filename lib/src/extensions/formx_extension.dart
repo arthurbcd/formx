@@ -2,12 +2,25 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../../formx.dart';
+import '../models/field_key.dart';
+import '../models/formx_exception.dart';
+import '../models/formx_options.dart';
+import '../models/formx_setup.dart';
+import 'field_key_extension.dart';
 import 'form_field_state_extension.dart';
+import 'formx_state.dart';
+import 'sanitizers.dart';
 
 /// Extension for [BuildContext] to access the [FormState].
-extension FormStateExtension on FormState {
+extension Formx on FormState {
+  /// Global setup for all [Formx] widgets.
+  static FormxSetup setup = const FormxSetup();
+
+  /// Global options for all [FormxState] methods.
+  static FormxOptions options = const FormxOptions();
+
   /// The [Key] `value` of this [FormState].
   String? get key => widget.key?.value;
 
@@ -31,27 +44,11 @@ extension FormStateExtension on FormState {
   /// Returns a structured map with all keyed custom [FormFieldState.value].
   ///
   /// The custom values are processed by [Formx.options].
-  Map<String, dynamic> get values {
-    return customValues(
-      trim: Formx.options.trim,
-      unmask: Formx.options.unmask,
-      nonNulls: Formx.options.nonNulls,
-      nonEmptyMaps: Formx.options.nonEmptyMaps,
-      nonEmptyStrings: Formx.options.nonEmptyStrings,
-      nonEmptyIterables: Formx.options.nonEmptyIterables,
-    );
-  }
+  @Deprecated('Use `.toMap()` instead.')
+  Map<String, dynamic> get values => toMap();
 
   /// Returns a structured map with all keyed [FormFieldState.value].
-  ///
-  /// The custom values are processed by the provided options.
-  /// - [trim] trims all string values.
-  /// - [unmask] gets the unmasked value of [MaskTextInputFormatter], if any.
-  /// - [nonNulls] removes all null values.
-  /// - [nonEmptyMaps] removes all empty maps.
-  /// - [nonEmptyStrings] removes all empty strings.
-  /// - [nonEmptyIterables] removes all empty iterables.
-  ///
+  @Deprecated('Use `.toMap()` instead.')
   Map<String, dynamic> customValues({
     bool trim = false,
     bool unmask = false,
@@ -60,7 +57,31 @@ extension FormStateExtension on FormState {
     bool nonEmptyStrings = false,
     bool nonEmptyIterables = false,
   }) {
+    return toMap(
+      options: FormxOptions(
+        trim: trim,
+        unmask: unmask,
+        nonNulls: nonNulls,
+        nonEmptyMaps: nonEmptyMaps,
+        nonEmptyStrings: nonEmptyStrings,
+        nonEmptyIterables: nonEmptyIterables,
+      ),
+    );
+  }
+
+  /// Returns a structured map with all keyed [FormFieldState.value].
+  ///
+  /// You can customize the output by setting [options].
+  Map<String, dynamic> toMap({
+    FormxOptions? options,
+  }) {
+    // when null, use the global options
+    options ??= Formx.options;
+
     final map = <String, dynamic>{};
+    var unmask = options.unmask;
+    var trim = options.trim;
+
     visit(
       onField: (key, state) {
         Object? value = state.value;
@@ -86,30 +107,51 @@ extension FormStateExtension on FormState {
         if (state.fieldKey?.maybeAdapt case var adapter?) {
           map[key] = adapter(value);
         } else if (value is DateTime) {
-          map[key] = Formx.options.dateAdapter(value);
+          map[key] = options!.dateAdapter(value);
         } else if (value is Enum) {
-          map[key] = Formx.options.enumAdapter(value);
+          map[key] = options!.enumAdapter(value);
         } else {
           map[key] = value;
         }
       },
-      onForm: (key, state) => map[key] = state.customValues(
-        trim: trim,
-        unmask: unmask,
-        nonNulls: nonNulls,
-        nonEmptyMaps: nonEmptyMaps,
-        nonEmptyStrings: nonEmptyStrings,
-        nonEmptyIterables: nonEmptyIterables,
-      ),
+      onForm: (key, state) {
+        Object value = state.toMap(options: options);
+
+        if (state.widget.key case FieldKey fkey) {
+          map[key] = fkey.maybeAdapt(value);
+        } else {
+          map[key] = value;
+        }
+      },
       shouldStop: (key, state) => state is FormState,
     );
 
     return map.cleaned(
-      nonNulls: nonNulls,
-      nonEmptyMaps: nonEmptyMaps,
-      nonEmptyStrings: nonEmptyStrings,
-      nonEmptyIterables: nonEmptyIterables,
+      nonNulls: options.nonNulls,
+      nonEmptyMaps: options.nonEmptyMaps,
+      nonEmptyStrings: options.nonEmptyStrings,
+      nonEmptyIterables: options.nonEmptyIterables,
     );
+  }
+
+  /// Performs [validate], [save], and returns [toMap] with [options].
+  /// Throws a [FormxException] if the form is invalid.
+  Map<String, dynamic> submit({FormxOptions? options}) {
+    if (!validate()) {
+      throw FormxException(errorTexts);
+    }
+    save();
+    return toMap(options: options);
+  }
+
+  /// Performs [validate], [save], and returns [toMap] with [options].
+  /// Returns `null` if the form is invalid.
+  Map<String, dynamic>? trySubmit({FormxOptions? options}) {
+    try {
+      return submit(options: options);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Returns a structured map with all keyed [FormField.initialValue].
@@ -161,8 +203,16 @@ extension FormStateExtension on FormState {
   /// Returns true if all nested [FormFieldState.isValid].
   bool get isValid => invalids.isEmpty;
 
-  /// Returns true if all nested [FormFieldState.isInitial].
-  bool get isInitial => rawValues == initialValues;
+  /// Returns true if all nested [FormFieldStateExtension.isInitial].
+  bool get isInitial {
+    var test = true;
+    visit(
+      onField: (key, state) => test = state.isInitial,
+      onForm: (key, state) => test = state.isInitial,
+      shouldStop: (key, state) => !test || state is FormState,
+    );
+    return test;
+  }
 
   /// Returns a flat [Map] with all nested [FormFieldState.errorText].
   Map<String, String> get errorTexts {
@@ -175,34 +225,18 @@ extension FormStateExtension on FormState {
     return IndentedMap(errorTexts);
   }
 
-  /// Fills this [FormState] with new [values]. Null values are ignored.
-  void fill(Map<String, dynamic> values) {
+  /// Fills this [FormState] with new [map].
+  void fill(Map<String, dynamic> map) {
     visit(
       onField: (key, state) {
-        if (values[key] case var value?) state.didChange(value);
+        if (map.containsKey(key)) state.didChange(map[key]);
       },
       onForm: (key, state) {
-        if (values[key] case Map<String, dynamic> map) state.fill(map);
+        if (map.containsKey(key)) state.fill((map[key] as Map).cast());
       },
       shouldStop: (key, state) => state is FormState,
     );
   }
-
-  /// Gets the [FormFieldState.value] by [key] as [T].
-  @Deprecated('Use `context.field().value` instead.')
-  T? value<T>(String key) => this[key].value as T?;
-
-  /// Gets the [FormFieldState.value] by [key] as [String].
-  @Deprecated('Use `context.field().text` instead.')
-  String string(String key) => this[key].string;
-
-  /// Gets the [FormFieldState.value] by [key] as [num].
-  @Deprecated('Use `context.field().number` instead.')
-  num? number(String key) => this[key].number;
-
-  /// Gets the [FormFieldState.value] by [key] as [DateTime].
-  @Deprecated('Use `context.field().date` instead.')
-  DateTime? date(String key) => this[key].date;
 
   /// Logs the current state of this [FormState].
   void debug() {
@@ -261,41 +295,15 @@ extension FormStateExtension on FormState {
     );
   }
 
-  /// Gets a [FormFieldState] by [key] in this [FormState.context].
-  @Deprecated('Use `context.field()` instead')
-  FormFieldState operator [](String key) => context.field(key);
-
-  /// Sets either a [FormFieldState.value] or [values] by [key].
+  /// Behaves like [Form.of], but returns a [FormxState] instead.
   ///
-  /// This is useful for setting values programatically.
+  /// This will not scan the widget tree like `context.formx`, but will create
+  /// a dependency on the nearest [Form] ancestor, like [Form.of].
   ///
-  /// ```dart
-  /// formState['name'] = 'John Doe';
-  /// ```
-  ///
-  /// You can also fill a specific [Form] by setting a [Map] value.
-  ///
-  /// ```dart
-  /// formState['address'] = {
-  ///  'street': 'Main St',
-  ///  'number': 123,
-  ///  'zip': '12345-678',
-  /// };
-  /// ```
-  ///
-  @Deprecated('Use `context.formx().fill()` instead')
-  void operator []=(String key, Object value) {
-    assertKeys([key], 'set');
-    visit(
-      onField: (k, state) {
-        if (k == key) state.didChange(value);
-      },
-      onForm: (k, state) {
-        if (k == key) state.fill(value.cast());
-      },
-      shouldStop: (k, state) => k == key,
-    );
-  }
+  /// NOTE: We do not recommend using formx in build methods, as all formx
+  /// methods must be called after the build phase.
+  @Deprecated('Use context.formx() instead.')
+  static FormxState of(BuildContext context) => FormxState(Form.of(context));
 }
 
 /// Extension for [FormState] to assert if `keys` are valid.

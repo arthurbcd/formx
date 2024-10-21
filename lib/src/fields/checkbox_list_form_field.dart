@@ -1,9 +1,7 @@
-// ignore_for_file: inference_failure_on_untyped_parameter
-
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../../formx.dart';
+import '../extensions/formx_extension.dart';
 
 /// A `FormField<List<T>>` that builds a list of [CheckboxListTile].
 class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
@@ -42,7 +40,7 @@ class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
   }) : super(builder: _builder);
 
   static Widget _defaultTitle(Object item) {
-    return Text(Formx.options.defaultTitle(item));
+    return Text(Formx.setup.defaultTitle(item));
   }
 
   static Widget _defaultItemBuilder(state, item, Widget child) => child;

@@ -42,7 +42,7 @@ class RadioListFormField<T extends Object> extends FormField<T> {
 
   // Default implementations
   static Widget _defaultTitle(Object item) {
-    return Text(Formx.options.defaultTitle(item));
+    return Text(Formx.setup.defaultTitle(item));
   }
 
   static Widget _defaultItemBuilder(state, item, Widget child) => child;

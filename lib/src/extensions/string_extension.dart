@@ -1,8 +1,5 @@
-
-
 /// Extension for [String] for validations.
-extension StringValidatorExtension on String {
-
+extension FormxStringExtension on String {
   /// Check if the string has at least one number
   bool get hasNumeric => contains(RegExp(r'\d'));
 
@@ -86,6 +83,12 @@ extension StringValidatorExtension on String {
 
   /// Whether this is equals to [other], ignoring case.
   bool equalsIgnoreCase(String other) => toLowerCase() == other.toLowerCase();
+
+  /// The initials of this string.
+  /// - John Doe P. -> JD
+  /// - John    -> J
+  String get initials =>
+      isEmpty ? '' : split(' ').map((e) => e[0]).take(2).join().toUpperCase();
 }
 
 /// Extension for [List<String>] for validations.

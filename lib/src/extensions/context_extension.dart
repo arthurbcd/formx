@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../formx.dart';
+import '../models/formx_options.dart';
+import 'form_field_state_extension.dart';
+import 'formx_extension.dart';
+import 'formx_state.dart';
 
 /// Extension for [BuildContext] to access the main [FormState].
 extension FormxContextExtension on BuildContext {
@@ -12,7 +15,34 @@ extension FormxContextExtension on BuildContext {
   FormxState formx([String? key]) => FormxState(_form(key));
 
   /// Gets the [FormFieldState] of type [T] by [key].
-  FormFieldState<T> field<T>(String key) {
+  FormFieldState<T> field<T>(String key) => _field<T>(key);
+
+  /// Submits the [FormState] of this [BuildContext].
+  ///
+  /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
+  /// - Throws an [Exception] with errorText if the form is invalid.
+  Map<String, dynamic> submit({String? key, FormxOptions? options}) {
+    return formx(key).submit(options: options);
+  }
+
+  /// Submits the [FormState] of this [BuildContext].
+  ///
+  /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
+  /// - Returns `null` if the form is invalid.
+  Map<String, dynamic>? trySubmit({String? key, FormxOptions? options}) {
+    try {
+      return submit(options: options);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Debugs the [FormState] of this [BuildContext].
+  void debugForm([String? key]) {
+    if (kDebugMode) formx(key).debug();
+  }
+
+  FormFieldState<T> _field<T>(String key) {
     assert(
       !debugDoingBuild,
       'Called `context.field` during build, which is not allowed.\n'
@@ -32,11 +62,6 @@ extension FormxContextExtension on BuildContext {
 
     assert(fieldState != null, 'No [FormFieldState<$T>] found. key: $key');
     return fieldState!;
-  }
-
-  /// Debugs the [FormState] of this [BuildContext].
-  void debugForm([String? key]) {
-    if (kDebugMode) formx(key).debug();
   }
 
   FormState _form([String? key]) {
@@ -104,5 +129,40 @@ extension on FormState {
     if (key == null) return root;
     if (key == this.key) return this;
     return parent?.byKey(key);
+  }
+}
+
+/// Extension for [BuildContext] and factory methods.
+extension FormxFromMapExtension<T> on T Function(Map<String, dynamic>) {
+  /// Whether [FormxState] should autovalidate when calling [of] or [maybeOf].
+  static bool autovalidate = true;
+
+  /// Creates an instance of [T] from the [FormxState] of this [BuildContext].
+  /// Throws an [Exception] with errorText if the form is invalid.
+  T of(
+    BuildContext context, {
+    String? key,
+    bool? validate,
+    FormxOptions? options,
+  }) {
+    final state = context.formx(key);
+    final map = validate ?? autovalidate ? state.submit : state.toMap;
+
+    return this(map(options: options));
+  }
+
+  /// Creates an instance of [T] from the [FormxState] of this [BuildContext].
+  /// Returns `null` if the form is invalid.
+  T? maybeOf(
+    BuildContext context, {
+    String? key,
+    bool? validate,
+    FormxOptions? options,
+  }) {
+    try {
+      return of(context, key: key, validate: validate, options: options);
+    } catch (_) {
+      return null;
+    }
   }
 }

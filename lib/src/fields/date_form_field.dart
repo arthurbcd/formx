@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../../formx.dart';
+import '../extensions/formx_extension.dart';
+import '../models/formx_options.dart';
 
 /// A [FormField] of type [DateTime].
 class DateFormField extends FormField<DateTime> {
@@ -32,12 +33,7 @@ class DateFormField extends FormField<DateTime> {
   }
 
   static Future<DateTime?> _defaultPicker(DateFormFieldState state) async {
-    return showDatePicker(
-      context: state.context,
-      initialDate: state.value,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
+    return Formx.setup.datePicker(state);
   }
 
   /// The decoration to show around the field.

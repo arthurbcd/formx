@@ -2,6 +2,33 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.19.0 - Oct 20, 2024
+
+- Added `BuildContext.submit`.
+- Added `BuildContext.trySubmit`.
+- Added `Formx.submit`.
+- Added `Formx.trySubmit`.
+- Added `FormxStringExtension.initials`.
+- Added `FormxFromMapExtension`: `of` & `maybeOf`.
+- Added `FormxException`.
+- Improve `FileListFormField.url` upload.
+- Changes `ListFormField` to use `InputDecoration.suffix` instead of `suffixIcon`, so you can change the suffix icon.
+
+## 0.18.1 - Sep 29, 2024
+
+- Added adapter support to `Form.key`.
+
+## 0.18.0 - Sep 29, 2024
+
+- Removed old deprecations.
+- Deprecates `.values` and `.customValues`. Unified to `.toMap()`.
+- Added `FormxSetup` class to configure Formx widgets.
+- Added `FileFormField` widgets.
+- Added `material_file_icon` for `FileFormField`s.
+- Added `FormFieldStateExtension.isInitial`.
+- Improved `FormState.isInitial` performance.
+- Updated examples and README.
+
 ## 0.17.2 - Ago 9, 2024
 
 - Added `adapter` extension for `List`.

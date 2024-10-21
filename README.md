@@ -18,22 +18,20 @@ final addressState = context.formx('address');
 final email = context.field('email').value;
 ```
 
-Alternatively, use `Formx.of(context)` for a traditional approach without visitors.
-
-> ⚠️ Be careful, as using it will also rebuild the widget tree on any field change, just as `Form.of(context)`.
-
 ## FormState extensions
 
-- `.rawValues`, a structured `Map` with all raw [FormField.value] of the form.
-- `.values`, same as `rawValues`, but with global [FormxOptions] applied.
-- `.customValues()`, same as `rawValues`, but with explicit options applied.
-- `.initialValues`, a structured `Map` with all the initial values of the form.
+- `.toMap({FormxOptions? options})`, a structured `Map` with all the values of the form.
+  - Use `options` to modify the output. If `null`, the global `Formx.options` will be used.
+  - If a `Key` is used, it will apply the associated adapter or unmask to the value.
+- `.rawValues`, a structured `Map` with all [FormFieldState.value]. Unmodified.
+- `.initialValues`, a structured `Map` with all [FormField.initialValue]. Unmodified.
+- `.isInitial`, whether any nested [FormFieldStateExtension.isInitial].
 - `.hasInteractedByUser`, whether any nested [FormFieldState.hasInteractedByUser].
 - `.hasError`, whether any nested [FormFieldState.hasError].
 - `.isValid`, whether all nested [FormFieldState.isValid].
 - `.invalids`, a list with all invalid field keys, regardless if validated.
 - `.errorTexts`, a flat `Map` with all nested [FormFieldState.errorText].
-- `.fill(Map<String, dynamic> values)`, to fill the form with values.
+- `.fill(Map<String, dynamic> map)`, sets each associated field by it's key-value pair.
 
 ## FormxState extension type
 
@@ -53,6 +51,17 @@ You can redeclare any `FormState` to a `FormxState` by using `FormxState(formSta
 
 - `.setErrorText(String? errorText)`, sets the field errorText programmatically. Requires `Validator`.
 
+## FormxSetup
+
+You can use `Formx.setup` to set global options for all formx widgets.
+
+- `defaultTitle` to set the default title for fields that internally use `ListTile`. 
+- `datePicker` to pick a date in `FormField<DateTime>` fields.
+- `filePicker` to pick a file in `FormField<XFile>` fields.
+- `filesPicker` to pick a file in `FormField<List<XFile>>` fields.
+- `fileUploader` to upload a file in `FormField<XFile>` fields.
+- `fileDeleter` to delete a file in `FormField<XFile>` fields.
+
 ## FormxOptions
 
 You can use `Formx.options` to modify `FormState.values` output.
@@ -64,6 +73,7 @@ You can use `Formx.options` to modify `FormState.values` output.
 - `nonEmptyStrings` removes all empty strings.
 - `nonEmptyIterables` removes all empty iterables.
 - `dateAdapter` to format date in `FormState.values`.
+- `enumAdapter` to format enum in `FormState.values`.
 
 By default, all options are enabled, except for [nonEmptyIterables].
 
