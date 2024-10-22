@@ -85,12 +85,17 @@ class FormxExample extends StatelessWidget {
 
                   // Just add a key to your fields and you're good to go.
                   TextFormField(
-                    key: const Key('name'),
+                    key: const Key('name').options(
+                      adapter: int.parse,
+                    ),
                     initialValue: 'Big',
                     validator: Validator().minWords(2),
                   ),
                   TextFormField(
-                    key: const Key('age').text().toInt(),
+                    key: const Key('age'),
+                    onSaved: Adapter(
+                      adapter: (String i) => int.tryParse(i),
+                    ),
                     initialValue: '1',
                     validator: Validator(),
                   ),

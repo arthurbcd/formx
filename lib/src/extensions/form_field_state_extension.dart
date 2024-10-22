@@ -75,9 +75,15 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
     return value?.toString() ?? '';
   }
 
-  /// Sets the [errorText] programatically.
-  ///
-  /// You need to set a [Validator] to use this method.
+  /// Returns the [FormFieldState.value] adapted with [FieldKey.adapter].
+  Object? get valueAdapted {
+    final fn = fieldKey?.maybeAdapt;
+    if (fn == null || value == null) return value;
+
+    return fn(value!);
+  }
+
+  /// Sets the [errorText] of this [FormFieldState].
   void setErrorText(String? errorText) {
     attachToValidator(errorText: errorText);
     validate();
@@ -117,4 +123,23 @@ extension NumberFieldKeyExtension on FieldKey<String> {
   FieldKey<String> toInt() {
     return copyWith(adapter: int.tryParse);
   }
+}
+
+class Adapter<T, R> {
+  const Adapter({
+    this.adapter,
+    this.onAdapted,
+  });
+  final void Function(R value)? onAdapted;
+  final R Function(T value)? adapter;
+
+  void call(Object? value) {
+    if (value case ValueNotifier vn when vn.value is T) {
+      vn.value = adapter?.call(vn.value as T);
+    }
+  }
+}
+
+class Ref {
+  Object? value;
 }

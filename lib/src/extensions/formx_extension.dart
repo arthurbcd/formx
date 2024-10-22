@@ -78,12 +78,13 @@ extension Formx on FormState {
     // when null, use the global options
     options ??= Formx.options;
 
+    // the sanitized map
     final map = <String, dynamic>{};
-    var unmask = options.unmask;
-    var trim = options.trim;
 
     visit(
       onField: (key, state) {
+        var (unmask, trim) = (options!.unmask, options.trim);
+
         Object? value = state.value;
         if (value == null) return map[key] = null;
 
@@ -104,18 +105,18 @@ extension Formx on FormState {
         }
 
         // adapter
-        if (state.fieldKey?.maybeAdapt case var adapter?) {
-          map[key] = adapter(value);
+        if (state.fieldKey?.maybeAdapt case var valueAdapter?) {
+          map[key] = valueAdapter(value);
         } else if (value is DateTime) {
-          map[key] = options!.dateAdapter(value);
+          map[key] = options.dateAdapter(value);
         } else if (value is Enum) {
-          map[key] = options!.enumAdapter(value);
+          map[key] = options.enumAdapter(value);
         } else {
           map[key] = value;
         }
       },
       onForm: (key, state) {
-        Object value = state.toMap(options: options);
+        final value = state.toMap(options: options);
 
         if (state.widget.key case FieldKey fkey) {
           map[key] = fkey.maybeAdapt(value);

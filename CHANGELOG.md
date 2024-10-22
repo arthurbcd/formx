@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.19.1 - Oct 22, 2024
+
+- Added `FormFieldState.valueAdapted`.
+- Fixed `FieldKey.unmask` apply on the entire map instead of just the value. 
+- Deprecates `FieldKey` extensions. Use `Key.options` instead.
+
 ## 0.19.0 - Oct 20, 2024
 
 - Added `BuildContext.submit`.

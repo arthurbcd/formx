@@ -10,11 +10,13 @@ import '../models/formx_options.dart';
 /// Extension for `FieldKey<T>`.
 extension FieldKeyExtension<T> on FieldKey<T> {
   /// Whether to mask the value. Overrides [FormxOptions.unmask].
+  @Deprecated('Use options() instead')
   FieldKey<T> masked() => copyWith(unmask: false);
 
   /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter.
   ///
   /// This is a shorthand for `field(adapter: adapter)`.
+  @Deprecated('Use options() instead')
   FieldKey<T> adapt(dynamic Function(T value) adapter) {
     return field(adapter: adapter);
   }
@@ -22,6 +24,7 @@ extension FieldKeyExtension<T> on FieldKey<T> {
   /// Adapts [T] `value` to `Object.toJson()` in `FormState.values`.
   ///
   /// If [T] is an [Iterable], it will map each element to `Object.toJson()`.
+  @Deprecated('Use toJson() instead')
   FieldKey<T> toJson() {
     return copyWith(
       adapter: (value) {
@@ -34,6 +37,7 @@ extension FieldKeyExtension<T> on FieldKey<T> {
   /// Adapts [T] `value` to `Object.toMap()` in `FormState.values`.
   ///
   /// If [T] is an [Iterable], it will map each element to `Object.toMap()`.
+  @Deprecated('Use toJson() instead')
   FieldKey<T> toMap() {
     return copyWith(
       adapter: (value) {
@@ -44,6 +48,7 @@ extension FieldKeyExtension<T> on FieldKey<T> {
   }
 
   /// Whether to unmask the value. Overrides [FormxOptions.unmask].
+  @Deprecated('Use options() instead')
   FieldKey<T> unmasked() => copyWith(unmask: true);
 }
 
@@ -52,6 +57,7 @@ extension FieldKeyListExtension<T> on FieldKey<List<T>> {
   /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter.
   ///
   /// This is a shorthand for `field(adapter: adapter)`.
+  @Deprecated('Use options() instead')
   FieldKey<List<T>> adapt(dynamic Function(T value) adapter) {
     return field(
       adapter: (value) => value.map(adapter).toList(),
@@ -72,6 +78,7 @@ extension FormFieldKeyExtension on Key {
   /// Creates a `FieldKey<DateTime>` of this [Key] value.
   ///
   /// Use with a [FormField] of type [DateTime]. Ex: [DateFormField].
+  @Deprecated('Use options() instead')
   FieldKey<DateTime> date([FieldAdapter<DateTime>? adapter]) {
     return field(adapter: adapter);
   }
@@ -83,6 +90,7 @@ extension FormFieldKeyExtension on Key {
   ///
   /// The type [T] must be the same type defined in the associated [FormField].
   /// This [Key] value must be a [String]. Otherwise, [ArgumentError] is thrown.
+  @Deprecated('Use options() instead')
   FieldKey<T> field<T>({
     FieldAdapter<T>? adapter,
     bool? unmask,
@@ -94,9 +102,28 @@ extension FormFieldKeyExtension on Key {
     );
   }
 
+  /// Creates a [FieldKey] of type [T] of this [Key].
+  ///
+  /// - [adapter] is a function to adapt the [T] value to any value.
+  /// - [unmask] overrides [FormxOptions.unmask].
+  ///
+  /// The type [T] must be the same type defined in the associated [FormField].
+  /// This [Key] value must be a [String]. Otherwise, [ArgumentError] is thrown.
+  FieldKey<T> options<T>({
+    bool? unmask,
+    FieldAdapter<T>? adapter,
+  }) {
+    return FieldKey(
+      ArgumentError.checkNotNull(value, 'value'),
+      adapter: adapter,
+      unmask: unmask,
+    );
+  }
+
   /// Creates a `FieldKey<List<T>>` of this [Key] value.
   ///
   /// Use with a [FormField] of type [List]. Ex: [CheckboxListFormField].
+  @Deprecated('Use options() instead')
   FieldKey<List<T>> list<T>([FieldAdapter<T>? adapter]) {
     if (adapter == null) return field();
 
@@ -106,6 +133,7 @@ extension FormFieldKeyExtension on Key {
   /// Creates a `FieldKey<String>` with this [Key] value.
   ///
   /// Use with a [FormField] of type [String]. Ex: [TextFormField].
+  @Deprecated('Use options() instead')
   FieldKey<String> text([FieldAdapter<String>? adapter]) {
     return field(adapter: adapter);
   }
@@ -113,6 +141,7 @@ extension FormFieldKeyExtension on Key {
   /// Creates a `FieldKey<T>` of this [Key] value using a custom adapter.
   ///
   /// This is a shorthand for `field(adapter: adapter)`.
+  @Deprecated('Use options() instead')
   FieldKey<T> adapt<T>(FieldAdapter<T> adapter) {
     return field(adapter: adapter);
   }
@@ -121,16 +150,19 @@ extension FormFieldKeyExtension on Key {
 /// Extension for `FieldKey<DateTime>`.
 extension DateFieldKeyExtension on FieldKey<DateTime> {
   /// Adapts [DateTime] `value` to a [String] in `FormState.values`.
+  @Deprecated('Use options() instead')
   FieldKey<DateTime> toLocalIso8601String() {
     return copyWith(adapter: (value) => value.toLocal().toIso8601String());
   }
 
   /// Adapts [DateTime] `value` to a [int] in `FormState.values`.
+  @Deprecated('Use options() instead')
   FieldKey<DateTime> toMillisecondsSinceEpoch() {
     return copyWith(adapter: (value) => value.millisecondsSinceEpoch);
   }
 
   /// Adapts [DateTime] `value` to a [String] in `FormState.values`.
+  @Deprecated('Use options() instead')
   FieldKey<DateTime> toUtcIso8601String() {
     return copyWith(adapter: (value) => value.toUtc().toIso8601String());
   }
@@ -139,11 +171,13 @@ extension DateFieldKeyExtension on FieldKey<DateTime> {
 /// Extension for `FieldKey<String>`.
 extension EnumFieldKeyExtension on FieldKey<Enum> {
   /// Adapts [Enum] `value` to [int] in `FormState.values`.
+  @Deprecated('Use options() instead')
   FieldKey<Enum> toIndex() {
     return copyWith(adapter: (value) => value.index);
   }
 
   /// Adapts [Enum] `value` to [String] in `FormState.values`.
+  @Deprecated('Use options() instead')
   FieldKey<Enum> toName() {
     return copyWith(adapter: (value) => value.name);
   }
