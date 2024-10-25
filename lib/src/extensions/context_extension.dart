@@ -20,7 +20,7 @@ extension FormxContextExtension on BuildContext {
   /// Submits the [FormState] of this [BuildContext].
   ///
   /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
-  /// - Throws an [Exception] with errorText if the form is invalid.
+  /// - Throws an [Exception] with [Formx.errorTexts] if invalid.
   Map<String, dynamic> submit({String? key, FormxOptions? options}) {
     return formx(key).submit(options: options);
   }
@@ -73,7 +73,7 @@ extension FormxContextExtension on BuildContext {
       'Ex:\n'
       '```dart\n'
       'Form(\n'
-      '  onChanged: () => print(context.form().values),\n'
+      '  onChanged: () => print(context.formx().toMap()),\n'
       ')\n'
       '```',
     );
@@ -83,7 +83,7 @@ extension FormxContextExtension on BuildContext {
         _visitForm(key) ??
         Navigator.maybeOf(this)?.context._visitForm(key);
 
-    assert(formState != null, 'No [Form] found in this context. key: $key');
+    assert(formState != null, 'No [Form] found. key: $key');
     return formState!;
   }
 
@@ -91,12 +91,9 @@ extension FormxContextExtension on BuildContext {
     FormState? formState;
     void visit(Element el) {
       if (el case StatefulElement(:FormState state)) {
-        if (key == null || state.key == key) {
-          formState = state;
-          return;
-        }
+        if (key == null || state.key == key) formState = state;
       }
-      el.visitChildren(visit);
+      if (formState == null) el.visitChildren(visit);
     }
 
     visitChildElements(visit);
@@ -111,12 +108,9 @@ extension FormxContextExtension on BuildContext {
     FormFieldState<T>? fieldState;
     void visit(Element el) {
       if (el case StatefulElement(:FormFieldState<T> state)) {
-        if (state.key == key) {
-          fieldState = state;
-          return;
-        }
+        if (state.key == key) fieldState = state;
       }
-      el.visitChildren(visit);
+      if (fieldState == null) el.visitChildren(visit);
     }
 
     visitChildElements(visit);

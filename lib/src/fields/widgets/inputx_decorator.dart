@@ -2,33 +2,50 @@
 
 import 'package:flutter/material.dart';
 
-// not exported
-class InputxDecorator<T> extends StatelessWidget {
+/// Not exported.
+class InputxDecorator extends StatefulWidget {
   const InputxDecorator({
-    required this.state,
+    super.key,
     required this.decoration,
     required this.child,
+    required this.isTextEmpty,
     this.suffix,
-    this.suffixIcon = const Icon(Icons.upload_file),
-    super.key,
   });
+
   final InputDecoration? decoration;
-  final FormFieldState<T> state;
-  final Widget Function(Widget icon)? suffix;
-  final Widget suffixIcon;
+  final bool isTextEmpty;
+  final Widget? suffix;
   final Widget? child;
 
   @override
-  Widget build(BuildContext context) {
-    final decoration = this.decoration ?? const InputDecoration();
+  State<InputxDecorator> createState() => _InputxDecoratorState();
+}
 
-    return InputDecorator(
-      decoration: decoration.copyWith(
-        errorText: state.errorText,
-        suffix: decoration.suffix ??
-            suffix?.call(decoration.suffixIcon ?? suffixIcon),
+class _InputxDecoratorState extends State<InputxDecorator> {
+  var _hasFocus = false;
+  var _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final decoration = widget.decoration ?? const InputDecoration();
+    final state = context.findAncestorStateOfType<FormFieldState>()!;
+
+    return Focus(
+      onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: InputDecorator(
+          isFocused: _hasFocus,
+          isHovering: _hovering,
+          isEmpty: widget.isTextEmpty,
+          decoration: decoration.copyWith(
+            errorText: decoration.errorText ?? state.errorText,
+            suffix: decoration.suffix ?? widget.suffix,
+          ),
+          child: widget.child,
+        ),
       ),
-      child: child,
     );
   }
 }

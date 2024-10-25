@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../extensions/formx_extension.dart';
+import 'widgets/inputx_decorator.dart';
 
 /// A `FormField<List<T>>` that builds a list of [CheckboxListTile].
 class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
@@ -130,9 +131,9 @@ class _CheckboxListFormField<T extends Object> extends StatelessWidget {
     var child = widget.listBuilder(state, children);
 
     if (widget.decoration case var decoration?) {
-      // TODO(art): verify the need to manage isFocused & isHovering, etc.
-      child = InputDecorator(
-        decoration: decoration.copyWith(errorText: state.errorText),
+      child = InputxDecorator(
+        isTextEmpty: false, // not a text field.
+        decoration: decoration,
         child: child,
       );
     }

@@ -15,6 +15,8 @@ void main() {
       return result?.xFiles ?? [];
     },
     fileUploader: (file, path) async {
+      await Future.delayed(const Duration(seconds: 2));
+
       /// Simulando o upload do arquivo.
       return '${file.name}/$path';
     },

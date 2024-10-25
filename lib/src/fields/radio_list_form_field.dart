@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../../formx.dart';
+import 'widgets/inputx_decorator.dart';
 
 /// A `FormField<T>` that builds a list of [RadioListTile].
 class RadioListFormField<T extends Object> extends FormField<T> {
@@ -121,8 +122,8 @@ class _RadioListFormField<T extends Object> extends StatelessWidget {
     var child = widget.listBuilder(state, children);
 
     if (widget.decoration case var decoration?) {
-      // TODO(art): verify the need to manage isFocused & isHovering, etc.
-      child = InputDecorator(
+      child = InputxDecorator(
+        isTextEmpty: false, // not a text field.
         decoration: decoration.copyWith(errorText: state.errorText),
         child: child,
       );

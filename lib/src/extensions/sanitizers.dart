@@ -86,10 +86,13 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
 
   /// Returns a view of this [Map] that is indented when printed.
   Map<K, V> get indented => IndentedMap(this);
+
+  /// Pairs of the entries of this map.
+  List<(K, V)> get pairs => [for (final e in entries) (e.key, e.value)];
 }
 
 /// Extension for casting lists.
-extension FormxCastListExtension<T> on List<T> {
+extension FormxCastListExtension<T> on Iterable<T> {
   /// Returns a new [List] with values casted as `Map<String, dynamic>`.
   List<Map<String, dynamic>> castJson() => [
         for (final item in this) Map.castFrom(item as Map),
@@ -221,7 +224,6 @@ extension FormxMapExtension<K, V> on Map<K, V> {
   }
 }
 
-// TODO(liz): add tests for String.alpha, String.alphaNumeric, String.numeric
 /// A set of extensions to sanitize strings.
 extension StringSanitizerExtension on String {
   /// Returns the alpha characters of this [String].

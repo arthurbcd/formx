@@ -71,11 +71,14 @@ class Validator<T> {
 
   // States
   String? _errorText;
-  FormFieldState? _state;
+  FormFieldState<T>? _state;
   final String? _key;
 
   /// The [Key] value of the [FormField] that this [Validator] is attached.
   String? get key => _key ?? _state?.widget.key?.value;
+
+  /// The [FormFieldState] of the [FormField] that this [Validator] is attached.
+  FormFieldState<T>? get state => _state;
 
   /// The resolved [FormField.validator] for this [Validator].
   FormFieldValidator<Object> get validator {
@@ -113,7 +116,7 @@ class Validator<T> {
   ///
   /// Applies the [Validator.translator] before calling it.
   String? call(Object? value) {
-    if (value case FormFieldData data) {
+    if (value case FormFieldData<T> data) {
       if (data.errorText != null) _errorText = data.errorText;
       _state = data.state;
       return null;

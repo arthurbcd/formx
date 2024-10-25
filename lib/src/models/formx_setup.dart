@@ -44,9 +44,6 @@ class FormxSetup {
   });
 
   static String _defaultTitle(Object value) {
-    // TODO(art): allow for retrocompatibility, remove in the future
-    if (Formx.options.defaultTitle?.call(value) case var text?) return text;
-
     if (value is String) return value;
 
     try {

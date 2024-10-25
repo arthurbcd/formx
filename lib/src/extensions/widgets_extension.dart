@@ -3,8 +3,10 @@ import 'package:flutter/widgets.dart';
 /// Extension for [List] to keep alive its children.
 extension ListWidgetExtension<T extends Widget> on List<T> {
   /// Wraps each child with a [Expanded] widget.
-  List<Widget> expanded() {
-    return map((e) => Expanded(child: e)).toList();
+  List<Widget> expanded([bool Function(T)? condition]) {
+    return map(
+      (e) => condition?.call(e) ?? true ? Expanded(child: e) : e,
+    ).toList();
   }
 
   /// Wraps each child with a [_KeepAlive] widget.

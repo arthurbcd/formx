@@ -4,6 +4,7 @@ import 'package:material_file_icon/material_file_icon.dart';
 import '../extensions/formx_extension.dart';
 import '../models/formx_setup.dart';
 import 'widgets/file_label.dart';
+import 'widgets/icon_loading_button.dart';
 import 'widgets/inputx_decorator.dart';
 
 /// A mixin that provides default values for the formx [FormField]s.
@@ -85,10 +86,11 @@ class _FileListFormField extends StatelessWidget {
     final filesPicker = widget.filesPicker ?? Formx.setup.filesPicker;
 
     return InputxDecorator(
+      isTextEmpty: false, // not a text field.
+
       decoration: widget.decoration,
-      state: state,
-      suffix: (icon) => IconButton(
-        icon: icon,
+      suffix: IconLoadingButton(
+        icon: widget.decoration?.suffixIcon ?? const Icon(Icons.upload_file),
         onPressed: () async {
           final newFiles = await filesPicker(state);
           state.didChange(files + newFiles);
@@ -160,10 +162,10 @@ class __FileUrlListFormFieldState extends State<__FileUrlListFormField> {
     final fileDeleter = widget.fileDeleter ?? Formx.setup.fileDeleter;
 
     return InputxDecorator(
+      isTextEmpty: false, // not a text field.
       decoration: widget.decoration,
-      state: state,
-      suffix: (icon) => IconButton(
-        icon: icon,
+      suffix: IconLoadingButton(
+        icon: widget.decoration?.suffixIcon ?? const Icon(Icons.upload_file),
         onPressed: () async {
           final newFiles = await filesPicker(state);
           final newUrls = <Future<String>>[];

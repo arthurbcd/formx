@@ -25,10 +25,10 @@ extension Formx on FormState {
   String? get key => widget.key?.value;
 
   /// The parent [FormState] of this [Form] node.
-  FormState? get parent => Form.maybeOf(context);
+  FormState? get parent => context.findAncestorStateOfType();
 
   /// The root [FormState] of this [Form] tree. Can be itself.
-  FormState get root => parent?.root ?? this;
+  FormState get root => context.findRootAncestorStateOfType() ?? this;
 
   /// Returns a structured map with all keyed raw [FormFieldState.value].
   Map<String, dynamic> get rawValues {
@@ -75,15 +75,20 @@ extension Formx on FormState {
   Map<String, dynamic> toMap({
     FormxOptions? options,
   }) {
-    // when null, use the global options
-    options ??= Formx.options;
+    return _map(options ??= Formx.options).cleaned(
+      nonNulls: options.nonNulls,
+      nonEmptyMaps: options.nonEmptyMaps,
+      nonEmptyStrings: options.nonEmptyStrings,
+      nonEmptyIterables: options.nonEmptyIterables,
+    );
+  }
 
-    // the sanitized map
+  Map<String, dynamic> _map(FormxOptions options) {
     final map = <String, dynamic>{};
 
     visit(
       onField: (key, state) {
-        var (unmask, trim) = (options!.unmask, options.trim);
+        var (unmask, trim) = (options.unmask, options.trim);
 
         Object? value = state.value;
         if (value == null) return map[key] = null;
@@ -127,12 +132,7 @@ extension Formx on FormState {
       shouldStop: (key, state) => state is FormState,
     );
 
-    return map.cleaned(
-      nonNulls: options.nonNulls,
-      nonEmptyMaps: options.nonEmptyMaps,
-      nonEmptyStrings: options.nonEmptyStrings,
-      nonEmptyIterables: options.nonEmptyIterables,
-    );
+    return map;
   }
 
   /// Performs [validate], [save], and returns [toMap] with [options].

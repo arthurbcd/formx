@@ -12,10 +12,39 @@
 `BuildContext.formx([String? key])` automatically retrieves the appropriate `FormState` for you, though you can specify a key if necessary.
 
 ```dart
-final state = context.formx();
-final addressState = context.formx('address');
+final addressState = context.formx();
+// specify if multiple forms:
+final addressState = context.formx('address'); 
 
-final email = context.field('email').value;
+if (addressState.validate()) {
+  final map = addressState.toMap();
+  addressState.save(); // do something with map
+} else {
+  throw FormxException(addressState.errorTexts);
+}
+```
+
+> You can do the same for a specific field `final emailState = context.field('email')`
+
+## Submit shortcut
+
+Performs .validate(), .save() and .toMap(). Throws errorTexts if invalid.
+
+```dart
+// essentially the same as the code above, but in one line
+final map = context.submit('address');
+final mapOrNull = context.trySubmit('address');
+```
+
+> We recommend using it with `flutter_async` to handle errors effortlessly.
+
+## FromMap.of shortcut
+
+Performs .submit() in any .fromMap/fromJson constructor.
+  
+```dart
+final user = User.fromMap.of(context);
+final userOrNull = User.fromMap.maybeOf(context);
 ```
 
 ## FormState extensions
@@ -81,28 +110,17 @@ By default, all options are enabled, except for [nonEmptyIterables].
 
 To understand how masks are applied, see [mask_text_input_formatter](https://pub.dev/packages/mask_text_input_formatter) library, also exported by this package.
 
-## FieldKey class
-
-A shortcut for `GlobalKey<FormFieldState<T>>` that allows you to control the form fields directly. Additionally, you can modify the field behavior, with:
+## FieldKey options
 
 - `.adapter` to format the field value.
 - `.unmask` to (un)mask the field value, regardless of the form global options.
 
 ```dart
 TextFormField(
-  key: FieldKey('phone', unmask: true),
-),
-TextFormField(
-  key: FieldKey('age', adapter: (value) => value?.toInt()),
-),
-```
-
-You can also use extension modifiers:
-
-```dart
-TextFormField(
-  // Use `text()` as this is a TextFormField.
-  key: const Key('phone').text().toInt().unmasked();
+  key: const Key('age').options(
+    unmask: true,
+    adapter: (String value) => value?.toInt(),
+  ),
 ),
 ```
 
@@ -125,16 +143,6 @@ For the one-liners, the modifiers allows you to chain your validators.
 TextFormField(
   validator: Validator().required().email(),
 ),
-```
-
-You can also easily create custom validators:
-
-```dart
-extension CustomValidators on Validator<T> {
-  Validator<T> myValidator([String? requiredText]) {
-    return test((value) => /* your logic here */, requiredText);
-  }
-}
 ```
 
 ### Customizing
@@ -206,11 +214,14 @@ Additionally exports [string_validator](https://pub.dev/packages/string_validato
 
 ### `Map`
 
+- `.pairs` for getting a list of key-value pairs.
 - `.indented` for a map view that indents when printed.
 - `.indentedText` for getting an indented text.
 - `.deepMap()` for mapping nested maps.
 - `.clean()` for values that are `null` or empty string/iterable/map.
 - `.cleaned()` for a new map with all `null` or empty values removed.
+- `.castJson()` for casting any List as List<Map<String, dynamic>>.
+- `.mapJson()` for mapping any jsonList to List<T>.
 
 Deeply recases all your map keys:
 

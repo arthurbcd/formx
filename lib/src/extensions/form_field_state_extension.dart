@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'package:flutter/material.dart';
+import 'package:material_file_icon/material_file_icon.dart';
 
 import '../models/field_key.dart';
 import '../models/formx_options.dart';
@@ -10,7 +11,7 @@ import 'formx_extension.dart';
 import 'sanitizers.dart';
 
 /// Signature for binding a [FormFieldState] to a [FormFieldValidator].
-typedef FormFieldData = ({FormFieldState state, String? errorText});
+typedef FormFieldData<T> = ({FormFieldState<T> state, String? errorText});
 
 /// Attaches a [FormFieldState] to a [Validator].
 extension FormFieldStateAttacher on FormFieldState {
@@ -83,6 +84,15 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
     return fn(value!);
   }
 
+  /// Whether [value] is empty.
+  bool? get isEmpty {
+    final value = this.value;
+    if (value is String) return value.isEmpty;
+    if (value is Iterable) return value.isEmpty;
+    if (value is Map) return value.isEmpty;
+    return null;
+  }
+
   /// Sets the [errorText] of this [FormFieldState].
   void setErrorText(String? errorText) {
     attachToValidator(errorText: errorText);
@@ -125,21 +135,15 @@ extension NumberFieldKeyExtension on FieldKey<String> {
   }
 }
 
-class Adapter<T, R> {
-  const Adapter({
-    this.adapter,
-    this.onAdapted,
-  });
-  final void Function(R value)? onAdapted;
-  final R Function(T value)? adapter;
-
-  void call(Object? value) {
-    if (value case ValueNotifier vn when vn.value is T) {
-      vn.value = adapter?.call(vn.value as T);
-    }
+/// Extension for XFile.
+extension TimestampName on XFile {
+  /// Returns the [XFile] with a timestamp instead of the original name.
+  /// Example: `image_name.jpg` -> `1632345678901.jpg`.
+  String get timestampName {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    return '$timestamp.$extension';
   }
-}
 
-class Ref {
-  Object? value;
+  /// Returns the extension of the file.
+  String get extension => name.split('.').last;
 }

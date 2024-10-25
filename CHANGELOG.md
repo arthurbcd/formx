@@ -2,6 +2,33 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.20.3 - Oct 25, 2024
+
+- Added `onChanged` to all `FileFormField`.
+- Added `CircularProgressIndicator` to all `FileFormField` when picking/uploading.
+
+## 0.20.2 - Oct 24, 2024
+
+- Fixed exception on `FileFormFeild` deleter.
+- Added `XFile.timestampName`.
+- Added `XFile.extension`.
+
+## 0.20.1 - Oct 23, 2024
+
+- Fixed `InputDecorator` empty state.
+
+## 0.20.0 - Oct 23, 2024
+
+- Added `Map.pairs` extension.
+- Added `Validator.state` getter.
+- Added `Validator.testState` extension.
+- Added `Validator.equalsField` extension.
+- Fixed `FileFormField` deleter call order.
+- Optimized formx/field visitors & to not use dependsOn.
+- Optimized field widgets that use `InputDecorator` & added hover, empty and focus interactions.
+- Optimized `castJson()` and `mapJson()` to work on any Iterable.
+- Removed `FormxOptions.defaultTitle` deprecation. Use `FormxSetup.defaultTitle`.
+
 ## 0.19.1 - Oct 22, 2024
 
 - Added `FormFieldState.valueAdapted`.

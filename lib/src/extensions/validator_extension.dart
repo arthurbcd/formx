@@ -1,6 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:string_validator/string_validator.dart';
 
 import '../validator/validator.dart';
+import 'context_extension.dart';
 import 'string_extension.dart';
 
 /// Extension for [Validator] to add syntactic sugar.
@@ -163,6 +165,30 @@ extension ValidatorExtension<T> on Validator<T> {
   /// Validates the maximum value of a date.
   Validator<T> isBefore(DateTime date, [String? invalidText]) {
     return datetime((value) => value.isBefore(date), invalidText);
+  }
+
+  /// Validates if this field value is equal to another field.
+  Validator<T> equalsField(String key, [String? invalidText]) {
+    bool equals(T value) {
+      assert(state != null, 'Validator must be attached to a FormFieldState.');
+      return value == state?.context.field<T>(key).value;
+    }
+
+    return test(equals, invalidText);
+  }
+
+  /// Validates if [onState] is true.
+  Validator<T> testState(
+    bool onState(FormFieldState<T> state), [
+    String? invalidText,
+  ]) {
+    bool on(_) {
+      assert(state != null, 'Validator must be attached to a FormFieldState.');
+      if (state != null) return onState(state!);
+      return false;
+    }
+
+    return test(on, invalidText);
   }
 }
 

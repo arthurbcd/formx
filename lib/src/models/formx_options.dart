@@ -31,7 +31,6 @@ class FormxOptions {
     this.nonEmptyIterables = false,
     this.dateAdapter = _defaultDateAdapter,
     this.enumAdapter = _defaultEnumAdapter,
-    @Deprecated('Moved to FormxSetup') this.defaultTitle,
   });
 
   /// Creates a new [FormxOptions] instance with all options disabled.
@@ -44,7 +43,6 @@ class FormxOptions {
     this.nonEmptyIterables = false,
     this.dateAdapter = _defaultDateAdapter,
     this.enumAdapter = _defaultEnumAdapter,
-    @Deprecated('Moved to FormxSetup') this.defaultTitle,
   });
 
   static dynamic _defaultDateAdapter(DateTime date) {
@@ -76,8 +74,4 @@ class FormxOptions {
 
   /// Global adapter for [Enum] values.
   final FieldAdapter<Enum> enumAdapter;
-
-  /// The default title for all fields.
-  @Deprecated('Moved to FormxSetup')
-  final String Function(Object value)? defaultTitle;
 }

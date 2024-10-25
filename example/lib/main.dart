@@ -46,16 +46,6 @@ class FormxExample extends StatelessWidget {
           print(state.toMap());
         },
 
-        // Optional initial values for all fields. Tip: Model.toMap().
-        // initialValues: const {
-        //   'name': 'Big',
-        //   'email': 'some@email',
-        //   'address': {
-        //     'street': 'Sesame Street',
-        //     'number': '42',
-        //   },
-        // },
-
         // Builder shortcut to access the form state.
         child: Scaffold(
           body: Center(
@@ -85,17 +75,12 @@ class FormxExample extends StatelessWidget {
 
                   // Just add a key to your fields and you're good to go.
                   TextFormField(
-                    key: const Key('name').options(
-                      adapter: int.parse,
-                    ),
+                    key: const Key('name').options<int>(),
                     initialValue: 'Big',
                     validator: Validator().minWords(2),
                   ),
                   TextFormField(
                     key: const Key('age'),
-                    onSaved: Adapter(
-                      adapter: (String i) => int.tryParse(i),
-                    ),
                     initialValue: '1',
                     validator: Validator(),
                   ),
@@ -127,8 +112,9 @@ class FormxExample extends StatelessWidget {
                           validator: Validator().required(),
                         ),
                         CheckboxListFormField(
-                          key:
-                              const Key('friends').list<Expertise>((v) => v.id),
+                          key: const Key('friends').options<List<String>>(
+                            adapter: (v) => [for (final i in v) i],
+                          ),
                           items: const ['Arthur', 'Iran', 'Juan'],
                           validator: Validator().minLength(2),
                         ),
