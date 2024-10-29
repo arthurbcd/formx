@@ -1,14 +1,8 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'package:flutter/material.dart';
-import 'package:material_file_icon/material_file_icon.dart';
 
-import '../models/field_key.dart';
-import '../models/formx_options.dart';
-import '../validator/validator.dart';
-import 'field_key_extension.dart';
-import 'formx_extension.dart';
-import 'sanitizers.dart';
+import '../../formx.dart';
 
 /// Signature for binding a [FormFieldState] to a [FormFieldValidator].
 typedef FormFieldData<T> = ({FormFieldState<T> state, String? errorText});

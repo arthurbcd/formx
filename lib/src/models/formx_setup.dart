@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:material_file_icon/material_file_icon.dart';
 
 import '../extensions/form_field_state_extension.dart';
 import '../extensions/formx_extension.dart';

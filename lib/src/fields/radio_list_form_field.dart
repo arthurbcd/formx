@@ -1,13 +1,12 @@
 // ignore_for_file: inference_failure_on_untyped_parameter
 
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 import '../../formx.dart';
-import 'widgets/inputx_decorator.dart';
+import 'widgets/formx_field.dart';
 
 /// A `FormField<T>` that builds a list of [RadioListTile].
-class RadioListFormField<T extends Object> extends FormField<T> {
+class RadioListFormField<T extends Object> extends FormxField<T> {
   /// Creates a `FormField<T>` that builds a list of [RadioListTile].
   ///
   /// The [items] are the list of items to be displayed.
@@ -27,9 +26,13 @@ class RadioListFormField<T extends Object> extends FormField<T> {
     required this.items,
     this.title = _defaultTitle,
     this.subtitle,
-    this.onChanged,
+    super.onChanged,
+    super.autofocus,
+    super.focusNode,
+    super.forceErrorText,
     this.isExpanded = false,
-    this.decoration = const InputDecoration(),
+    super.decoration,
+    super.decorator,
     this.itemBuilder = _defaultItemBuilder,
     this.listBuilder = _defaultListBuilder,
     this.controlAffinity = ListTileControlAffinity.leading,
@@ -39,7 +42,7 @@ class RadioListFormField<T extends Object> extends FormField<T> {
     super.onSaved,
     super.enabled,
     super.restorationId,
-  }) : super(builder: _builder);
+  });
 
   // Default implementations
   static Widget _defaultTitle(Object item) {
@@ -51,13 +54,6 @@ class RadioListFormField<T extends Object> extends FormField<T> {
     return Wrap(children: children);
   }
 
-  static Widget _builder<T extends Object>(FormFieldState<T> state) {
-    return _RadioListFormField<T>(RadioListFormFieldState(state));
-  }
-
-  /// The decoration to show around the [RadioListTile]s.
-  final InputDecoration? decoration;
-
   /// The list of items to be displayed.
   final List<T> items;
 
@@ -67,78 +63,45 @@ class RadioListFormField<T extends Object> extends FormField<T> {
   /// The callback to build the subtitle of the [RadioListTile].
   final Widget Function(T item)? subtitle;
 
-  /// The callback that is called when the value changes.
-  final ValueChanged<T?>? onChanged;
-
   /// Whether the [RadioListTile] should expand to the full width.
   final bool isExpanded;
 
   /// The builder that creates each checkbox.
   final Widget Function(
-    RadioListFormFieldState<T> state,
+    FormFieldState<T> state,
     T item,
     Widget child,
   ) itemBuilder;
 
   /// The builder that creates the list of checkboxes.
   final Widget Function(
-    RadioListFormFieldState<T> state,
+    FormFieldState<T> state,
     List<Widget> children,
   ) listBuilder;
 
   /// The alignment of the checkbox.
   final ListTileControlAffinity controlAffinity;
-}
-
-class _RadioListFormField<T extends Object> extends StatelessWidget {
-  const _RadioListFormField(this.state);
-  final RadioListFormFieldState<T> state;
 
   @override
-  Widget build(BuildContext context) {
-    final widget = state.widget;
-
+  Widget build(FormFieldState<T> state) {
     final children = [
-      for (final item in widget.items)
-        widget
-            .itemBuilder(
-              state,
-              item,
-              RadioListTile(
-                value: item,
-                groupValue: state.value,
-                title: widget.title?.call(item),
-                subtitle: widget.subtitle?.call(item),
-                controlAffinity: widget.controlAffinity,
-                onChanged: (value) {
-                  state.didChange(value);
-                  widget.onChanged?.call(value);
-                },
-              ),
-            )
-            .useIntrinsicWidth(!widget.isExpanded),
+      for (final item in items)
+        itemBuilder(
+          state,
+          item,
+          RadioListTile(
+            value: item,
+            groupValue: state.value,
+            title: title?.call(item),
+            subtitle: subtitle?.call(item),
+            controlAffinity: controlAffinity,
+            onChanged: state.didChange,
+          ),
+        ).useIntrinsicWidth(!isExpanded),
     ];
 
-    var child = widget.listBuilder(state, children);
-
-    if (widget.decoration case var decoration?) {
-      child = InputxDecorator(
-        isTextEmpty: false, // not a text field.
-        decoration: decoration.copyWith(errorText: state.errorText),
-        child: child,
-      );
-    }
-
-    return child;
+    return listBuilder(state, children);
   }
-}
-
-/// The state of a [RadioListFormField].
-extension type RadioListFormFieldState<T extends Object>(
-    FormFieldState<T> state) implements FormFieldState<T> {
-  /// The [RadioListFormField] of this [FormFieldState].
-  @redeclare
-  RadioListFormField<T> get widget => state.widget as RadioListFormField<T>;
 }
 
 extension on Widget {

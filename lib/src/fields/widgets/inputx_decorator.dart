@@ -6,14 +6,16 @@ import 'package:flutter/material.dart';
 class InputxDecorator extends StatefulWidget {
   const InputxDecorator({
     super.key,
+    required this.autofocus,
+    required this.focusNode,
     required this.decoration,
     required this.child,
-    required this.isTextEmpty,
     this.suffix,
   });
 
+  final bool autofocus;
+  final FocusNode? focusNode;
   final InputDecoration? decoration;
-  final bool isTextEmpty;
   final Widget? suffix;
   final Widget? child;
 
@@ -31,6 +33,8 @@ class _InputxDecoratorState extends State<InputxDecorator> {
     final state = context.findAncestorStateOfType<FormFieldState>()!;
 
     return Focus(
+      autofocus: widget.autofocus,
+      focusNode: widget.focusNode,
       onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
       child: MouseRegion(
         onEnter: (_) => setState(() => _hovering = true),
@@ -38,7 +42,6 @@ class _InputxDecoratorState extends State<InputxDecorator> {
         child: InputDecorator(
           isFocused: _hasFocus,
           isHovering: _hovering,
-          isEmpty: widget.isTextEmpty,
           decoration: decoration.copyWith(
             errorText: decoration.errorText ?? state.errorText,
             suffix: decoration.suffix ?? widget.suffix,

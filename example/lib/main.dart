@@ -69,6 +69,9 @@ class FormxExample extends StatelessWidget {
                     ),
                   ),
                   const Text('USER'),
+                  FileFormField.url(
+                    key: const Key('file'),
+                  ),
                   const DateFormField(
                     key: Key('date'),
                   ),

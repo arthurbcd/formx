@@ -143,6 +143,5 @@ class _AutocompleteFormField<T extends Object> extends StatelessWidget {
 extension type SearchFormFieldState<T extends Object>(FormFieldState<T> state)
     implements FormFieldState<T> {
   @redeclare
-  @redeclare
   SearchFormField<T> get widget => state.widget as SearchFormField<T>;
 }

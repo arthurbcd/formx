@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 import '../extensions/formx_extension.dart';
-import 'widgets/inputx_decorator.dart';
+import 'widgets/formx_field.dart';
 
 /// A `FormField<List<T>>` that builds a list of [CheckboxListTile].
-class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
+class CheckboxListFormField<T extends Object> extends FormxField<List<T>> {
   /// Creates a `FormField<List<T>>` that builds a list of [CheckboxListTile].
   ///
   /// The [items] are the list of items to be displayed.
@@ -25,20 +24,23 @@ class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
     required this.items,
     this.title = _defaultTitle,
     this.subtitle,
-    this.onChanged,
     this.isExpanded = false,
     this.isExclusive = false,
-    this.decoration = const InputDecoration(),
     this.itemBuilder = _defaultItemBuilder,
     this.listBuilder = _defaultListBuilder,
     this.controlAffinity = ListTileControlAffinity.leading,
-    super.initialValue = const [],
+    List<T> super.initialValue = const [],
+    super.onChanged,
+    super.autofocus,
+    super.focusNode,
+    super.decoration,
+    super.decorator,
     super.autovalidateMode,
     super.validator,
     super.onSaved,
     super.enabled,
     super.restorationId,
-  }) : super(builder: _builder);
+  });
 
   static Widget _defaultTitle(Object item) {
     return Text(Formx.setup.defaultTitle(item));
@@ -49,13 +51,6 @@ class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
     return Wrap(children: children);
   }
 
-  static Widget _builder<T extends Object>(FormFieldState<List<T>> state) {
-    return _CheckboxListFormField<T>(CheckboxListFormFieldState(state));
-  }
-
-  /// The decoration to show around the [CheckboxListTile]s.
-  final InputDecoration? decoration;
-
   /// The list of items to be displayed.
   final List<T> items;
 
@@ -65,9 +60,6 @@ class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
   /// The callback to build the subtitle of the [CheckboxListTile].
   final Widget Function(T item)? subtitle;
 
-  /// The callback that is called when the value changes.
-  final ValueChanged<List<T>>? onChanged;
-
   /// Whether the [CheckboxListTile] should expand to the full width.
   final bool isExpanded;
 
@@ -76,79 +68,51 @@ class CheckboxListFormField<T extends Object> extends FormField<List<T>> {
 
   /// The builder that creates each checkbox.
   final Widget Function(
-    CheckboxListFormFieldState<T> state,
+    FormFieldState<List<T>> state,
     T item,
     Widget child,
   ) itemBuilder;
 
   /// The builder that creates the list of checkboxes.
   final Widget Function(
-    CheckboxListFormFieldState<T> state,
+    FormFieldState<List<T>> state,
     List<Widget> children,
   ) listBuilder;
 
   /// The alignment of the checkbox.
   final ListTileControlAffinity controlAffinity;
-}
-
-class _CheckboxListFormField<T extends Object> extends StatelessWidget {
-  const _CheckboxListFormField(this.state);
-  final CheckboxListFormFieldState<T> state;
 
   @override
-  Widget build(BuildContext context) {
-    final widget = state.widget;
-
+  Widget build(FormFieldState<List<T>> state) {
     final children = [
-      for (final item in widget.items)
-        widget
-            .itemBuilder(
-              state,
-              item,
-              CheckboxListTile(
-                controlAffinity: widget.controlAffinity,
-                title: widget.title?.call(item),
-                subtitle: widget.subtitle?.call(item),
-                value: state.value?.contains(item) ?? false,
-                onChanged: (value) {
-                  final list = [...?state.value];
+      for (final item in items)
+        itemBuilder(
+          state,
+          item,
+          CheckboxListTile(
+            controlAffinity: controlAffinity,
+            title: title?.call(item),
+            subtitle: subtitle?.call(item),
+            value: state.value?.contains(item) ?? false,
+            onChanged: (value) {
+              final list = [...?state.value];
 
-                  if (widget.isExclusive) {
-                    state.didChange(value ?? false ? [item] : []);
-                  } else if (value ?? false) {
-                    state.didChange(list..add(item));
-                  } else {
-                    state.didChange(list..remove(item));
-                  }
+              if (isExclusive) {
+                state.didChange(value ?? false ? [item] : []);
+              } else if (value ?? false) {
+                state.didChange(list..add(item));
+              } else {
+                state.didChange(list..remove(item));
+              }
 
-                  widget.onChanged?.call(list);
-                },
-              ),
-            )
-            .useIntrinsicWidth(!widget.isExpanded),
+              onChanged?.call(list);
+            },
+          ),
+        ).useIntrinsicWidth(!isExpanded),
     ];
 
-    var child = widget.listBuilder(state, children);
-
-    if (widget.decoration case var decoration?) {
-      child = InputxDecorator(
-        isTextEmpty: false, // not a text field.
-        decoration: decoration,
-        child: child,
-      );
-    }
-
-    return child;
+    return listBuilder(state, children);
   }
-}
-
-/// The state of a [CheckboxListFormField].
-extension type CheckboxListFormFieldState<T extends Object>(
-    FormFieldState<List<T>> state) implements FormFieldState<List<T>> {
-  /// The [CheckboxListFormField] of this [FormFieldState].
-  @redeclare
-  CheckboxListFormField<T> get widget =>
-      state.widget as CheckboxListFormField<T>;
 }
 
 extension on Widget {

@@ -20,7 +20,9 @@ void main() {
       /// Simulando o upload do arquivo.
       return '${file.name}/$path';
     },
-    fileDeleter: (url) async => print('Deleting: $url'),
+    fileDeleter: (url) async {
+      print('Deleting: $url');
+    },
   );
   runApp(
     const MaterialApp(

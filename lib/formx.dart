@@ -1,8 +1,8 @@
 /// Access, build, validate, sanitize and fill forms easily with Form/Field extensions.
 library formx;
 
+export 'package:cross_file/cross_file.dart';
 export 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-export 'package:material_file_icon/material_file_icon.dart';
 export 'package:recase/recase.dart';
 export 'package:string_validator/string_validator.dart';
 

@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:material_file_icon/material_file_icon.dart';
 
 // not exported
 class FileLabel extends StatelessWidget {
@@ -18,13 +18,16 @@ class FileLabel extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          FileThumb(file),
+          SizedBox.square(
+            dimension: 20,
+            child: _FileThumb(file, url: url),
+          ),
           const SizedBox(width: 4),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Text(
-                file?.name ?? '',
+                file?.name ?? url?.split('/').last ?? url ?? '',
                 overflow: TextOverflow.clip,
               ),
             ),
@@ -35,35 +38,18 @@ class FileLabel extends StatelessWidget {
   }
 }
 
-class FileThumb extends StatefulWidget {
-  /// Creates a widget that shows a thumbnail of a file.
-  const FileThumb(
-    this.file, {
-    super.key,
-    this.url,
-    this.size,
-    this.color,
-    this.placeholder = const Icon(Icons.insert_drive_file),
-  });
+class _FileThumb extends StatefulWidget {
+  const _FileThumb(this.file, {this.url});
   final XFile? file;
   final String? url;
-  final double? size;
-  final Color? color;
-  final Widget placeholder;
 
   @override
-  State<FileThumb> createState() => _FileThumbState();
+  State<_FileThumb> createState() => _FileThumbState();
 }
 
-class _FileThumbState extends State<FileThumb> {
+class _FileThumbState extends State<_FileThumb> {
   late final _future = widget.file?.readAsBytes();
-
-  Widget get _fileIcon => MFIcon(
-        widget.file?.name ?? '',
-        size: widget.size,
-        color: widget.color,
-        placeholder: widget.placeholder,
-      );
+  Widget get _fileIcon => const Icon(Icons.insert_drive_file);
 
   @override
   Widget build(BuildContext context) {
@@ -71,19 +57,16 @@ class _FileThumbState extends State<FileThumb> {
       return Image.network(widget.url!);
     }
 
-    return SizedBox.square(
-      dimension: 20,
-      child: FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return _fileIcon;
+    return FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return _fileIcon;
 
-          return Image.memory(
-            snapshot.data!,
-            errorBuilder: (_, e, s) => _fileIcon,
-          );
-        },
-      ),
+        return Image.memory(
+          snapshot.data!,
+          errorBuilder: (_, e, s) => _fileIcon,
+        );
+      },
     );
   }
 }

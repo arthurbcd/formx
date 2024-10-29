@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 import '../extensions/formx_extension.dart';
 import '../models/formx_options.dart';
+import 'widgets/formx_field.dart';
 
 /// A [FormField] of type [DateTime].
-class DateFormField extends FormField<DateTime> {
+class DateFormField extends FormxField<DateTime> {
   /// Creates a [FormField] of type [DateTime].
   ///
   /// Use [FormxOptions.dateAdapter] to define the format in [FormState] values.
@@ -17,67 +17,48 @@ class DateFormField extends FormField<DateTime> {
   ///
   const DateFormField({
     super.key,
-    this.onChanged,
-    this.decoration = const InputDecoration(),
-    this.picker = _defaultPicker,
+    super.onChanged,
+    super.decoration,
+    super.decorator,
+    super.autofocus,
+    super.focusNode,
     super.enabled,
     super.initialValue,
     super.autovalidateMode,
     super.onSaved,
     super.validator,
     super.restorationId,
-  }) : super(builder: _builder);
+    super.forceErrorText,
+    this.picker = _defaultPicker,
+  });
 
-  static Widget _builder(FormFieldState<DateTime> state) {
-    return _DateFormField(DateFormFieldState(state));
-  }
-
-  static Future<DateTime?> _defaultPicker(DateFormFieldState state) async {
+  static Future<DateTime?> _defaultPicker(
+    FormFieldState<DateTime> state,
+  ) {
     return Formx.setup.datePicker(state);
   }
 
-  /// The decoration to show around the field.
-  final InputDecoration? decoration;
-
-  /// The callback that is called when the value changes.
-  final ValueChanged<DateTime?>? onChanged;
-
   /// The function that creates the [DateTime] picker.
-  final FutureOr<DateTime?> Function(DateFormFieldState state) picker;
-}
-
-class _DateFormField extends StatelessWidget {
-  const _DateFormField(this.state);
-  final DateFormFieldState state;
+  final Future<DateTime?> Function(FormFieldState<DateTime> state) picker;
 
   @override
-  Widget build(BuildContext context) {
-    final localizations = MaterialLocalizations.of(context);
-    final widget = state.widget;
+  Widget build(FormFieldState<DateTime> state) {
+    final localizations = MaterialLocalizations.of(state.context);
     final date = state.value;
 
     return TextField(
       readOnly: true,
       onTapAlwaysCalled: true,
-      decoration: widget.decoration?.copyWith(
-        hintText: widget.decoration?.hintText ?? localizations.dateHelpText,
+      decoration: decoration?.copyWith(
+        hintText: decoration?.hintText ?? localizations.dateHelpText,
       ),
       controller: TextEditingController(
         text: date != null ? localizations.formatCompactDate(date) : null,
       ),
       onTap: () async {
-        final pickedDate = await widget.picker(state);
-
+        final pickedDate = await picker(state);
         state.didChange(pickedDate ?? date);
-        widget.onChanged?.call(pickedDate ?? date);
       },
     );
   }
-}
-
-/// The state of a [DateFormField].
-extension type DateFormFieldState(FormFieldState<DateTime> state)
-    implements FormFieldState<DateTime> {
-  @redeclare
-  DateFormField get widget => state.widget as DateFormField;
 }

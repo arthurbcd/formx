@@ -1,12 +1,16 @@
+// ignore_for_file: invalid_use_of_protected_member
+
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
-import '../../formx.dart';
+import '../extensions/formx_extension.dart';
+import '../models/formx_setup.dart';
 import 'widgets/file_label.dart';
+import 'widgets/formx_field.dart';
 import 'widgets/icon_loading_button.dart';
-import 'widgets/inputx_decorator.dart';
 
 /// A [FormField] that allows the user to pick a file.
-class FileFormField extends FormField<XFile> {
+class FileFormField extends FormxField<XFile> {
   /// Creates a [FileFormField] that allows the user to pick a file.
   const FileFormField({
     super.key,
@@ -17,54 +21,28 @@ class FileFormField extends FormField<XFile> {
     super.onSaved,
     super.restorationId,
     super.validator,
-    this.decoration = const InputDecoration(),
+    super.decoration,
+    super.decorator,
+    super.onChanged,
+    super.autofocus,
+    super.focusNode,
+    this.label,
+    this.uploadIcon = const Icon(Icons.upload_file),
     this.filePicker,
     this.onFilePressed,
-    this.onChanged,
-  }) : super(builder: _FileFormField.new);
+  });
 
   /// Creates a `FormField<String>` that directly gets the uploaded file url.
-  /// The file is uploaded to the [path] using the [fileUploader].
+  /// The file is uploaded to the `path` using the `fileUploader`.
   ///
-  /// The [path] is generated using the [path] function.
-  static FormField<String> url({
-    Key? key,
-    AutovalidateMode? autovalidateMode,
-    bool enabled = true,
-    String? forceErrorText,
-    String? initialValue,
-    void Function(String? value)? onSaved,
-    String? restorationId,
-    String? Function(String? value)? validator,
-    InputDecoration? decoration = const InputDecoration(),
-    FieldPicker<XFile?>? filePicker,
-    UploaderPath? path,
-    FileUploader? fileUploader,
-    FileDeleter? fileDeleter,
-    void Function(XFile file, String url)? onFilePressed,
-    void Function(XFile? file, String? url)? onChanged,
-  }) {
-    return _FileUrlFormField(
-      key: key,
-      autovalidateMode: autovalidateMode,
-      enabled: enabled,
-      forceErrorText: forceErrorText,
-      initialValue: initialValue,
-      onSaved: onSaved,
-      restorationId: restorationId,
-      validator: validator,
-      decoration: decoration,
-      path: path,
-      filePicker: filePicker,
-      fileDeleter: fileDeleter,
-      fileUploader: fileUploader,
-      onFilePressed: onFilePressed,
-      onChanged: onChanged,
-    );
-  }
+  /// The `path` is generated using the `path` function.
+  static const url = _FileUrlFormField.new;
 
-  /// The decoration to show around the field.
-  final InputDecoration decoration;
+  /// The [InputChip.label] widget to show when a file is attached.
+  final Widget Function(XFile file)? label;
+
+  /// The [Widget] icon to upload files.
+  final Widget uploadIcon;
 
   /// The file picker to use.
   final FieldPicker<XFile?>? filePicker;
@@ -72,48 +50,39 @@ class FileFormField extends FormField<XFile> {
   /// The callback that is called when a file is pressed.
   final void Function(XFile file)? onFilePressed;
 
-  /// The callback that is called when the file is changed.
-  final ValueChanged<XFile?>? onChanged;
-}
-
-class _FileFormField extends StatelessWidget {
-  const _FileFormField(this.state, {super.key});
-  final FormFieldState<XFile> state;
-
   @override
-  Widget build(BuildContext context) {
-    final widget = state.widget as FileFormField;
-    final filePicker = widget.filePicker ?? Formx.setup.filePicker;
-    final file = state.value;
+  InputDecoration? decorate(FormFieldState<XFile> state) {
+    final filePicker = this.filePicker ?? Formx.setup.filePicker;
 
-    return InputxDecorator(
-      isTextEmpty: false, // not a text field.
-      decoration: widget.decoration,
+    return decoration?.applyDefaultWidgets(
       suffix: IconLoadingButton(
-        icon: widget.decoration.suffixIcon ?? const Icon(Icons.upload_file),
+        icon: uploadIcon,
         onPressed: () async {
           final newFile = await filePicker(state);
           state.didChange(newFile);
         },
       ),
-      child: file != null
-          ? InputChip(
-              key: ValueKey(file.name),
-              label: FileLabel(file),
-              onPressed: switch (widget.onFilePressed) {
-                var onFilePressed? => () => onFilePressed(file),
-                _ => null,
-              },
-              onDeleted: () {
-                state.didChange(null);
-              },
-            )
-          : null,
+    );
+  }
+
+  @override
+  Widget build(FormFieldState<XFile> state) {
+    final file = state.value;
+    if (file == null) return const SizedBox.shrink();
+
+    return InputChip(
+      key: ValueKey(file.name),
+      label: label?.call(file) ?? FileLabel(file),
+      onPressed: switch (onFilePressed) {
+        var onFilePressed? => () => onFilePressed(file),
+        _ => null,
+      },
+      onDeleted: () => state.didChange(null),
     );
   }
 }
 
-class _FileUrlFormField extends FormField<String> {
+class _FileUrlFormField extends FormxField<String> {
   const _FileUrlFormField({
     super.key,
     super.autovalidateMode,
@@ -123,82 +92,110 @@ class _FileUrlFormField extends FormField<String> {
     super.onSaved,
     super.restorationId,
     super.validator,
-    this.decoration = const InputDecoration(),
+    super.decoration,
+    super.onChanged,
+    super.autofocus,
+    super.decorator,
+    super.focusNode,
     this.filePicker,
     this.path,
     this.fileUploader,
     this.fileDeleter,
     this.onFilePressed,
-    this.onChanged,
-  }) : super(builder: __FileUrlFormField.new);
+    this.onFileChanged,
+    this.label,
+    this.uploadIcon = const Icon(Icons.upload_file),
+  });
 
-  final InputDecoration? decoration;
   final UploaderPath? path;
   final FieldPicker<XFile?>? filePicker;
   final FileUploader? fileUploader;
   final FileDeleter? fileDeleter;
-  final void Function(XFile file, String url)? onFilePressed;
-  final void Function(XFile? file, String? url)? onChanged;
-}
+  final Widget Function(String url, XFile? file)? label;
+  final Widget uploadIcon;
 
-class __FileUrlFormField extends StatefulWidget {
-  const __FileUrlFormField(this.state, {super.key});
-  final FormFieldState<String> state;
+  final void Function(String url, XFile file)? onFilePressed;
+  final void Function(String? url, XFile? file)? onFileChanged;
 
   @override
-  State<__FileUrlFormField> createState() => __FileUrlFormFieldState();
-}
-
-class __FileUrlFormFieldState extends State<__FileUrlFormField> {
-  XFile? _file;
+  FormFieldState<String> createState() => _FormFieldState();
 
   @override
-  Widget build(BuildContext context) {
-    final state = this.widget.state;
-    final widget = state.widget as _FileUrlFormField;
-    final filePicker = widget.filePicker ?? Formx.setup.filePicker;
-    final fileUploader = widget.fileUploader ?? Formx.setup.fileUploader;
-    final fileDeleter = widget.fileDeleter ?? Formx.setup.fileDeleter;
-    final file = _file;
+  InputDecoration? decorate(FormFieldState<String> state) {
+    if (state is! _FormFieldState) throw UnimplementedError();
 
-    return InputxDecorator(
-      isTextEmpty: false, // not a text field.
-      decoration: widget.decoration,
+    final filePicker = this.filePicker ?? Formx.setup.filePicker;
+    final fileUploader = this.fileUploader ?? Formx.setup.fileUploader;
+
+    return decoration?.applyDefaultWidgets(
       suffix: IconLoadingButton(
-        icon: widget.decoration?.suffixIcon ?? const Icon(Icons.upload_file),
+        icon: uploadIcon,
         onPressed: () async {
           final newFile = await filePicker(state);
           if (newFile == null) return;
 
-          final path = await widget.path?.call(newFile);
+          final path = await this.path?.call(newFile);
           final url = await fileUploader(newFile, path);
 
-          setState(() => _file = newFile);
-          state.didChange(url);
-          widget.onChanged?.call(newFile, url);
+          state.didChange(url, newFile);
         },
       ),
-      child: Wrap(
-        children: [
-          if (state.value case var url?)
-            InputChip(
-              key: Key(url),
-              label: FileLabel(file, url: url),
-              onPressed: switch (widget.onFilePressed) {
-                var onFilePressed? when file != null => () =>
-                    onFilePressed(file, url),
-                _ => null,
-              },
-              onDeleted: () {
-                fileDeleter?.call(url).ignore();
-
-                setState(() => _file = null);
-                state.didChange(null);
-                widget.onChanged?.call(null, null);
-              },
-            ),
-        ],
-      ),
     );
+  }
+
+  @override
+  Widget build(FormFieldState<String> state) {
+    if (state is! _FormFieldState) throw UnimplementedError();
+
+    return Wrap(
+      children: [
+        if (state.value case var url?)
+          InputChip(
+            key: Key(url),
+            label:
+                label?.call(url, state.file) ?? FileLabel(state.file, url: url),
+            onPressed: switch ((onFilePressed, state.file)) {
+              (var fn?, var file?) => () => fn(url, file),
+              _ => null,
+            },
+            onDeleted: () {
+              state.didChange(null);
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class _FormFieldState extends FormxFieldState<String> {
+  XFile? _file;
+
+  /// The current associated [XFile].
+  XFile? get file => _file;
+
+  Future<void> Function(String url)? get fileDeleter =>
+      widget.fileDeleter ?? Formx.setup.fileDeleter;
+
+  @override
+  _FileUrlFormField get widget => super.widget as _FileUrlFormField;
+
+  @override
+  void didChange(String? value, [XFile? file]) {
+    final oldUrl = this.value;
+
+    _file = file;
+    super.didChange(value);
+    widget.onFileChanged?.call(value, file);
+
+    if (oldUrl != null && oldUrl != value) {
+      fileDeleter?.call(oldUrl).ignore();
+    }
+  }
+
+  @override
+  void reset() {
+    _file = null;
+    super.reset();
+    widget.onFileChanged?.call(value, null);
   }
 }

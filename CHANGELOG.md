@@ -2,7 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.20.3 - Oct 25, 2024
+## 0.21.0 - Oct 28, 2024
+
+- Added `FormxField` and `FormxFieldState` interfaces.
+- Major refactor.
+
+## 0.20.4 - Oct 25, 2024
 
 - Added `onChanged` to all `FileFormField`.
 - Added `CircularProgressIndicator` to all `FileFormField` when picking/uploading.

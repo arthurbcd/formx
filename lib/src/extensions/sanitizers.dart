@@ -234,27 +234,18 @@ extension StringSanitizerExtension on String {
 
   /// Returns the alphanumeric characters of this [String].
   String get alphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
-
-  /// Extracts only the alpha characters from a string.
-  @Deprecated('Use alpha instead.')
-  String get onlyAlpha => replaceAll(RegExp('[^0-9]'), '');
-
-  /// Extracts only the numeric characters from a string.
-  @Deprecated('Use numeric instead.')
-  String get onlyNumeric => replaceAll(RegExp('[^a-zA-Z]'), '');
-
-  /// Extracts only the alphanumeric characters from a string.
-  @Deprecated('Use alphanumeric instead.')
-  String get onlyAlphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
 }
 
-/// Extension to enable Object inference casting by type.
-extension FormxCastExtension on Object {
-  /// Returns this as [T].
-  T cast<T>() => this as T;
+/// A set of extensions to sanitize objects.
+extension ObjectExtension<T extends Object> on T {
+  /// Returns this as [R].
+  R cast<R>() => this as R;
 
-  /// Returns this as [T] if it is [T], otherwise null.
-  T? tryCast<T>() => this is T ? this as T : null;
+  /// Returns this as [R] if it is [R], otherwise null.
+  R? tryCast<R>() => this is R ? this as R : null;
+
+  /// Returns itself and applies [transform] to it.
+  R let<R>(R transform(T it)) => transform(this);
 }
 
 /// An indented view of a [Map].

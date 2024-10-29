@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+
+import 'widgets/formx_field.dart';
 
 /// A [FormField] that contains a single [CheckboxListTile].
-class CheckboxFormField extends FormField<bool> {
+class CheckboxFormField extends FormxField<bool> {
   /// Creates a [FormField] that contains a single [CheckboxListTile].
   const CheckboxFormField({
     this.title,
     this.subtitle,
-    this.onChanged,
     this.controlAffinity = ListTileControlAffinity.leading,
+    super.key,
     super.autovalidateMode,
     super.enabled,
+    super.forceErrorText,
     super.initialValue = false,
-    super.key,
     super.onSaved,
     super.validator,
     super.restorationId,
-  }) : super(builder: _builder);
-
-  static Widget _builder(FormFieldState<bool> state) {
-    return _CheckboxFormField(CheckboxFormFieldState(state));
-  }
-
-  /// The callback that is called when the value changes.
-  final ValueChanged<bool?>? onChanged;
+    super.onChanged,
+  }) : super(decoration: null);
 
   /// The title of the [CheckboxListTile].
   final Widget? title;
@@ -33,40 +28,24 @@ class CheckboxFormField extends FormField<bool> {
 
   /// The alignment of the checkbox.
   final ListTileControlAffinity controlAffinity;
-}
-
-class _CheckboxFormField extends StatelessWidget {
-  const _CheckboxFormField(this.state);
-  final CheckboxFormFieldState state;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final widget = state.widget;
+  Widget build(FormFieldState<bool> state) {
+    final theme = Theme.of(state.context);
 
     return CheckboxListTile(
       value: state.value,
-      title: widget.title,
-      subtitle: widget.subtitle ??
-          (state.errorText != null
-              ? Text(
-                  state.errorText!,
-                  style: TextStyle(color: theme.colorScheme.error),
-                )
-              : null),
-      isError: state.hasError,
-      controlAffinity: widget.controlAffinity,
-      onChanged: (value) {
-        state.didChange(value);
-        widget.onChanged?.call(value);
+      onChanged: state.didChange,
+      title: title,
+      subtitle: switch (state.errorText) {
+        null => subtitle,
+        _ => Text(
+            state.errorText!,
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
       },
+      isError: state.hasError,
+      controlAffinity: controlAffinity,
     );
   }
-}
-
-/// The state of a [CheckboxFormField].
-extension type CheckboxFormFieldState(FormFieldState<bool> state)
-    implements FormFieldState<bool> {
-  @redeclare
-  CheckboxFormField get widget => state.widget as CheckboxFormField;
 }

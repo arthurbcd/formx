@@ -1,20 +1,15 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:material_file_icon/material_file_icon.dart';
 
 import '../extensions/formx_extension.dart';
+import '../extensions/sanitizers.dart';
 import '../models/formx_setup.dart';
 import 'widgets/file_label.dart';
+import 'widgets/formx_field.dart';
 import 'widgets/icon_loading_button.dart';
-import 'widgets/inputx_decorator.dart';
-
-/// A mixin that provides default values for the formx [FormField]s.
-mixin FieldData<T> on FormField<T> {
-  /// The decoration to show around the this [FormField].
-  InputDecoration? get decoration;
-}
 
 /// A [FormField] that allows the user to pick multiple files.
-class FileListFormField extends FormField<List<XFile>> with FieldData {
+class FileListFormField extends FormxField<List<XFile>> {
   /// Creates a [FileListFormField] that allows the user to pick multiple files.
   const FileListFormField({
     super.key,
@@ -25,13 +20,25 @@ class FileListFormField extends FormField<List<XFile>> with FieldData {
     super.onSaved,
     super.restorationId,
     super.validator,
-    this.decoration = const InputDecoration(),
+    super.autofocus,
+    super.decoration,
+    super.decorator,
+    super.focusNode,
+    super.onChanged,
+    this.label,
+    this.uploadIcon = const Icon(Icons.upload_file),
     this.filesPicker,
     this.onFilePressed,
-  }) : super(builder: _FileListFormField.new);
+  });
 
-  @override
-  final InputDecoration? decoration;
+  /// Creates a `FormField<List<String>>` that directly uploads the files.
+  static const url = _FileUrlListFormField.new;
+
+  /// The [Widget] icon to upload files.
+  final Widget uploadIcon;
+
+  /// The [InputChip.label] widget to show when a file is attached.
+  final Widget Function(XFile file)? label;
 
   /// The files picker to use.
   final FieldPicker<List<XFile>>? filesPicker;
@@ -39,83 +46,47 @@ class FileListFormField extends FormField<List<XFile>> with FieldData {
   /// The callback that is called when a file is pressed.
   final void Function(XFile file)? onFilePressed;
 
-  /// Creates a `FormField<List<String>>` that directly uploads the files.
-  static FormField<List<String>> url({
-    Key? key,
-    AutovalidateMode? autovalidateMode,
-    bool enabled = true,
-    String? forceErrorText,
-    List<String>? initialValue,
-    void Function(List<String>? value)? onSaved,
-    String? restorationId,
-    String? Function(List<String>? value)? validator,
-    InputDecoration? decoration = const InputDecoration(),
-    UploaderPath? path,
-    FieldPicker<List<XFile>>? filesPicker,
-    FileUploader? fileUploader,
-    FileDeleter? fileDeleter,
-    void Function(XFile file)? onFilePressed,
-  }) {
-    return _FileUrlListFormField(
-      key: key,
-      autovalidateMode: autovalidateMode,
-      enabled: enabled,
-      forceErrorText: forceErrorText,
-      initialValue: initialValue,
-      onSaved: onSaved,
-      restorationId: restorationId,
-      validator: validator,
-      path: path,
-      filesPicker: filesPicker,
-      fileUploader: fileUploader,
-      fileDeleter: fileDeleter,
-      decoration: decoration,
-      onFilePressed: onFilePressed,
-    );
-  }
-}
-
-class _FileListFormField extends StatelessWidget {
-  const _FileListFormField(this.state);
-  final FormFieldState<List<XFile>> state;
-
   @override
-  Widget build(BuildContext context) {
-    final widget = state.widget as FileListFormField;
-    final files = [...?state.value];
-    final filesPicker = widget.filesPicker ?? Formx.setup.filesPicker;
+  InputDecoration? decorate(FormFieldState<List<XFile>> state) {
+    final filesPicker = this.filesPicker ?? Formx.setup.filesPicker;
 
-    return InputxDecorator(
-      isTextEmpty: false, // not a text field.
-
-      decoration: widget.decoration,
+    return decoration?.applyDefaultWidgets(
       suffix: IconLoadingButton(
-        icon: widget.decoration?.suffixIcon ?? const Icon(Icons.upload_file),
+        icon: uploadIcon,
         onPressed: () async {
-          final newFiles = await filesPicker(state);
-          state.didChange(files + newFiles);
+          final files = state.value ?? [];
+          final newFiles = files + await filesPicker(state);
+
+          state.didChange(newFiles);
         },
       ),
-      child: Wrap(
-        children: [
-          for (final (index, file) in files.indexed)
-            InputChip(
-              label: FileLabel(file),
-              onPressed: switch (widget.onFilePressed) {
-                var onFilePressed? => () => onFilePressed(file),
-                _ => null,
-              },
-              onDeleted: () {
-                state.didChange(files..removeAt(index));
-              },
-            ),
-        ],
-      ),
+    );
+  }
+
+  @override
+  Widget build(FormFieldState<List<XFile>> state) {
+    final files = state.value ?? [];
+
+    return Wrap(
+      children: [
+        for (final (index, file) in files.indexed)
+          InputChip(
+            label: label?.call(file) ?? FileLabel(file),
+            onPressed: switch (onFilePressed) {
+              var onFilePressed? => () => onFilePressed(file),
+              _ => null,
+            },
+            onDeleted: () {
+              final newFiles = files..removeAt(index);
+              state.didChange(newFiles);
+            },
+          ),
+      ],
     );
   }
 }
 
-class _FileUrlListFormField extends FormField<List<String>> {
+class _FileUrlListFormField extends FormxField<List<String>> {
   const _FileUrlListFormField({
     super.key,
     super.autovalidateMode,
@@ -125,83 +96,144 @@ class _FileUrlListFormField extends FormField<List<String>> {
     super.onSaved,
     super.restorationId,
     super.validator,
-    this.decoration = const InputDecoration(),
-    this.onFilePressed,
+    super.decoration,
+    super.onChanged,
+    super.autofocus,
+    super.decorator,
+    super.focusNode,
+    this.path,
+    this.label,
+    this.uploadIcon = const Icon(Icons.upload_file),
     this.filesPicker,
     this.fileUploader,
     this.fileDeleter,
-    this.path,
-  }) : super(builder: __FileUrlListFormField.new);
+    this.onFilePressed,
+    this.onFilesChanged,
+  });
 
-  final InputDecoration? decoration;
-  final void Function(XFile file)? onFilePressed;
-  final FieldPicker<List<XFile>>? filesPicker;
-  final FileUploader? fileUploader;
-  final FileDeleter? fileDeleter;
+  /// The [InputChip.label] widget to show when a file is attached.
+  final Widget Function(String url, XFile? file)? label;
+  final Widget uploadIcon;
   final UploaderPath? path;
-}
-
-class __FileUrlListFormField extends StatefulWidget {
-  const __FileUrlListFormField(this.state);
-  final FormFieldState<List<String>> state;
-
-  @override
-  State<__FileUrlListFormField> createState() => __FileUrlListFormFieldState();
-}
-
-class __FileUrlListFormFieldState extends State<__FileUrlListFormField> {
-  Map<String, XFile> files = <String, XFile>{};
+  final FileDeleter? fileDeleter;
+  final FileUploader? fileUploader;
+  final FieldPicker<List<XFile>>? filesPicker;
+  final void Function(String url, XFile file)? onFilePressed;
+  final void Function(Map<String, XFile?> files)? onFilesChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final state = this.widget.state;
-    final widget = state.widget as _FileUrlListFormField;
-    final urls = [...?state.value];
-    final filesPicker = widget.filesPicker ?? Formx.setup.filesPicker;
-    final fileUploader = widget.fileUploader ?? Formx.setup.fileUploader;
-    final fileDeleter = widget.fileDeleter ?? Formx.setup.fileDeleter;
+  FormFieldState<List<String>> createState() => _FormFieldState();
 
-    return InputxDecorator(
-      isTextEmpty: false, // not a text field.
-      decoration: widget.decoration,
+  @override
+  InputDecoration? decorate(FormFieldState<List<String>> state) {
+    if (state is! _FormFieldState) throw UnimplementedError();
+    final filesPicker = this.filesPicker ?? Formx.setup.filesPicker;
+    final fileUploader = this.fileUploader ?? Formx.setup.fileUploader;
+
+    return decoration?.applyDefaultWidgets(
       suffix: IconLoadingButton(
-        icon: widget.decoration?.suffixIcon ?? const Icon(Icons.upload_file),
+        icon: uploadIcon,
         onPressed: () async {
+          final files = state.files;
           final newFiles = await filesPicker(state);
-          final newUrls = <Future<String>>[];
+          final futures = <Future>[];
 
           for (final file in newFiles) {
-            final path = await widget.path?.call(file);
-            final url = fileUploader(file, path).then((url) {
-              setState(() => files[url] = file);
-              return url;
+            final path = await this.path?.call(file);
+            final future = fileUploader(file, path).then((url) {
+              files[url] = file;
+              state.didChange(files.keys.toList(), files.values.toList());
             });
-            newUrls.add(url);
+            futures.add(future);
           }
 
-          state.didChange(urls + await newUrls.wait);
+          await futures.wait;
         },
       ),
-      child: Wrap(
-        spacing: 4,
-        runSpacing: 4,
-        children: [
-          for (final MapEntry(key: url, value: file) in files.entries)
-            InputChip(
-              key: Key(url),
-              label: FileLabel(file),
-              onPressed: switch (widget.onFilePressed) {
-                var onFilePressed? => () => onFilePressed(file),
-                _ => null,
-              },
-              onDeleted: () {
-                files.remove(url);
-                state.didChange(files.keys.toList());
-                fileDeleter?.call(url);
-              },
-            ),
-        ],
-      ),
     );
+  }
+
+  @override
+  Widget build(FormFieldState<List<String>> state) {
+    if (state is! _FormFieldState) throw UnimplementedError();
+    final fileDeleter = this.fileDeleter ?? Formx.setup.fileDeleter;
+    final urls = state.files;
+
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: [
+        for (final (url, file) in urls.pairs)
+          InputChip(
+            key: Key(url),
+            label: label?.call(url, file) ?? FileLabel(file, url: url),
+            onPressed: switch ((onFilePressed, file)) {
+              (var fn?, var file?) => () => fn(url, file),
+              _ => null,
+            },
+            onDeleted: () {
+              final map = urls..remove(url);
+              final newUrls = map.keys.toList();
+              final newFiles = map.values.toList();
+
+              state.didChange(newUrls, newFiles);
+              fileDeleter?.call(url).ignore();
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class _FormFieldState extends FormxFieldState<List<String>> {
+  var _files = <XFile?>[];
+  var _saved = <String>{};
+
+  Map<String, XFile?> get files {
+    final urls = value ?? [];
+
+    if (value?.length == _files.length) {
+      return Map.fromIterables(urls, _files);
+    }
+    return Map.fromIterable(urls);
+  }
+
+  @override
+  _FileUrlListFormField get widget => super.widget as _FileUrlListFormField;
+
+  @override
+  void didChange(List<String>? value, [List<XFile?> files = const []]) {
+    _files = files;
+    super.didChange(value);
+    widget.onFilesChanged?.call(this.files);
+  }
+
+  @override
+  void save() {
+    _saved.addAll(value ?? []);
+    super.save();
+  }
+
+  @override
+  void reset() {
+    _files = [];
+    _deleteNotSaveds();
+    super.reset();
+    widget.onFilesChanged?.call(files);
+  }
+
+  @override
+  void dispose() {
+    _deleteNotSaveds();
+    super.dispose();
+  }
+
+  void _deleteNotSaveds() {
+    for (final url in value ?? <String>[]) {
+      if (!_saved.contains(url)) {
+        widget.fileDeleter?.call(url).ignore();
+      }
+    }
+    _saved = {};
   }
 }
