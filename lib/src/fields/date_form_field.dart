@@ -3,14 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../extensions/formx_extension.dart';
-import '../models/formx_options.dart';
 import 'widgets/formx_field.dart';
 
 /// A [FormField] of type [DateTime].
 class DateFormField extends FormxField<DateTime> {
   /// Creates a [FormField] of type [DateTime].
-  ///
-  /// Use [FormxOptions.dateAdapter] to define the format in [FormState] values.
   ///
   /// You can override the default [picker] to show a custom date picker or to
   /// apply customized parameters.
@@ -29,10 +26,11 @@ class DateFormField extends FormxField<DateTime> {
     super.validator,
     super.restorationId,
     super.forceErrorText,
-    this.picker = _defaultPicker,
+    this.picker = defaultPicker,
   });
 
-  static Future<DateTime?> _defaultPicker(
+  /// The default [picker] to show the date picker.
+  static Future<DateTime?> defaultPicker(
     FormFieldState<DateTime> state,
   ) {
     return Formx.setup.datePicker(state);

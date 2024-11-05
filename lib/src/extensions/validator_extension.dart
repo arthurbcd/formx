@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:string_validator/string_validator.dart';
 
 import '../validator/validator.dart';
 import 'context_extension.dart';
@@ -52,9 +51,14 @@ extension ValidatorExtension<T> on Validator<T> {
     return test((value) => '$value'.isEmail, invalidText);
   }
 
-  /// Tests if the value is a valid URL.
+  /// Tests if the value is a valid url.
   Validator<T> url([String? invalidText]) {
-    return test((value) => '$value'.isURL(), invalidText);
+    return test((value) => '$value'.isUrl, invalidText);
+  }
+
+  /// Tests if the value is a valid http url.
+  Validator<T> httpUrl([String? invalidText]) {
+    return test((value) => '$value'.isHttpUrl, invalidText);
   }
 
   /// Tests if the value is a valid phone number.
@@ -79,7 +83,14 @@ extension ValidatorExtension<T> on Validator<T> {
 
   /// Tests if the value is a valid date.
   Validator<T> date([String? invalidText]) {
-    return test((value) => '$value'.isDate, invalidText);
+    return test(
+      (value) => switch (value) {
+        DateTime _ => true,
+        String date => DateTime.tryParse(date) != null,
+        _ => false,
+      },
+      invalidText,
+    );
   }
 
   /// Tests if the value is only letters.
@@ -196,6 +207,6 @@ extension<T> on T {
   int get length => switch (this) {
         Iterable iterable => iterable.length,
         Map map => map.length,
-        _ => this.toString().length,
+        _ => toString().length,
       };
 }

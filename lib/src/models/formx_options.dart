@@ -1,9 +1,17 @@
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
+import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 
-import '../fields/date_form_field.dart';
+import '../../formx.dart';
 
 /// A function to adapt a [value] to any other.
 typedef FieldAdapter<T> = dynamic Function(T value);
+
+/// A function to unmask a [text] from a list of [TextInputFormatter].
+typedef Unmasker = String Function(
+  String text,
+  List<TextInputFormatter> formatters,
+);
 
 /// Global options for all `FormxState` methods.
 class FormxOptions {
@@ -12,8 +20,7 @@ class FormxOptions {
   /// By default, all options are enabled, except for [nonEmptyIterables].
   ///
   /// The custom values are processed by the provided options.
-  /// - [trim] trims all string values.
-  /// - [unmask] gets the unmasked value of [MaskTextInputFormatter], if any.
+  /// - [keepMask] gets the unmasked value of [MaskedInputFormatter], if any.
   /// - [nonNulls] removes all null values.
   /// - [nonEmptyMaps] removes all empty maps.
   /// - [nonEmptyStrings] removes all empty strings.
@@ -23,39 +30,57 @@ class FormxOptions {
   /// any option.
   ///
   const FormxOptions({
-    this.trim = true,
-    this.unmask = true,
+    this.keepMask = false,
     this.nonNulls = true,
     this.nonEmptyMaps = true,
     this.nonEmptyStrings = true,
     this.nonEmptyIterables = false,
-    this.dateAdapter = _defaultDateAdapter,
-    this.enumAdapter = _defaultEnumAdapter,
+    this.unmasker = defaultUnmasker,
+    this.adapter = defaultAdapter,
   });
 
   /// Creates a new [FormxOptions] instance with all options disabled.
   const FormxOptions.none({
-    this.trim = false,
-    this.unmask = false,
+    this.keepMask = true,
     this.nonNulls = false,
     this.nonEmptyMaps = false,
     this.nonEmptyStrings = false,
     this.nonEmptyIterables = false,
-    this.dateAdapter = _defaultDateAdapter,
-    this.enumAdapter = _defaultEnumAdapter,
+    this.unmasker = defaultUnmasker,
+    this.adapter = defaultAdapter,
   });
 
-  static dynamic _defaultDateAdapter(DateTime date) {
+  /// The default JSON-serializable adapter for any value.
+  static dynamic defaultAdapter(Object value) => switch (value) {
+        DateTime _ => defaultDateAdapter(value),
+        Enum _ => defaultEnumAdapter(value),
+        String _ => value.trim(),
+        _ => value,
+      };
+
+  /// The default JSON-serializable format for [DateTime].
+  static dynamic defaultDateAdapter(DateTime date) {
     return date.toUtc().toIso8601String();
   }
 
-  static dynamic _defaultEnumAdapter(Enum type) => type.name;
+  /// The default JSON-serializable format for [Enum].
+  static dynamic defaultEnumAdapter(Enum type) => type.name;
 
-  /// Whether to trim all string values.
-  final bool trim;
+  /// The default unmasker for [TextInputFormatter] values.
+  static String defaultUnmasker(
+    String text,
+    List<TextInputFormatter> formatters,
+  ) {
+    for (final f in formatters) {
+      if (f is MaskedInputFormatter) return f.unmaskedValue;
+      if (f is PhoneInputFormatter) return text.numeric;
+    }
+
+    return text;
+  }
 
   /// Whether to unmask all masked text fields.
-  final bool unmask;
+  final bool keepMask;
 
   /// Whether to remove all null values.
   final bool nonNulls;
@@ -69,9 +94,32 @@ class FormxOptions {
   /// Whether to remove all empty iterables.
   final bool nonEmptyIterables;
 
-  /// Global adapter for [DateFormField] values.
-  final FieldAdapter<DateTime> dateAdapter;
+  /// Global adapter for any value.
+  ///
+  /// Use this for adapting any class to a JSON-serializable value.
+  final FieldAdapter<Object> adapter;
 
-  /// Global adapter for [Enum] values.
-  final FieldAdapter<Enum> enumAdapter;
+  /// Global unmasker for unmasking [TextInputFormatter] values.
+  final Unmasker unmasker;
+
+  /// Creates a copy of this [FormxOptions] with the provided values.
+  FormxOptions copyWith({
+    bool? keepMask,
+    bool? nonNulls,
+    bool? nonEmptyMaps,
+    bool? nonEmptyStrings,
+    bool? nonEmptyIterables,
+    FieldAdapter<Object>? adapter,
+    Unmasker? unmasker,
+  }) {
+    return FormxOptions(
+      keepMask: keepMask ?? this.keepMask,
+      nonNulls: nonNulls ?? this.nonNulls,
+      nonEmptyMaps: nonEmptyMaps ?? this.nonEmptyMaps,
+      nonEmptyStrings: nonEmptyStrings ?? this.nonEmptyStrings,
+      nonEmptyIterables: nonEmptyIterables ?? this.nonEmptyIterables,
+      adapter: adapter ?? this.adapter,
+      unmasker: unmasker ?? this.unmasker,
+    );
+  }
 }

@@ -95,6 +95,9 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
   final WidgetBuilder? scrollLoadingBuilder;
 
   @override
+  bool get isRaw => true;
+
+  @override
   Widget build(FormFieldState<T> state) {
     final decoration = decorate(state); // resolved decoration
 

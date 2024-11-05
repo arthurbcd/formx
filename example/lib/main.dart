@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:formx/formx.dart';
+// import 'package:formx/formx.dart';
 
 void main() {
   runApp(
@@ -33,6 +34,17 @@ class FormxExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Validator.translator = (key, errorText) => '$errorText.$key';
+
+    final phoneFormatter = Formatter().phone.br();
+
+    // context.onInitialForm(
+    //   (state) {
+    //     state.fill({
+    //       'name': 'Arthur',
+    //     });
+    //     print('onFormInit: called');
+    //   },
+    // );
 
     return Scaffold(
       floatingActionButton: const MyWidget(),
@@ -76,16 +88,35 @@ class FormxExample extends StatelessWidget {
                     key: Key('date'),
                   ),
 
+                  TextFormField(
+                    key: const Key('price'),
+                    inputFormatters: Formatter().currency(code: 'BRL'),
+                  ),
+
+                  TextFormField(
+                    key: const Key('name'),
+                    inputFormatters: Formatter().pinyin(),
+                    // validator: Validator().required().minLength(2),
+                  ),
+
                   // Just add a key to your fields and you're good to go.
                   TextFormField(
-                    key: const Key('name').options<int>(),
-                    initialValue: 'Big',
+                    key: const Key('phone'),
+                    initialValue: phoneFormatter.format('91982224111'),
+                    inputFormatters: phoneFormatter,
                     validator: Validator().minWords(2),
                   ),
+
                   TextFormField(
                     key: const Key('age'),
                     initialValue: '1',
+                    inputFormatters: Formatter().phone.br(),
                     validator: Validator(),
+                  ),
+                  TextFormField(
+                    key: const Key('cpf'),
+                    initialValue: '00252054202',
+                    inputFormatters: Formatter().cpfCnpj(),
                   ),
                   TextFormField(
                     key: const Key('email'),
@@ -146,14 +177,16 @@ class FormxExample extends StatelessWidget {
               FloatingActionButton(
                 onPressed: () {
                   // programatically fill all fields.
-                  // state.fill({
-                  //   'name': 'Biggy',
-                  //   'email': 'z@z',
-                  //   'address': {
-                  //     'street': 'Lalala Street',
-                  //     'number': '43',
-                  //   },
-                  // });
+                  final state = context.formx();
+                  state.fill({
+                    'name': 'Biggy',
+                    'email': 'z@z',
+                    'cpf': '00252054202',
+                    'address': {
+                      'street': 'Lalala Street',
+                      'number': '43',
+                    },
+                  });
 
                   // or the shorthand:
                   // state['name'] = 'Biggy';

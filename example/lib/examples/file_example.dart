@@ -50,10 +50,15 @@ class FileFormExample extends StatelessWidget {
         children: [
           FileFormField.url(
             key: const Key('imageUrl'),
+            initialValue: 'https://via.placeholder.com/150',
             validator: Validator().required(),
           ),
           FileListFormField.url(
             key: const Key('imageUrls'),
+            initialValue: [
+              'https://via.placeholder.com/150',
+              'https://via.placeholder.com/150',
+            ],
             path: (_) {
               const userId = '1';
               final levelId = DateTime.now().millisecondsSinceEpoch;

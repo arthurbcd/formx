@@ -1,8 +1,10 @@
-// ignore_for_file: avoid_dynamic_calls
-
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
-import '../../formx.dart';
+import '../models/field_key.dart';
+import '../models/formx_options.dart';
+import '../validator/validator.dart';
+import 'sanitizers.dart';
 
 /// Signature for binding a [FormFieldState] to a [FormFieldValidator].
 typedef FormFieldData<T> = ({FormFieldState<T> state, String? errorText});
@@ -60,14 +62,23 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
   num? get number => value?.tryCast<num>() ?? num.tryParse(text);
 
   /// Returns the [FormFieldState.value] as a [String].
-  String get text {
-    if (value is DateTime) {
-      return Formx.options.dateAdapter(value! as DateTime)?.toString() ?? '';
+  String get text => value?.toString() ?? '';
+
+  /// Returns the [FormFieldState.value] modified by form/field options.
+  Object? toValue({FormxOptions? options}) {
+    Object? value = this.value;
+    if (value == null) return null;
+
+    // options
+    options = getOptions(options);
+
+    // unmask
+    if (widget case TextFormField it when !options.keepMask) {
+      value = it.maybeUnmask(cast(), options);
     }
-    if (value is Enum) {
-      return Formx.options.enumAdapter(value! as Enum)?.toString() ?? '';
-    }
-    return value?.toString() ?? '';
+
+    // adapter
+    return options.adapter(value);
   }
 
   /// Returns the [FormFieldState.value] adapted with [FieldKey.adapter].
@@ -94,41 +105,6 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
   }
 }
 
-/// Extension for `FieldKey<List<T>>`.
-extension ListFieldKeyExtension<T> on FieldKey<List<T>> {
-  /// Adapts List [T] by mapping [toElement] in `FormState.values`.
-  FieldKey<List<T>> map(dynamic Function(T e) toElement) {
-    return copyWith(adapter: (value) => value.map(toElement).toList());
-  }
-}
-
-/// Extension for `FieldKey<String>`.
-extension NumberFieldKeyExtension on FieldKey<String> {
-  /// Adapts [String] `value` to [Color] in `FormState.values`.
-  FieldKey<String> toColor() {
-    return copyWith(
-      adapter: (value) {
-        if (value.startsWith('#')) value = value.substring(1);
-        if (value.length == 6) value = 'FF$value';
-        if (value.length != 8) return null;
-
-        final colorValue = int.tryParse(value, radix: 16);
-        return colorValue != null ? Color(colorValue) : null;
-      },
-    );
-  }
-
-  /// Adapts [String] `value` to [double] in `FormState.values`.
-  FieldKey<String> toDouble() {
-    return copyWith(adapter: double.tryParse);
-  }
-
-  /// Adapts [String] `value` to [int] in `FormState.values`.
-  FieldKey<String> toInt() {
-    return copyWith(adapter: int.tryParse);
-  }
-}
-
 /// Extension for XFile.
 extension TimestampName on XFile {
   /// Returns the [XFile] with a timestamp instead of the original name.
@@ -140,4 +116,15 @@ extension TimestampName on XFile {
 
   /// Returns the extension of the file.
   String get extension => name.split('.').last;
+}
+
+extension on TextFormField {
+  /// Attempts to unmask the [FormFieldState.value] of this [TextFormField].
+  ///
+  /// Returns the unmasked value or the original value.
+  String maybeUnmask(FormFieldState<String> state, FormxOptions options) {
+    final field = (builder(state) as dynamic).child as TextField;
+
+    return options.unmasker(state.value ?? '', field.inputFormatters ?? []);
+  }
 }

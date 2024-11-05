@@ -25,6 +25,18 @@ extension FormxContextExtension on BuildContext {
     return formx(key).submit(options: options);
   }
 
+  /// Calls [callback] when [FormState] is on its initial state.
+  ///
+  /// This is useful for setting initial values, for example.
+  void onInitialForm(ValueSetter<FormxState> callback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = formx();
+      if (!state.hasInteractedByUser && state.isInitial) {
+        callback(state);
+      }
+    });
+  }
+
   /// Submits the [FormState] of this [BuildContext].
   ///
   /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
@@ -100,10 +112,6 @@ extension FormxContextExtension on BuildContext {
     return formState;
   }
 
-  @Deprecated('Use `context.debugForm` instead.')
-  // ignore: public_member_api_docs
-  VoidCallback get onFormChanged => debugForm;
-
   FormFieldState<T>? _visitField<T>(String key) {
     FormFieldState<T>? fieldState;
     void visit(Element el) {
@@ -127,7 +135,7 @@ extension on FormState {
 }
 
 /// Extension for [BuildContext] and factory methods.
-extension FormxFromMapExtension<T> on T Function(Map<String, dynamic>) {
+extension FormxOfExtension<T> on T Function(Map<String, dynamic>) {
   /// Whether [FormxState] should autovalidate when calling [of] or [maybeOf].
   static bool autovalidate = true;
 

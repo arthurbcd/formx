@@ -2,6 +2,18 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.22.0 - Nov 5, 2024
+- Added `Formatter` class.
+- Added `FormatterExtension` & many modifiers.
+- Simplified `FormxOptions` customizations.
+- Improved `.submit` to reach nested fields.
+- Improved `.fill` to format text fields.
+- Removed `mask_text_input_formatter`.
+- Removed `string_validators` dependency.
+- Removed `material_file_icon` dependency.
+- Removed all deprecations.
+- Added test utils.
+
 ## 0.21.0 - Oct 28, 2024
 
 - Added `FormxField` and `FormxFieldState` interfaces.

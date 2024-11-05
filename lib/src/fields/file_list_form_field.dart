@@ -195,7 +195,8 @@ class _FormFieldState extends FormxFieldState<List<String>> {
     if (value?.length == _files.length) {
       return Map.fromIterables(urls, _files);
     }
-    return Map.fromIterable(urls);
+
+    return Map.fromIterable(urls, value: (_) => null);
   }
 
   @override

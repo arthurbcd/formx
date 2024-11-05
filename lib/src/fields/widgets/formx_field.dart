@@ -42,6 +42,9 @@ class FormxField<T> extends FormField<T> {
   /// The [decoration] modifier.
   final InputDecoration? Function(FormFieldState<T> state)? decorator;
 
+  /// Whether the field is raw and should not integrate focus and decoration.
+  bool get isRaw => false;
+
   /// The [FormxField.decoration] modifier.
   InputDecoration? decorate(FormFieldState<T> state) {
     return decorator?.call(state) ?? decoration;
@@ -74,8 +77,11 @@ class _BuilderState extends State<_Builder> {
 
   @override
   Widget build(BuildContext context) {
-    final state = this.widget.state;
-    final widget = state.widget as FormxField;
+    final state = this.widget.state as FormxFieldState;
+    final widget = state.widget;
+
+    // raw
+    if (widget.isRaw) return widget.build(state);
 
     // field
     var child = widget.build(state);

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:dartx/dartx.dart';
 import 'package:recase/recase.dart';
 
 /// A set of extensions to sanitize maps.
@@ -92,7 +93,7 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
 }
 
 /// Extension for casting lists.
-extension FormxCastListExtension<T> on Iterable<T> {
+extension FormxAdaptersExtension<T> on Iterable<T> {
   /// Returns a new [List] with values casted as `Map<String, dynamic>`.
   List<Map<String, dynamic>> castJson() => [
         for (final item in this) Map.castFrom(item as Map),
@@ -224,26 +225,40 @@ extension FormxMapExtension<K, V> on Map<K, V> {
   }
 }
 
-/// A set of extensions to sanitize strings.
-extension StringSanitizerExtension on String {
-  /// Returns the alpha characters of this [String].
-  String get alpha => replaceAll(RegExp('[^a-zA-Z]'), '');
+///
+extension HexadecimalExtension on String {
+  /// Returns `true` if this [String] contains only hexadecimal characters.
+  bool get isHexadecimal => RegExp(r'^[0-9a-fA-F]+$').hasMatch(this);
 
-  /// Returns the numeric characters of this [String].
-  String get numeric => replaceAll(RegExp('[^0-9]'), '');
-
-  /// Returns the alphanumeric characters of this [String].
-  String get alphanumeric => replaceAll(RegExp('[^a-zA-Z0-9]'), '');
+  /// Returns `true` if this [String] is a valid hexadecimal color.
+  bool get isHexColor =>
+      RegExp(r'^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$').hasMatch(this);
 }
 
 /// A set of extensions to sanitize objects.
-extension ObjectExtension<T extends Object> on T {
+extension ObjectExtension on Object {
   /// Returns this as [R].
   R cast<R>() => this as R;
 
   /// Returns this as [R] if it is [R], otherwise null.
   R? tryCast<R>() => this is R ? this as R : null;
+}
 
+///
+extension JsonValidatorExtension on String {
+  /// Returns `true` if this [String] is a valid JSON.
+  bool get isJson {
+    try {
+      json.decode(this);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
+/// A set of extensions to sanitize objects.
+extension ObjectExtensionT<T extends Object> on T {
   /// Returns itself and applies [transform] to it.
   R let<R>(R transform(T it)) => transform(this);
 }
@@ -275,5 +290,32 @@ class IndentedMap<K, V> extends MapBase<K, V> {
   @override
   String toString() {
     return JsonEncoder.withIndent('  ', (e) => e.toString()).convert(_map);
+  }
+}
+
+///
+extension IterableSortedByWithAscending<E> on Iterable<E> {
+  /// Returns a new list with all elements sorted according to natural sort
+  /// order of the values returned by specified [selector] function.
+  ///
+  /// The [ascending] parameter controls the order of sorting:
+  /// - Defaults to `true`, sorting elements in ascending order.
+  /// - Set to `false` to sort elements in descending order.
+  ///
+  /// To sort by more than one property, `thenBy()` or `thenByDescending()` can
+  /// be called afterwards.
+  ///
+  /// **Note:** The actual sorting is performed when an element is accessed for
+  /// the first time.
+  SortedList<E> sortedBy(
+    Comparable Function(E element) selector, {
+    bool ascending = true,
+  }) {
+    return SortedList<E>.withSelector(
+      this,
+      selector,
+      ascending ? 1 : -1,
+      null,
+    );
   }
 }

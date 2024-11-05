@@ -2,16 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../models/field_key.dart';
-import '../models/formx_exception.dart';
-import '../models/formx_options.dart';
-import '../models/formx_setup.dart';
-import 'field_key_extension.dart';
+import '../../formx.dart';
 import 'form_field_state_extension.dart';
-import 'formx_state.dart';
-import 'sanitizers.dart';
 
 /// Extension for [BuildContext] to access the [FormState].
 extension Formx on FormState {
@@ -35,47 +28,19 @@ extension Formx on FormState {
     final map = <String, dynamic>{};
     visit(
       onField: (key, state) => map[key] = state.value,
-      onForm: (key, state) => map[key] = state.values,
+      onForm: (key, state) => map[key] = state.rawValues,
       shouldStop: (key, state) => state is FormState,
     );
     return IndentedMap(map);
   }
 
-  /// Returns a structured map with all keyed custom [FormFieldState.value].
-  ///
-  /// The custom values are processed by [Formx.options].
-  @Deprecated('Use `.toMap()` instead.')
-  Map<String, dynamic> get values => toMap();
-
-  /// Returns a structured map with all keyed [FormFieldState.value].
-  @Deprecated('Use `.toMap()` instead.')
-  Map<String, dynamic> customValues({
-    bool trim = false,
-    bool unmask = false,
-    bool nonNulls = false,
-    bool nonEmptyMaps = false,
-    bool nonEmptyStrings = false,
-    bool nonEmptyIterables = false,
-  }) {
-    return toMap(
-      options: FormxOptions(
-        trim: trim,
-        unmask: unmask,
-        nonNulls: nonNulls,
-        nonEmptyMaps: nonEmptyMaps,
-        nonEmptyStrings: nonEmptyStrings,
-        nonEmptyIterables: nonEmptyIterables,
-      ),
-    );
-  }
-
   /// Returns a structured map with all keyed [FormFieldState.value].
   ///
   /// You can customize the output by setting [options].
-  Map<String, dynamic> toMap({
-    FormxOptions? options,
-  }) {
-    return _map(options ??= Formx.options).cleaned(
+  Map<String, dynamic> toMap({FormxOptions? options}) {
+    options = getOptions(options);
+
+    return _map(options).cleaned(
       nonNulls: options.nonNulls,
       nonEmptyMaps: options.nonEmptyMaps,
       nonEmptyStrings: options.nonEmptyStrings,
@@ -85,63 +50,23 @@ extension Formx on FormState {
 
   Map<String, dynamic> _map(FormxOptions options) {
     final map = <String, dynamic>{};
-
     visit(
-      onField: (key, state) {
-        var (unmask, trim) = (options.unmask, options.trim);
-
-        Object? value = state.value;
-        if (value == null) return map[key] = null;
-
-        // ignore: parameter_assignments
-        if (state.fieldKey?.unmask case bool value) unmask = value;
-
-        // trim
-        if (value case String text when trim) value = text.trim();
-
-        // unmask
-        if (state.widget case TextFormField field when unmask) {
-          final f = (field.builder(state.cast()) as dynamic).child as TextField;
-          final list = f.inputFormatters?.whereType<MaskTextInputFormatter>();
-
-          if (list?.firstOrNull case var formatter?) {
-            value = formatter.unmaskText(value.cast());
-          }
-        }
-
-        // adapter
-        if (state.fieldKey?.maybeAdapt case var valueAdapter?) {
-          map[key] = valueAdapter(value);
-        } else if (value is DateTime) {
-          map[key] = options.dateAdapter(value);
-        } else if (value is Enum) {
-          map[key] = options.enumAdapter(value);
-        } else {
-          map[key] = value;
-        }
-      },
-      onForm: (key, state) {
-        final value = state.toMap(options: options);
-
-        if (state.widget.key case FieldKey fkey) {
-          map[key] = fkey.maybeAdapt(value);
-        } else {
-          map[key] = value;
-        }
-      },
+      onForm: (key, state) => map[key] = state.toMap(options: options),
+      onField: (key, state) => map[key] = state.toValue(options: options),
       shouldStop: (key, state) => state is FormState,
     );
-
     return map;
   }
 
   /// Performs [validate], [save], and returns [toMap] with [options].
   /// Throws a [FormxException] if the form is invalid.
   Map<String, dynamic> submit({FormxOptions? options}) {
-    if (!validate()) {
+    final state = FormxState(this);
+
+    if (!state.validate()) {
       throw FormxException(errorTexts);
     }
-    save();
+    state.save();
     return toMap(options: options);
   }
 
@@ -227,13 +152,20 @@ extension Formx on FormState {
   }
 
   /// Fills this [FormState] with new [map].
-  void fill(Map<String, dynamic> map) {
+  ///
+  /// If [format] is `true`, [TextField.inputFormatters] will be applied.
+  void fill(Map<String, dynamic> map, {bool format = true}) {
     visit(
       onField: (key, state) {
-        if (map.containsKey(key)) state.didChange(map[key]);
+        if (map.containsKey(key)) {
+          final value = state.maybeFormat(map[key], format);
+          state.didChange(value);
+        }
       },
       onForm: (key, state) {
-        if (map.containsKey(key)) state.fill((map[key] as Map).cast());
+        if (map.containsKey(key)) {
+          state.fill((map[key] as Map).cast());
+        }
       },
       shouldStop: (key, state) => state is FormState,
     );
@@ -241,13 +173,11 @@ extension Formx on FormState {
 
   /// Logs the current state of this [FormState].
   void debug() {
-    final keys = rawValues.keys;
-
     log(
       name: 'Formx',
-      'keys (${keys.length}): ${rawValues.keys}\n'
+      'keys (${rawValues.keys.length}): ${rawValues.keys}\n'
       'initialValues: ${initialValues.cleaned()}\n'
-      'values: $values\n'
+      'values: ${toMap()}\n'
       'invalids: $invalids\n',
     );
   }
@@ -295,16 +225,6 @@ extension Formx on FormState {
       '```',
     );
   }
-
-  /// Behaves like [Form.of], but returns a [FormxState] instead.
-  ///
-  /// This will not scan the widget tree like `context.formx`, but will create
-  /// a dependency on the nearest [Form] ancestor, like [Form.of].
-  ///
-  /// NOTE: We do not recommend using formx in build methods, as all formx
-  /// methods must be called after the build phase.
-  @Deprecated('Use context.formx() instead.')
-  static FormxState of(BuildContext context) => FormxState(Form.of(context));
 }
 
 /// Extension for [FormState] to assert if `keys` are valid.
@@ -331,5 +251,23 @@ extension AssertKeysExtension on FormState {
         'Found: $list',
       );
     }
+  }
+}
+
+extension on FormFieldState {
+  /// Atempts to format the [value] with [TextField.inputFormatters].
+  ///
+  /// Returns [value] if [format] is `false` or if cannot be formatted.
+  Object? maybeFormat(Object? value, bool format) {
+    if (!format || value is! String || widget is! TextFormField) return value;
+
+    final tff = widget as dynamic;
+    final field = tff.builder(this).child as TextField;
+
+    if (field.inputFormatters case var it?) {
+      return it.fold<String>(value, (value, f) => f.format(value));
+    }
+
+    return value;
   }
 }

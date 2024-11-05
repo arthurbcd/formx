@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../extensions/field_key_extension.dart';
 import '../extensions/form_field_state_extension.dart';
+import '../models/field_key.dart';
 
 /// A class that handles the validation of a [FormField].
 ///

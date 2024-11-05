@@ -19,7 +19,7 @@ analyzer:
     missing_return: error
 
     # Treats assigning new values to a parameter as a error. Making them always immutable.
-    parameter_assignments: error
+    parameter_assignments: ignore
 
     # Allow self-reference to deprecated members. This is done because otherwise we have
     # to annotate every member in every test, assert, etc. when we deprecate something.
@@ -27,6 +27,10 @@ analyzer:
     use_function_type_syntax_for_parameters: ignore
     discarded_futures: ignore
     depend_on_referenced_packages: ignore
+    avoid_dynamic_calls: ignore
+    implicit_call_tearoffs: ignore
+    cascade_invocations: ignore
+    inference_failure_on_instance_creation: ignore
     # strict_raw_type: ignore
 linter:
   rules:
