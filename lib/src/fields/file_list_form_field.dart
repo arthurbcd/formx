@@ -235,7 +235,7 @@ class _FileUrlListFormField extends FormxField<List<String>> {
 
 class _FormFieldState extends FormxFieldState<List<String>> {
   var _files = <XFile?>[];
-  var _saved = <String>{};
+  late var _saved = {...?widget.initialValue};
 
   Map<String, XFile?> get files {
     final urls = value ?? [];
@@ -255,6 +255,13 @@ class _FormFieldState extends FormxFieldState<List<String>> {
     _files = files;
     super.didChange(value);
     widget.onFilesChanged?.call(this.files);
+  }
+
+  @override
+  bool validate() {
+    if (!super.validate()) return false;
+    _saved.addAll(value ?? []);
+    return true;
   }
 
   @override
@@ -283,6 +290,6 @@ class _FormFieldState extends FormxFieldState<List<String>> {
         widget.fileDeleter?.call(url).ignore();
       }
     }
-    _saved = {};
+    _saved = {...?widget.initialValue};
   }
 }

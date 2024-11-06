@@ -2,6 +2,9 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.1 - Nov 6, 2024
+- Added `FileListFormField.initialValue` to saved files.
+
 ## 0.24.0 - Nov 6, 2024
 - Added `FormFieldState.submit` and `FormFieldState.trySubmit`.
 - Added `FormxException.errorMessage` for custom messages.
