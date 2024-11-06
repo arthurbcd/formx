@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'dart:async';
+
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +38,53 @@ class FileFormField extends FormxField<XFile> {
   /// The file is uploaded to the `path` using the `fileUploader`.
   ///
   /// The `path` is generated using the `path` function.
-  static const url = _FileUrlFormField.new;
+  static FormField<String?> url({
+    Key? key,
+    AutovalidateMode? autovalidateMode,
+    bool enabled = true,
+    String? forceErrorText,
+    String? initialValue,
+    void Function(String? url)? onSaved,
+    String? restorationId,
+    String? Function(String? value)? validator,
+    InputDecoration? decoration = const InputDecoration(),
+    void Function(String? value)? onChanged,
+    bool autofocus = false,
+    InputDecoration? Function(FormFieldState<String> state)? decorator,
+    FocusNode? focusNode,
+    Future<XFile?> Function(FormFieldState<dynamic> state)? filePicker,
+    FutureOr<String> Function(XFile file)? path,
+    Future<String> Function(XFile file, String? url)? fileUploader,
+    Future<void> Function(String url)? fileDeleter,
+    void Function(String url, XFile file)? onFilePressed,
+    void Function(String? url, XFile? file)? onFileChanged,
+    Widget Function(String url, XFile? file)? label,
+    Widget uploadIcon = const Icon(Icons.upload_file),
+  }) {
+    return _FileUrlFormField(
+      key: key,
+      autovalidateMode: autovalidateMode,
+      autofocus: autofocus,
+      decorator: decorator,
+      decoration: decoration,
+      enabled: enabled,
+      focusNode: focusNode,
+      forceErrorText: forceErrorText,
+      initialValue: initialValue,
+      label: label,
+      onChanged: onChanged,
+      onFilePressed: onFilePressed,
+      onSaved: onSaved,
+      restorationId: restorationId,
+      uploadIcon: uploadIcon,
+      validator: validator,
+      filePicker: filePicker,
+      fileDeleter: fileDeleter,
+      fileUploader: fileUploader,
+      onFileChanged: onFileChanged,
+      path: path,
+    );
+  }
 
   /// The [InputChip.label] widget to show when a file is attached.
   final Widget Function(XFile file)? label;
@@ -55,7 +103,7 @@ class FileFormField extends FormxField<XFile> {
     final filePicker = this.filePicker ?? Formx.setup.filePicker;
 
     return decoration?.applyDefaultWidgets(
-      suffix: IconLoadingButton(
+      suffixIcon: IconLoadingButton(
         icon: uploadIcon,
         onPressed: () async {
           final newFile = await filePicker(state);
@@ -128,7 +176,7 @@ class _FileUrlFormField extends FormxField<String> {
     final fileUploader = this.fileUploader ?? Formx.setup.fileUploader;
 
     return decoration?.applyDefaultWidgets(
-      suffix: IconLoadingButton(
+      suffixIcon: IconLoadingButton(
         icon: uploadIcon,
         onPressed: () async {
           final newFile = await filePicker(state);

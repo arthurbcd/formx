@@ -210,8 +210,6 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.hasSpecialCharacters`
 - `.equalsIgnoreCase(String)`
 
-Additionally exports [string_validator](https://pub.dev/packages/string_validator) library. See it for complete list of extensions.
-
 ### `Map`
 
 - `.pairs` for getting a list of key-value pairs.

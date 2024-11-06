@@ -1,13 +1,15 @@
 import 'dart:async';
 
-import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../extensions/form_field_state_extension.dart';
 import '../extensions/formx_extension.dart';
 import '../fields/date_form_field.dart';
 import '../fields/file_form_field.dart';
 import '../fields/file_list_form_field.dart';
+import '../fields/image_form_field.dart';
+import '../fields/image_list_form_field.dart';
 
 /// A function to pick a value for a [FormField].
 typedef FieldPicker<T> = Future<T> Function(FormFieldState state);
@@ -41,6 +43,10 @@ class FormxSetup {
     this.filesPicker = _noFilesPicker,
     this.fileUploader = _noFileUploader,
     this.fileDeleter = _noFileDeleter,
+    this.imagePicker = _defaultImagePicker,
+    this.imagesPicker = _defaultImagesPicker,
+    this.imageUploader = _noImageUploader,
+    this.imageDeleter = _noImageDeleter,
   });
 
   static String _defaultTitle(Object value) {
@@ -65,6 +71,33 @@ class FormxSetup {
     );
   }
 
+  static Future<XFile?> _defaultImagePicker(FormFieldState state) {
+    try {
+      return ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1200,
+        maxHeight: 1200,
+      );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<XFile>> _defaultImagesPicker(FormFieldState state) {
+    try {
+      return ImagePicker().pickMultiImage(
+        imageQuality: 80,
+        maxWidth: 1200,
+        maxHeight: 1200,
+      );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
   static Future<XFile?> _noFilePicker(FormFieldState state) {
     throw UnimplementedError('You must setup a filePicker.');
   }
@@ -81,6 +114,14 @@ class FormxSetup {
     throw UnimplementedError('You should setup a fileDeleter.');
   }
 
+  static Future<String> _noImageUploader(XFile file, String? path) {
+    throw UnimplementedError('You must setup a imageUploader.');
+  }
+
+  static Future<void> _noImageDeleter(String url) {
+    throw UnimplementedError('You should setup a imageDeleter.');
+  }
+
   /// The default title for all fields.
   final String Function(Object value) defaultTitle;
 
@@ -90,12 +131,24 @@ class FormxSetup {
   /// The default file picker for [FileFormField] fields.
   final FieldPicker<XFile?> filePicker;
 
-  /// The default file picker for [FileListFormField] fields.
+  /// The default files picker for [FileListFormField] fields.
   final FieldPicker<List<XFile>> filesPicker;
 
-  /// The default file uploader for [XFile] fields.
+  /// The default file uploader for [XFile] file fields.
   final FileUploader fileUploader;
 
-  /// The default file deleter for [XFile] fields.
+  /// The default file deleter for [XFile] file fields.
   final FileDeleter? fileDeleter;
+
+  /// The default image picker for [ImageFormField] fields.
+  final FieldPicker<XFile?> imagePicker;
+
+  /// The default image picker for [ImageListFormField] fields.
+  final FieldPicker<List<XFile>> imagesPicker;
+
+  /// The default image uploader for [XFile] image fields.
+  final FileUploader imageUploader;
+
+  /// The default image deleter for [XFile] image fields.
+  final FileDeleter imageDeleter;
 }

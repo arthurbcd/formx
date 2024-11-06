@@ -59,19 +59,22 @@ extension Formx on FormState {
   }
 
   /// Performs [validate], [save], and returns [toMap] with [options].
-  /// Throws a [FormxException] if the form is invalid.
-  Map<String, dynamic> submit({FormxOptions? options}) {
+  /// Throws a [FormxException] if form is invalid.
+  Map<String, dynamic> submit({
+    FormxOptions? options,
+    String? errorMessage,
+  }) {
     final state = FormxState(this);
 
     if (!state.validate()) {
-      throw FormxException(errorTexts);
+      throw FormxException(errorTexts, errorMessage);
     }
     state.save();
     return toMap(options: options);
   }
 
   /// Performs [validate], [save], and returns [toMap] with [options].
-  /// Returns `null` if the form is invalid.
+  /// Returns `null` if form is invalid.
   Map<String, dynamic>? trySubmit({FormxOptions? options}) {
     try {
       return submit(options: options);

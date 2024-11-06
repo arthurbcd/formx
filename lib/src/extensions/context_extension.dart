@@ -21,8 +21,24 @@ extension FormxContextExtension on BuildContext {
   ///
   /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
   /// - Throws an [Exception] with [Formx.errorTexts] if invalid.
-  Map<String, dynamic> submit({String? key, FormxOptions? options}) {
-    return formx(key).submit(options: options);
+  Map<String, dynamic> submit({
+    String? key,
+    FormxOptions? options,
+    String? errorMessage,
+  }) {
+    return formx(key).submit(options: options, errorMessage: errorMessage);
+  }
+
+  /// Submits the [FormState] of this [BuildContext].
+  ///
+  /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
+  /// - Returns `null` if the form is invalid.
+  Map<String, dynamic>? trySubmit({String? key, FormxOptions? options}) {
+    try {
+      return submit(key: key, options: options);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Calls [callback] when [FormState] is on its initial state.
@@ -35,18 +51,6 @@ extension FormxContextExtension on BuildContext {
         callback(state);
       }
     });
-  }
-
-  /// Submits the [FormState] of this [BuildContext].
-  ///
-  /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
-  /// - Returns `null` if the form is invalid.
-  Map<String, dynamic>? trySubmit({String? key, FormxOptions? options}) {
-    try {
-      return submit(options: options);
-    } catch (_) {
-      return null;
-    }
   }
 
   /// Debugs the [FormState] of this [BuildContext].
@@ -146,11 +150,14 @@ extension FormxOfExtension<T> on T Function(Map<String, dynamic>) {
     String? key,
     bool? validate,
     FormxOptions? options,
+    String? errorMessage,
   }) {
     final state = context.formx(key);
-    final map = validate ?? autovalidate ? state.submit : state.toMap;
+    final map = validate ?? autovalidate
+        ? state.submit(options: options, errorMessage: errorMessage)
+        : state.toMap(options: options);
 
-    return this(map(options: options));
+    return this(map);
   }
 
   /// Creates an instance of [T] from the [FormxState] of this [BuildContext].

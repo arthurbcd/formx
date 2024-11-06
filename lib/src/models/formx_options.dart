@@ -7,10 +7,10 @@ import '../../formx.dart';
 /// A function to adapt a [value] to any other.
 typedef FieldAdapter<T> = dynamic Function(T value);
 
-/// A function to unmask a [text] from a list of [TextInputFormatter].
-typedef Unmasker = String Function(
-  String text,
-  List<TextInputFormatter> formatters,
+/// A function to unmask a formatted [value] from a [TextInputFormatter].
+typedef Unmasker = String? Function(
+  String value,
+  TextInputFormatter formatter,
 );
 
 /// Global options for all `FormxState` methods.
@@ -66,17 +66,11 @@ class FormxOptions {
   /// The default JSON-serializable format for [Enum].
   static dynamic defaultEnumAdapter(Enum type) => type.name;
 
-  /// The default unmasker for [TextInputFormatter] values.
-  static String defaultUnmasker(
-    String text,
-    List<TextInputFormatter> formatters,
-  ) {
-    for (final f in formatters) {
-      if (f is MaskedInputFormatter) return f.unmaskedValue;
-      if (f is PhoneInputFormatter) return text.numeric;
-    }
-
-    return text;
+  /// The default unmasker for [TextInputFormatter].
+  static String? defaultUnmasker(String value, TextInputFormatter formatter) {
+    if (formatter is MaskedInputFormatter) return formatter.unmaskedValue;
+    if (formatter is PhoneInputFormatter) return value.numeric;
+    return null;
   }
 
   /// Whether to unmask all masked text fields.

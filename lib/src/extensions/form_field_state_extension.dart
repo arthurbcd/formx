@@ -1,7 +1,9 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/field_key.dart';
+import '../models/formx_exception.dart';
 import '../models/formx_options.dart';
 import '../validator/validator.dart';
 import 'sanitizers.dart';
@@ -44,25 +46,32 @@ extension FormFieldStateAttacher on FormFieldState {
 
 /// Extends [FormFieldState] with a programatic way to set [errorText].
 extension FormFieldStateExtension<T> on FormFieldState<T> {
+  /// The [Key] `value` of this [FormFieldState].
+  String? get key => widget.key?.value;
+
+  /// The options of this [FormField].
+  FieldKey<T>? get fieldKey => widget.key?.tryCast<FieldKey<T>>();
+
   /// Whether [FormFieldState.value] is the same as [FormField.initialValue].
   bool get isInitial => value == widget.initialValue;
 
-  /// Returns the [FormFieldState.value] as a [DateTime].
-  DateTime? get date => value?.tryCast<DateTime>() ?? DateTime.tryParse(text);
-
-  /// The [FieldAdapter] of this [FormFieldState].
-  FieldKey<T>? get fieldKey {
-    return widget.key?.tryCast<FieldKey<T>>();
-  }
-
-  /// The [Key] `value` of this [FormFieldState].
-  String? get key => widget.key?.value;
+  /// Returns the [FormFieldState.value] as a [String].
+  String get text => value?.toString() ?? '';
 
   /// Returns the [FormFieldState.value] as a [num].
   num? get number => value?.tryCast<num>() ?? num.tryParse(text);
 
-  /// Returns the [FormFieldState.value] as a [String].
-  String get text => value?.toString() ?? '';
+  /// Returns the [FormFieldState.value] as a [DateTime].
+  DateTime? get date => value?.tryCast<DateTime>() ?? DateTime.tryParse(text);
+
+  /// Whether [value] is empty.
+  bool? get isEmpty {
+    final value = this.value;
+    if (value is String) return value.isEmpty;
+    if (value is Iterable) return value.isEmpty;
+    if (value is Map) return value.isEmpty;
+    return null;
+  }
 
   /// Returns the [FormFieldState.value] modified by form/field options.
   Object? toValue({FormxOptions? options}) {
@@ -81,21 +90,24 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
     return options.adapter(value);
   }
 
-  /// Returns the [FormFieldState.value] adapted with [FieldKey.adapter].
-  Object? get valueAdapted {
-    final fn = fieldKey?.maybeAdapt;
-    if (fn == null || value == null) return value;
-
-    return fn(value!);
+  /// Performs [validate], [save], and returns [toValue] with [options].
+  /// Throws a [FormxException] if field is invalid.
+  Object? submit({FormxOptions? options, String? errorMessage}) {
+    if (!validate()) {
+      throw FormxException({key ?? '': errorText ?? ''}, errorMessage);
+    }
+    save();
+    return toValue(options: options);
   }
 
-  /// Whether [value] is empty.
-  bool? get isEmpty {
-    final value = this.value;
-    if (value is String) return value.isEmpty;
-    if (value is Iterable) return value.isEmpty;
-    if (value is Map) return value.isEmpty;
-    return null;
+  /// Performs [validate], [save], and returns [toValue] with [options].
+  /// Returns `null` if field is invalid.
+  Object? trySubmit({FormxOptions? options}) {
+    try {
+      return submit(options: options);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Sets the [errorText] of this [FormFieldState].
@@ -124,7 +136,12 @@ extension on TextFormField {
   /// Returns the unmasked value or the original value.
   String maybeUnmask(FormFieldState<String> state, FormxOptions options) {
     final field = (builder(state) as dynamic).child as TextField;
+    final value = state.value ?? '';
 
-    return options.unmasker(state.value ?? '', field.inputFormatters ?? []);
+    for (final formatter in field.inputFormatters ?? <TextInputFormatter>[]) {
+      if (options.unmasker(value, formatter) case var it?) return it;
+    }
+
+    return value;
   }
 }

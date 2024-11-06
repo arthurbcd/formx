@@ -7,6 +7,7 @@ export 'package:recase/recase.dart';
 
 export '/src/extensions/widgets_extension.dart';
 export 'src/extensions/context_extension.dart';
+export 'src/extensions/date_extension.dart';
 export 'src/extensions/form_field_state_extension.dart'
     hide FormFieldData, FormFieldStateAttacher;
 export 'src/extensions/formx_extension.dart' hide AssertKeysExtension;
@@ -20,6 +21,8 @@ export 'src/fields/checkbox_list_form_field.dart';
 export 'src/fields/date_form_field.dart';
 export 'src/fields/file_form_field.dart';
 export 'src/fields/file_list_form_field.dart';
+export 'src/fields/image_form_field.dart';
+export 'src/fields/image_list_form_field.dart';
 export 'src/fields/radio_list_form_field.dart';
 export 'src/fields/search_form_field.dart';
 export 'src/formatter/country_code_extension.dart';

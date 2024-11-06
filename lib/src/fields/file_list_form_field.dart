@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +34,53 @@ class FileListFormField extends FormxField<List<XFile>> {
   });
 
   /// Creates a `FormField<List<String>>` that directly uploads the files.
-  static const url = _FileUrlListFormField.new;
+  static FormField<List<String>> url({
+    bool autofocus = false,
+    AutovalidateMode? autovalidateMode,
+    InputDecoration? decoration = const InputDecoration(),
+    InputDecoration? Function(FormFieldState<List<String>> urls)? decorator,
+    bool enabled = true,
+    Future<void> Function(String url)? fileDeleter,
+    Future<String> Function(XFile file, String? url)? fileUploader,
+    Future<List<XFile>> Function(FormFieldState<dynamic> state)? filesPicker,
+    FocusNode? focusNode,
+    String? forceErrorText,
+    List<String>? initialValue,
+    Key? key,
+    Widget Function(String url, XFile? file)? label,
+    void Function(List<String>? urls)? onChanged,
+    void Function(String url, XFile file)? onFilePressed,
+    void Function(Map<String, XFile?> map)? onFilesChanged,
+    void Function(List<String>? urls)? onSaved,
+    FutureOr<String> Function(XFile file)? path,
+    String? restorationId,
+    Widget uploadIcon = const Icon(Icons.image),
+    String? Function(List<String>? urls)? validator,
+  }) {
+    return _FileUrlListFormField(
+      filesPicker: filesPicker,
+      autofocus: autofocus,
+      autovalidateMode: autovalidateMode,
+      decoration: decoration,
+      decorator: decorator,
+      enabled: enabled,
+      fileDeleter: fileDeleter,
+      fileUploader: fileUploader,
+      focusNode: focusNode,
+      forceErrorText: forceErrorText,
+      initialValue: initialValue,
+      key: key,
+      label: label,
+      onChanged: onChanged,
+      onFilePressed: onFilePressed,
+      onFilesChanged: onFilesChanged,
+      onSaved: onSaved,
+      path: path,
+      restorationId: restorationId,
+      uploadIcon: uploadIcon,
+      validator: validator,
+    );
+  }
 
   /// The [Widget] icon to upload files.
   final Widget uploadIcon;
@@ -51,7 +99,7 @@ class FileListFormField extends FormxField<List<XFile>> {
     final filesPicker = this.filesPicker ?? Formx.setup.filesPicker;
 
     return decoration?.applyDefaultWidgets(
-      suffix: IconLoadingButton(
+      suffixIcon: IconLoadingButton(
         icon: uploadIcon,
         onPressed: () async {
           final files = state.value ?? [];
@@ -131,7 +179,7 @@ class _FileUrlListFormField extends FormxField<List<String>> {
     final fileUploader = this.fileUploader ?? Formx.setup.fileUploader;
 
     return decoration?.applyDefaultWidgets(
-      suffix: IconLoadingButton(
+      suffixIcon: IconLoadingButton(
         icon: uploadIcon,
         onPressed: () async {
           final files = state.files;

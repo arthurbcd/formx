@@ -2,6 +2,24 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.24.0 - Nov 6, 2024
+- Added `FormFieldState.submit` and `FormFieldState.trySubmit`.
+- Added `FormxException.errorMessage` for custom messages.
+- Added `errorMessage` to all formx/field `submit`.
+- Added `ImageListFormField.url` default decoration.
+- Added `FormxDateExtension.hasPassed`.
+
+## 0.23.1 - Nov 5, 2024
+
+- Added singnature parameters to `ImageFormField.url` constructors.
+- Added `imageDeleter` & `imageUploader` to `FormxSetup`.
+- Simplified `Unmasker` signature.
+- Removed `adaptedValue`. Use `toValue`.
+
+## 0.23.0 - Nov 5, 2024
+- Added `ImageFormField` fields.
+- Added `imagePicker`/`imagesPicker` to `FormxOptions`.
+
 ## 0.22.0 - Nov 5, 2024
 - Added `Formatter` class.
 - Added `FormatterExtension` & many modifiers.

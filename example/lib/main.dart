@@ -46,6 +46,18 @@ class FormxExample extends StatelessWidget {
     //   },
     // );
 
+    return Center(
+      child: ImageListFormField.url(
+        initialValue: ['https://via.placeholder.com/150'],
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+        ),
+        imageUploader: (file, path) async {
+          return 'url';
+        },
+      ),
+    );
+
     return Scaffold(
       floatingActionButton: const MyWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
@@ -59,165 +71,114 @@ class FormxExample extends StatelessWidget {
         },
 
         // Builder shortcut to access the form state.
-        child: Scaffold(
-          body: Center(
-            child: Form(
-              onChanged: context.debugForm,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 300,
-                    child: AutocompleteFormField.paged(
-                      key: const Key('autocomplete'),
-                      search: search,
-                      onResults: print,
-                    ),
+        child: Center(
+          child: Form(
+            onChanged: context.debugForm,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: AutocompleteFormField.paged(
+                    key: const Key('autocomplete'),
+                    search: search,
+                    onResults: print,
                   ),
-                  SizedBox(
-                    width: 200,
-                    child: SearchFormField.paged(
-                      search: search,
-                    ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: SearchFormField.paged(
+                    search: search,
                   ),
-                  const Text('USER'),
-                  FileFormField.url(
-                    key: const Key('file'),
-                  ),
-                  const DateFormField(
-                    key: Key('date'),
-                  ),
+                ),
+                const Text('USER'),
+                // FileListFormField.url(
+                //   key: const Key('file'),
+                // ),
+                ImageListFormField.url(
+                  initialValue: ['https://via.placeholder.com/150'],
+                  // imageUploader: (file, path) async {
+                  //   return 'url';
+                  // },
+                ),
+                const DateFormField(
+                  key: Key('date'),
+                ),
 
-                  TextFormField(
-                    key: const Key('price'),
-                    inputFormatters: Formatter().currency(code: 'BRL'),
-                  ),
+                TextFormField(
+                  key: const Key('price'),
+                  inputFormatters: Formatter().currency(code: 'BRL'),
+                ),
 
-                  TextFormField(
-                    key: const Key('name'),
-                    inputFormatters: Formatter().pinyin(),
-                    // validator: Validator().required().minLength(2),
-                  ),
+                TextFormField(
+                  key: const Key('name'),
+                  inputFormatters: Formatter().pinyin(),
+                  // validator: Validator().required().minLength(2),
+                ),
 
-                  // Just add a key to your fields and you're good to go.
-                  TextFormField(
-                    key: const Key('phone'),
-                    initialValue: phoneFormatter.format('91982224111'),
-                    inputFormatters: phoneFormatter,
-                    validator: Validator().minWords(2),
-                  ),
+                // Just add a key to your fields and you're good to go.
+                TextFormField(
+                  key: const Key('phone'),
+                  initialValue: phoneFormatter.format('91982224111'),
+                  inputFormatters: phoneFormatter,
+                  validator: Validator().minWords(2),
+                ),
 
-                  TextFormField(
-                    key: const Key('age'),
-                    initialValue: '1',
-                    inputFormatters: Formatter().phone.br(),
-                    validator: Validator(),
-                  ),
-                  TextFormField(
-                    key: const Key('cpf'),
-                    initialValue: '00252054202',
-                    inputFormatters: Formatter().cpfCnpj(),
-                  ),
-                  TextFormField(
-                    key: const Key('email'),
-                    initialValue: 'some@email',
-                    validator: Validator().required().email(),
-                  ),
+                TextFormField(
+                  key: const Key('age'),
+                  initialValue: '1',
+                  inputFormatters: Formatter().phone.br(),
+                  validator: Validator(),
+                ),
+                TextFormField(
+                  key: const Key('cpf'),
+                  initialValue: '00252054202',
+                  inputFormatters: Formatter().cpfCnpj(),
+                ),
+                TextFormField(
+                  key: const Key('email'),
+                  initialValue: 'some@email',
+                  validator: Validator().required().email(),
+                ),
 
-                  /// You can nest [Formx] to create complex structures.
-                  Form(
-                    key: const Key('address'),
-                    onChanged: context.debugForm,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Address:'),
-                        const MyWidget(),
-                        TextFormField(
-                          key: const Key('street'),
-                          initialValue: 'Sesame Street',
+                /// You can nest [Formx] to create complex structures.
+                Form(
+                  key: const Key('address'),
+                  onChanged: context.debugForm,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Address:'),
+                      const MyWidget(),
+                      TextFormField(
+                        key: const Key('street'),
+                        initialValue: 'Sesame Street',
+                      ),
+                      TextFormField(
+                        key: const Key('age'),
+                      ),
+                      RadioListFormField(
+                        key: const Key('names'),
+                        items: const ['Arthur', 'Iran', 'Juan'],
+                        validator: Validator().required(),
+                      ),
+                      CheckboxListFormField(
+                        key: const Key('friends').options<List<String>>(
+                          adapter: (v) => [for (final i in v) i],
                         ),
-                        TextFormField(
-                          key: const Key('age'),
-                        ),
-                        RadioListFormField(
-                          key: const Key('names'),
-                          items: const ['Arthur', 'Iran', 'Juan'],
-                          validator: Validator().required(),
-                        ),
-                        CheckboxListFormField(
-                          key: const Key('friends').options<List<String>>(
-                            adapter: (v) => [for (final i in v) i],
-                          ),
-                          items: const ['Arthur', 'Iran', 'Juan'],
-                          validator: Validator().minLength(2),
-                        ),
-                        CheckboxFormField(
-                          key: const Key('terms'),
-                          title: const Text('I agree to the terms'),
-                          validator: Validator().required(),
-                        ),
-                      ],
-                    ),
+                        items: const ['Arthur', 'Iran', 'Juan'],
+                        validator: Validator().minLength(2),
+                      ),
+                      CheckboxFormField(
+                        key: const Key('terms'),
+                        title: const Text('I agree to the terms'),
+                        validator: Validator().required(),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-          floatingActionButton: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FloatingActionButton(
-                onPressed: () {
-                  // reset to initial values.
-                  context.formx().reset();
-                },
-                child: const Icon(Icons.refresh),
-              ),
-              FloatingActionButton(
-                onPressed: () {
-                  // programatically fill all fields.
-                  final state = context.formx();
-                  state.fill({
-                    'name': 'Biggy',
-                    'email': 'z@z',
-                    'cpf': '00252054202',
-                    'address': {
-                      'street': 'Lalala Street',
-                      'number': '43',
-                    },
-                  });
-
-                  // or the shorthand:
-                  // state['name'] = 'Biggy';
-                  // state['email'] = 'z@z';
-                  // state['address'] = {
-                  //   'street': 'Lalala Street',
-                  //   'number': '43',
-                  // };
-                },
-                child: const Icon(Icons.edit),
-              ),
-              FloatingActionButton(
-                onPressed: () {
-                  final state = context.formx();
-                  // Validate all fields. Just like `Form.validate()`.
-                  final isValid = state.validate();
-                  print('isValid: $isValid');
-
-                  // state['address'] = {
-                  //   'street': 'Lalala',
-                  //   'number': '42',
-                  // };
-
-                  // You can also validate a single field.
-                  // final isEmailValid = state.validate(['email']);
-                  // print('isEmailValid: $isEmailValid');
-                },
-                child: const Icon(Icons.check),
-              ),
-              const MyWidget(),
-            ],
           ),
         ),
       ),
