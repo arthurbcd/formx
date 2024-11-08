@@ -8,18 +8,28 @@ import 'string_extension.dart';
 extension ValidatorExtension<T> on Validator<T> {
   /// Sets [Validator.isRequired] to `true`.
   Validator<T> required([String? requiredText]) {
-    return this
-      ..validators.add(
-        Validator<T>(isRequired: true, requiredText: requiredText),
-      );
+    return addValidator(
+      Validator<T>(isRequired: true, requiredText: requiredText),
+    );
+  }
+
+  /// Adds a [OrValidator] that accepts either this or [other].
+  Validator<T> or([Validator<T>? other]) {
+    final orValidator = OrValidator<T>(this);
+    if (other != null) orValidator.addValidator(other);
+    return orValidator;
+  }
+
+  /// Adds a [OrValidator] that accepts either this or [test].
+  Validator<T> orTest(ValidatorTest<T> test, [String? invalidText]) {
+    return or(Validator<T>(test: test, invalidText: invalidText));
   }
 
   /// Sets [ValidatorTest]. Optionally, you can set [invalidText].
   Validator<T> test(ValidatorTest<T> test, [String? invalidText]) {
-    return this
-      ..validators.add(
-        Validator<T>(test: test, invalidText: invalidText),
-      );
+    return addValidator(
+      Validator<T>(test: test, invalidText: invalidText),
+    );
   }
 
   /// Sets [ValidatorTest] that callbacks the value as a [num].

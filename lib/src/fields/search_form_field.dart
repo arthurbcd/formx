@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../extensions/formx_extension.dart';
+import '../extensions/formx_state.dart';
 import 'search/async_autocomplete.dart';
 import 'search/async_search.dart';
 import 'search/async_search_base.dart';

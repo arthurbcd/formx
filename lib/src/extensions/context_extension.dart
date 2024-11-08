@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 
 import '../models/formx_options.dart';
 import 'form_field_state_extension.dart';
-import 'formx_extension.dart';
 import 'formx_state.dart';
 
 /// Extension for [BuildContext] to access the main [FormState].
@@ -25,17 +24,26 @@ extension FormxContextExtension on BuildContext {
     String? key,
     FormxOptions? options,
     String? errorMessage,
+    List<String>? keys,
   }) {
-    return formx(key).submit(options: options, errorMessage: errorMessage);
+    return formx(key).submit(
+      options: options,
+      errorMessage: errorMessage,
+      keys: keys,
+    );
   }
 
   /// Submits the [FormState] of this [BuildContext].
   ///
   /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
   /// - Returns `null` if the form is invalid.
-  Map<String, dynamic>? trySubmit({String? key, FormxOptions? options}) {
+  Map<String, dynamic>? trySubmit({
+    String? key,
+    FormxOptions? options,
+    List<String>? keys,
+  }) {
     try {
-      return submit(key: key, options: options);
+      return submit(key: key, options: options, keys: keys);
     } catch (_) {
       return null;
     }
@@ -107,7 +115,7 @@ extension FormxContextExtension on BuildContext {
     FormState? formState;
     void visit(Element el) {
       if (el case StatefulElement(:FormState state)) {
-        if (key == null || state.key == key) formState = state;
+        if (key == null || FormxState(state).key == key) formState = state;
       }
       if (formState == null) el.visitChildren(visit);
     }

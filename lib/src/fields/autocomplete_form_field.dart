@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../extensions/formx_extension.dart';
+import '../extensions/formx_state.dart';
 import 'search/async_autocomplete.dart';
 import 'search/async_search_base.dart';
 import 'widgets/formx_field.dart';

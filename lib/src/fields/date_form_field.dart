@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../extensions/formx_extension.dart';
+import '../extensions/formx_state.dart';
 import 'widgets/formx_field.dart';
 
 /// A [FormField] of type [DateTime].

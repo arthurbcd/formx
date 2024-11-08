@@ -2,10 +2,30 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.25.0 - Nov 8, 2024
+
+- Improved `FormxState.debug` messages.
+- Improved `FormxState.visit`.
+- Added `keys` parameter to `FormxState.visit`.
+- Added `keys` parameter to `FormxState.submit/trySubmit/toMap`.
+- Added `keys` parameter to `BuildContext.submit/trySubmit`.
+- Added `OrValidator` class.
+- Added `Validator.addValidator`.
+- Added `Validator.or` modifier.
+- Added `Validator.orTest` modifier.
+- Added `Map.nonNulls`.
+- Added `Iterable<MapEntry>.toMap`.
+- Added `Iterable<MapEntry>.keys`.
+- Added `Iterable<MapEntry>.values`.
+- Added `Map.keysWhere`.
+- Added `Map.valuesWhere`.
+
 ## 0.24.1 - Nov 6, 2024
+
 - Added `FileListFormField.initialValue` to saved files.
 
 ## 0.24.0 - Nov 6, 2024
+
 - Added `FormFieldState.submit` and `FormFieldState.trySubmit`.
 - Added `FormxException.errorMessage` for custom messages.
 - Added `errorMessage` to all formx/field `submit`.
@@ -20,6 +40,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Removed `adaptedValue`. Use `toValue`.
 
 ## 0.23.0 - Nov 5, 2024
+
 - Added `ImageFormField` fields.
 - Added `imagePicker`/`imagesPicker` to `FormxOptions`.
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../extensions/form_field_state_extension.dart';
-import '../extensions/formx_extension.dart';
 import '../fields/date_form_field.dart';
 import '../fields/file_form_field.dart';
 import '../fields/file_list_form_field.dart';
@@ -23,7 +22,7 @@ typedef FileDeleter = Future<void> Function(String url);
 /// Signature for a function that returns the path to upload a file.
 typedef UploaderPath = FutureOr<String> Function(XFile file);
 
-/// Global setup for all [Formx] widgets.
+/// Global setup for all Formx widgets.
 class FormxSetup {
   /// Creates a [FormxSetup].
   ///
@@ -72,30 +71,20 @@ class FormxSetup {
   }
 
   static Future<XFile?> _defaultImagePicker(FormFieldState state) {
-    try {
-      return ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-        maxWidth: 1200,
-        maxHeight: 1200,
-      );
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+    return ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 1200,
+      maxHeight: 1200,
+    );
   }
 
   static Future<List<XFile>> _defaultImagesPicker(FormFieldState state) {
-    try {
-      return ImagePicker().pickMultiImage(
-        imageQuality: 80,
-        maxWidth: 1200,
-        maxHeight: 1200,
-      );
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
+    return ImagePicker().pickMultiImage(
+      imageQuality: 80,
+      maxWidth: 1200,
+      maxHeight: 1200,
+    );
   }
 
   static Future<XFile?> _noFilePicker(FormFieldState state) {

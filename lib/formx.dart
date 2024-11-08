@@ -10,7 +10,6 @@ export 'src/extensions/context_extension.dart';
 export 'src/extensions/date_extension.dart';
 export 'src/extensions/form_field_state_extension.dart'
     hide FormFieldData, FormFieldStateAttacher;
-export 'src/extensions/formx_extension.dart' hide AssertKeysExtension;
 export 'src/extensions/formx_state.dart';
 export 'src/extensions/sanitizers.dart';
 export 'src/extensions/string_extension.dart';

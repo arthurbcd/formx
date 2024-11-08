@@ -130,6 +130,9 @@ class Validator<T> {
 
     return null;
   }
+
+  /// Adds other [Validator] to this one.
+  Validator<T> addValidator(Validator<T> other) => this..validators.add(other);
 }
 
 /// Signature for testing a value.
@@ -147,5 +150,29 @@ extension on Object {
     if (this case String e) return e.isEmpty;
     if (this case Map e) return e.isEmpty;
     return false;
+  }
+}
+
+/// A Validator that accepts either this or [other].
+class OrValidator<T> extends Validator<T> {
+  /// Creates a [OrValidator].
+  OrValidator(this.other);
+
+  /// The other validator to be used.
+  final Validator other;
+
+  @override
+  FormFieldValidator<Object> get validator {
+    return (value) {
+      final errors = (other.validator(value), super.validator(value));
+
+      if (errors case (var error1?, var error2?)) {
+        if (error1 == Validator.defaultInvalidText) return error2;
+        if (error2 == Validator.defaultInvalidText) return error1;
+        return '$error1; $error2';
+      }
+
+      return null;
+    };
   }
 }

@@ -8,7 +8,7 @@ import '../models/formx_options.dart';
 import '../validator/validator.dart';
 import 'sanitizers.dart';
 
-/// Signature for binding a [FormFieldState] to a [FormFieldValidator].
+/// Signature for attaching a [FormFieldState] to a [FormFieldValidator].
 typedef FormFieldData<T> = ({FormFieldState<T> state, String? errorText});
 
 /// Attaches a [FormFieldState] to a [Validator].

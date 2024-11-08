@@ -166,6 +166,29 @@ extension FormxListExtension<T> on List<T> {
   }
 }
 
+///
+extension FormxNullableMapExtension<K, V> on Map<K, V?> {
+  /// Returns a new [Map] with all null values removed.
+  Map<K, V> get nonNulls {
+    return entries
+        .where((e) => e.value != null)
+        .map((e) => MapEntry(e.key, e.value as V))
+        .toMap();
+  }
+}
+
+///
+extension FormxMapEntriesExtension<K, V> on Iterable<MapEntry<K, V>> {
+  /// Returns a new [Map] from this [Iterable] of [MapEntry].
+  Map<K, V> toMap() => Map.fromEntries(this);
+
+  /// Returns all [MapEntry.key] from this [Iterable].
+  Iterable get keys => map((e) => e.key);
+
+  /// Returns all [MapEntry.value] from this [Iterable].
+  Iterable get values => map((e) => e.value);
+}
+
 /// A map extension that removes all null or empty values.
 extension FormxMapExtension<K, V> on Map<K, V> {
   /// Returns a new [Map] casted as `Map<String, dynamic>`.
@@ -222,6 +245,22 @@ extension FormxMapExtension<K, V> on Map<K, V> {
         nonEmptyIterables: nonEmptyIterables,
       );
     return map;
+  }
+
+  /// Returns a new [List] with only the values that satisfy [test].
+  List<V> valuesWhere(bool Function(K key, V value) test) {
+    return [
+      for (final e in entries)
+        if (test(e.key, e.value)) e.value,
+    ];
+  }
+
+  /// Returns a new [List] with only the keys that satisfy [test].
+  List<K> keysWhere(bool Function(K key, V value) test) {
+    return [
+      for (final e in entries)
+        if (test(e.key, e.value)) e.key,
+    ];
   }
 }
 
