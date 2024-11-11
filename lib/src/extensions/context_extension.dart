@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import '../models/formx_options.dart';
 import 'form_field_state_extension.dart';
@@ -47,6 +47,13 @@ extension FormxContextExtension on BuildContext {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Fills this [FormState] with new [map].
+  ///
+  /// If [format] is true, [TextField.inputFormatters] will be applied.
+  void fill(Map<String, dynamic> map, {String? key, bool format = true}) {
+    formx(key).fill(map, format: format);
   }
 
   /// Calls [callback] when [FormState] is on its initial state.
@@ -143,43 +150,5 @@ extension on FormState {
     if (key == null) return root;
     if (key == this.key) return this;
     return parent?.byKey(key);
-  }
-}
-
-/// Extension for [BuildContext] and factory methods.
-extension FormxOfExtension<T> on T Function(Map<String, dynamic>) {
-  /// Whether [FormxState] should autovalidate when calling [of] or [maybeOf].
-  static bool autovalidate = true;
-
-  /// Creates an instance of [T] from the [FormxState] of this [BuildContext].
-  /// Throws an [Exception] with errorText if the form is invalid.
-  T of(
-    BuildContext context, {
-    String? key,
-    bool? validate,
-    FormxOptions? options,
-    String? errorMessage,
-  }) {
-    final state = context.formx(key);
-    final map = validate ?? autovalidate
-        ? state.submit(options: options, errorMessage: errorMessage)
-        : state.toMap(options: options);
-
-    return this(map);
-  }
-
-  /// Creates an instance of [T] from the [FormxState] of this [BuildContext].
-  /// Returns `null` if the form is invalid.
-  T? maybeOf(
-    BuildContext context, {
-    String? key,
-    bool? validate,
-    FormxOptions? options,
-  }) {
-    try {
-      return of(context, key: key, validate: validate, options: options);
-    } catch (_) {
-      return null;
-    }
   }
 }

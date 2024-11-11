@@ -115,10 +115,7 @@ class FormxExample extends StatelessWidget {
                     key: const Key('cpf'),
                     initialValue: '00252054202',
                     inputFormatters: Formatter().cpfCnpj(),
-                    validator: Validator()
-                        .cpf('Cpf Inválido')
-                        .or()
-                        .cnpj('Cnpj Inválido'),
+                    validator: Validator().cpfCnpj(),
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         onPressed: () {

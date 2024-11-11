@@ -6,30 +6,16 @@ import 'string_extension.dart';
 
 /// Extension for [Validator] to add syntactic sugar.
 extension ValidatorExtension<T> on Validator<T> {
-  /// Sets [Validator.isRequired] to `true`.
+  /// Sets [Validator._required] to `true`.
   Validator<T> required([String? requiredText]) {
     return addValidator(
-      Validator<T>(isRequired: true, requiredText: requiredText),
+      Validator(required: true, requiredText: requiredText),
     );
   }
 
-  /// Adds a [OrValidator] that accepts either this or [other].
-  Validator<T> or([Validator<T>? other]) {
-    final orValidator = OrValidator<T>(this);
-    if (other != null) orValidator.addValidator(other);
-    return orValidator;
-  }
-
-  /// Adds a [OrValidator] that accepts either this or [test].
-  Validator<T> orTest(ValidatorTest<T> test, [String? invalidText]) {
-    return or(Validator<T>(test: test, invalidText: invalidText));
-  }
-
-  /// Sets [ValidatorTest]. Optionally, you can set [invalidText].
+  /// Sets [Validator.test]. Optionally, you can set [invalidText].
   Validator<T> test(ValidatorTest<T> test, [String? invalidText]) {
-    return addValidator(
-      Validator<T>(test: test, invalidText: invalidText),
-    );
+    return addValidator(Validator.test(test, invalidText));
   }
 
   /// Sets [ValidatorTest] that callbacks the value as a [num].
@@ -89,6 +75,11 @@ extension ValidatorExtension<T> on Validator<T> {
   /// Tests if the value is a valid CNPJ.
   Validator<T> cnpj([String? invalidText]) {
     return test((value) => '$value'.isCnpj, invalidText);
+  }
+
+  /// Tests if the value is a valid CPF or CNPJ.
+  Validator<T> cpfCnpj([String? invalidCpf, String? invalidCnpj]) {
+    return cpf(invalidCpf).or().cnpj(invalidCnpj);
   }
 
   /// Tests if the value is a valid date.

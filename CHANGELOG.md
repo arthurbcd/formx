@@ -2,6 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.26.0 - Nov 10, 2024
+
+- Added `Validator.enabled` to enable/disable a validator.
+- Added enabled to `Validator.or/and`.
+- Added `ValidatorExtension.cpfCnpj`.
+- Added `FormxContextExtension.fill`.
+- Renamed `isRequired` to `required` in `Validator`.
+- Removed `FromMapExtension.of/maybeOf`.
+- Removed `orTest`.
+- Updated docs.
+
 ## 0.25.0 - Nov 8, 2024
 
 - Improved `FormxState.debug` messages.

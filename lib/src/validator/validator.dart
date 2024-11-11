@@ -11,38 +11,42 @@ import '../models/field_key.dart';
 class Validator<T> {
   /// Creates a [Validator] that handles [FormField] validation declaratively.
   ///
-  /// - [isRequired] - Whether this field is required.
+  /// - [key] - The [Key] value [String] of the attached [FormField].
   /// - [test] - The test to check if the value is valid.
+  /// - [enabled] - Whether this and it's additional validators are enabled.
+  /// - [required] - Whether this field is required.
   /// - [requiredText] - The required text to show when the field is empty.
   /// - [invalidText] - The invalid text to show when the field is invalid.
+  /// - [validators] - Additional validators to be merged with this one.
   Validator({
     String? key,
     ValidatorTest<T>? test,
-    this.isRequired = false,
+    bool required = false,
+    this.enabled = true,
     this.requiredText,
     this.invalidText,
     List<Validator<T>>? validators,
   })  : _key = key,
-        _test = test {
-    if (validators != null) this.validators.addAll(validators);
+        _test = test,
+        _required = required {
+    if (validators != null) _validators.addAll(validators);
   }
 
   /// Shorthand to [Validator.new] with a [test] and an optional [invalidText].
-  Validator.test(
-    ValidatorTest<T> test, [
-    this.invalidText,
-  ])  : _key = null,
-        _test = test,
-        isRequired = false,
-        requiredText = null;
+  factory Validator.test(ValidatorTest<T> test, [String? invalidText]) {
+    return Validator<T>(test: test, invalidText: invalidText);
+  }
+
+  /// Whether this validator is enabled.
+  final bool enabled;
 
   /// The test to check if the value is valid.
   ///
-  /// Always called after [isRequired] check. So value is never null or empty.
+  /// Always called after [_required] check. So value is never null or empty.
   final ValidatorTest<T>? _test;
 
   /// Whether this field is required.
-  final bool isRequired;
+  final bool _required;
 
   /// The required text to show when the field is empty.
   ///
@@ -55,7 +59,7 @@ class Validator<T> {
   final String? invalidText;
 
   /// Additional validators to be merged with this one.
-  final List<Validator<T>> validators = [];
+  final List<Validator<T>> _validators = [];
 
   /// The default required text.
   static String defaultRequiredText = 'form.required';
@@ -84,7 +88,7 @@ class Validator<T> {
   FormFieldValidator<Object> get validator {
     return (value) {
       // 0. Check if it is disabled.
-      if (Validator.disableOnDebug && kDebugMode) return null;
+      if (!enabled || (Validator.disableOnDebug && kDebugMode)) return null;
 
       // 1. Check if errorText was set programatically.
       if (_errorText case String errorText) {
@@ -94,8 +98,8 @@ class Validator<T> {
 
       // 2. Check if it is required.
       if (value == null || value.isEmpty || value == false) {
-        var e = validators.firstWhere((e) => e.isRequired, orElse: () => this);
-        return e.isRequired ? e.requiredText ?? defaultRequiredText : null;
+        var e = _validators.firstWhere((e) => e._required, orElse: () => this);
+        return e._required ? e.requiredText ?? defaultRequiredText : null;
       }
 
       // 3. Check if it passes the test.
@@ -104,7 +108,7 @@ class Validator<T> {
       }
 
       // 4. Check if any other merged validator are valid.
-      for (final e in validators) {
+      for (final e in _validators) {
         if (e.validator(value) case String errorText) return errorText;
       }
 
@@ -132,7 +136,25 @@ class Validator<T> {
   }
 
   /// Adds other [Validator] to this one.
-  Validator<T> addValidator(Validator<T> other) => this..validators.add(other);
+  ///
+  /// Disabling this will also disable the others added.
+  Validator<T> addValidator(Validator<T> other) => this.._validators.add(other);
+
+  /// Adds a OR branch that accepts either it or this.
+  ///
+  /// - [enabled] - Whether this new validator branch is enabled. Setting
+  /// this will not affect parent [Validator].
+  Validator<T> or({bool enabled = true}) {
+    return _OrValidator(this, enabled: enabled);
+  }
+
+  /// Adds a AND branch that accepts both it and this.
+  ///
+  /// - [enabled] - Whether this new validator branch is enabled. Setting
+  /// this will not affect parent [Validator].
+  Validator<T> and({bool enabled = true}) {
+    return _AndValidator(this, enabled: enabled);
+  }
 }
 
 /// Signature for testing a value.
@@ -153,26 +175,46 @@ extension on Object {
   }
 }
 
-/// A Validator that accepts either this or [other].
-class OrValidator<T> extends Validator<T> {
-  /// Creates a [OrValidator].
-  OrValidator(this.other);
+class _OrValidator<T> extends Validator<T> {
+  _OrValidator(this.parent, {super.enabled});
+  final Validator parent;
 
-  /// The other validator to be used.
-  final Validator other;
+  @override
+  bool get enabled => parent.enabled && super.enabled;
 
   @override
   FormFieldValidator<Object> get validator {
     return (value) {
-      final errors = (other.validator(value), super.validator(value));
-
-      if (errors case (var error1?, var error2?)) {
-        if (error1 == Validator.defaultInvalidText) return error2;
-        if (error2 == Validator.defaultInvalidText) return error1;
-        return '$error1; $error2';
-      }
+      final errors = (parent.validator(value), super.validator(value));
+      if (errors is (String, String)) return errors.invalidText;
 
       return null;
     };
+  }
+}
+
+class _AndValidator<T> extends Validator<T> {
+  _AndValidator(this.parent, {super.enabled});
+  final Validator parent;
+
+  @override
+  bool get enabled => parent.enabled && super.enabled;
+
+  @override
+  FormFieldValidator<Object> get validator {
+    return (value) {
+      final errors = (parent.validator(value), super.validator(value));
+      if (errors is (String, String)) return errors.invalidText;
+
+      return errors.$1 ?? errors.$2;
+    };
+  }
+}
+
+extension on (String, String) {
+  String get invalidText {
+    if ($1 == Validator.defaultInvalidText) return $1;
+    if ($2 == Validator.defaultInvalidText) return $2;
+    return '${$1}; ${$2}';
   }
 }
