@@ -2,6 +2,15 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.27.0 - Nov 13, 2024
+
+- Improved `FormxField` widgets.
+- Removed `FormxField.isRaw`.
+- Added `InputDecoratorx`.
+- Added `FormxField.buildDecorator`.
+- Added `DateFormField.firstDate` and `DateFormField.lastDate`.
+- Improved `FormxSetup` default datePicker.
+
 ## 0.26.0 - Nov 10, 2024
 
 - Added `Validator.enabled` to enable/disable a validator.

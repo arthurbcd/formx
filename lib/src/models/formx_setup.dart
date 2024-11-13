@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -62,11 +63,14 @@ class FormxSetup {
   }
 
   static Future<DateTime?> _defaultDatePicker(FormFieldState state) {
+    final widget = state.widget as DateFormField;
+    final now = DateTime.now();
+
     return showDatePicker(
       context: state.context,
       initialDate: state.date,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
+      firstDate: widget.firstDate ?? now.copyWith(year: now.year - 100),
+      lastDate: widget.lastDate ?? now.copyWith(year: now.year + 100),
     );
   }
 

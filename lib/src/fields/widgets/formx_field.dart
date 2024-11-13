@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../extensions/sanitizers.dart';
+
+/// Signature for decorating a [FormxField].
+typedef FormxFieldDecorator<T> = Widget Function(
+  FormFieldState<T> state,
+  Widget child,
+);
+
 /// An extended [FormField] with:
 ///
 /// - overridable [build] method.
@@ -21,11 +29,8 @@ class FormxField<T> extends FormField<T> {
     this.decoration = const InputDecoration(),
     this.decorator,
     this.onChanged,
-    FormFieldBuilder<T>? builder,
-  })  : _builder = builder,
-        super(builder: _Builder.new);
-
-  final FormFieldBuilder<T>? _builder;
+    super.builder = _build,
+  });
 
   /// Called on [FormFieldState.didChange].
   final ValueChanged<T?>? onChanged;
@@ -39,63 +44,90 @@ class FormxField<T> extends FormField<T> {
   /// The decoration to show around this [FormField].
   final InputDecoration? decoration;
 
-  /// The [decoration] modifier.
-  final InputDecoration? Function(FormFieldState<T> state)? decorator;
+  /// The decoration builder to show around this [FormField].
+  final FormxFieldDecorator<T>? decorator;
 
-  /// Whether the field is raw and should not integrate focus and decoration.
-  bool get isRaw => false;
+  @override
+  FormFieldState<T> createState() => _FormxFieldState();
 
-  /// The [FormxField.decoration] modifier.
-  InputDecoration? decorate(FormFieldState<T> state) {
-    return decorator?.call(state) ?? decoration;
+  @override
+  FormFieldBuilder<T> get builder {
+    return (state) {
+      return (decorator ?? buildDecorator)(state.cast(), super.builder(state));
+    };
+  }
+
+  static Widget _build(FormFieldState state) {
+    return (state.widget as FormxField).build(state.cast());
   }
 
   /// The [FormField.builder].
-  Widget build(FormFieldState<T> state) {
-    if (_builder != null) return _builder(state);
-
+  Widget build(FormxFieldState<T> state) {
     throw UnimplementedError(
       'You must either set [builder] or implement this [build] method.',
     );
   }
 
-  @override
-  FormFieldState<T> createState() => _FormxFieldState();
+  /// Builds the decorator around the [child] built by [build].
+  Widget buildDecorator(FormxFieldState<T> state, Widget child) {
+    return InputDecoratorx(
+      decoration: decoration,
+      child: child,
+    );
+  }
 }
 
-class _Builder extends StatefulWidget {
-  const _Builder(this.state);
-  final FormFieldState state;
+/// An extended [InputDecorator].
+///
+/// - Handles the focus and hover states.
+/// - Handles the error text.
+class InputDecoratorx extends StatefulWidget {
+  /// Creates an [InputDecoratorx].
+  const InputDecoratorx({
+    super.key,
+    this.autofocus,
+    this.focusNode,
+    required this.decoration,
+    required this.child,
+  });
+
+  /// The [Focus.autofocus]. If null, inherits from parent [FormxField].
+  final bool? autofocus;
+
+  /// The [Focus.focusNode]. If null, inherits from parent [FormxField].
+  final FocusNode? focusNode;
+
+  /// The decoration to show around this [FormField].
+  final InputDecoration? decoration;
+
+  /// The child widget to decorate.
+  final Widget? child;
 
   @override
-  State<_Builder> createState() => _BuilderState();
+  State<InputDecoratorx> createState() => _InputDecoratorxState();
 }
 
-class _BuilderState extends State<_Builder> {
+class _InputDecoratorxState extends State<InputDecoratorx> {
   var _hasFocus = false;
   var _hovering = false;
 
+  void setHovering(bool hovering) {
+    setState(() => _hovering = hovering);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final state = this.widget.state as FormxFieldState;
-    final widget = state.widget;
+    final field = context.findAncestorStateOfType<FormxFieldState>();
+    final decoration = widget.decoration;
 
-    // raw
-    if (widget.isRaw) return widget.build(state);
-
-    // field
-    var child = widget.build(state);
-    final decoration = widget.decorate(state);
-
-    // add interactions
-    child = Focus(
-      autofocus: widget.autofocus,
-      focusNode: widget.focusNode,
+    Widget child = Focus(
+      autofocus: widget.autofocus ?? field?.widget.autofocus ?? false,
+      focusNode: widget.focusNode ?? field?.widget.focusNode,
       onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
       child: MouseRegion(
-        onEnter: (_) => setState(() => _hovering = true),
-        onExit: (_) => setState(() => _hovering = false),
-        child: child,
+        onEnter: (_) => setHovering(true),
+        onExit: (_) => setHovering(false),
+        child: widget.child,
       ),
     );
 
@@ -106,7 +138,7 @@ class _BuilderState extends State<_Builder> {
       isFocused: _hasFocus,
       isHovering: _hovering,
       decoration: decoration.copyWith(
-        errorText: decoration.errorText ?? state.errorText,
+        errorText: decoration.errorText ?? field?.errorText,
       ),
       child: child,
     );

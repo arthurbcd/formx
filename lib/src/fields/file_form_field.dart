@@ -50,7 +50,7 @@ class FileFormField extends FormxField<XFile> {
     InputDecoration? decoration = const InputDecoration(),
     void Function(String? value)? onChanged,
     bool autofocus = false,
-    InputDecoration? Function(FormFieldState<String> state)? decorator,
+    Widget Function(FormFieldState<String>, Widget)? decorator,
     FocusNode? focusNode,
     Future<XFile?> Function(FormFieldState<dynamic> state)? filePicker,
     FutureOr<String> Function(XFile file)? path,
@@ -99,21 +99,6 @@ class FileFormField extends FormxField<XFile> {
   final void Function(XFile file)? onFilePressed;
 
   @override
-  InputDecoration? decorate(FormFieldState<XFile> state) {
-    final filePicker = this.filePicker ?? Formx.setup.filePicker;
-
-    return decoration?.applyDefaultWidgets(
-      suffixIcon: IconLoadingButton(
-        icon: uploadIcon,
-        onPressed: () async {
-          final newFile = await filePicker(state);
-          state.didChange(newFile);
-        },
-      ),
-    );
-  }
-
-  @override
   Widget build(FormFieldState<XFile> state) {
     final file = state.value;
     if (file == null) return const SizedBox.shrink();
@@ -126,6 +111,24 @@ class FileFormField extends FormxField<XFile> {
         _ => null,
       },
       onDeleted: () => state.didChange(null),
+    );
+  }
+
+  @override
+  Widget buildDecorator(FormxFieldState<XFile> state, Widget child) {
+    final filePicker = this.filePicker ?? Formx.setup.filePicker;
+
+    return InputDecoratorx(
+      decoration: decoration?.applyDefaultWidgets(
+        suffixIcon: IconLoadingButton(
+          icon: uploadIcon,
+          onPressed: () async {
+            final newFile = await filePicker(state);
+            state.didChange(newFile);
+          },
+        ),
+      ),
+      child: child,
     );
   }
 }
@@ -169,25 +172,28 @@ class _FileUrlFormField extends FormxField<String> {
   FormFieldState<String> createState() => _FormFieldState();
 
   @override
-  InputDecoration? decorate(FormFieldState<String> state) {
+  Widget buildDecorator(FormxFieldState<String> state, Widget child) {
     if (state is! _FormFieldState) throw UnimplementedError();
 
     final filePicker = this.filePicker ?? Formx.setup.filePicker;
     final fileUploader = this.fileUploader ?? Formx.setup.fileUploader;
 
-    return decoration?.applyDefaultWidgets(
-      suffixIcon: IconLoadingButton(
-        icon: uploadIcon,
-        onPressed: () async {
-          final newFile = await filePicker(state);
-          if (newFile == null) return;
+    return InputDecoratorx(
+      decoration: decoration?.applyDefaultWidgets(
+        suffixIcon: IconLoadingButton(
+          icon: uploadIcon,
+          onPressed: () async {
+            final newFile = await filePicker(state);
+            if (newFile == null) return;
 
-          final path = await this.path?.call(newFile);
-          final url = await fileUploader(newFile, path);
+            final path = await this.path?.call(newFile);
+            final url = await fileUploader(newFile, path);
 
-          state.didChange(url, newFile);
-        },
+            state.didChange(url, newFile);
+          },
+        ),
       ),
+      child: child,
     );
   }
 

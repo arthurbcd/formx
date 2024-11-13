@@ -95,12 +95,7 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
   final WidgetBuilder? scrollLoadingBuilder;
 
   @override
-  bool get isRaw => true;
-
-  @override
   Widget build(FormFieldState<T> state) {
-    final decoration = decorate(state); // resolved decoration
-
     return AsyncAutocomplete(
       search: search,
       pagedSearch: pagedSearch,
@@ -126,7 +121,7 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
               builder: (context, child) {
                 return loading.value
                     ? loadingBuilder(context)
-                    : decoration.suffix ?? const SizedBox();
+                    : decoration?.suffix ?? const SizedBox();
               },
             ),
           ),
@@ -149,4 +144,7 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
       },
     );
   }
+
+  @override
+  Widget buildDecorator(FormxFieldState<T> state, Widget child) => child;
 }

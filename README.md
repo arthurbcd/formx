@@ -38,15 +38,6 @@ final mapOrNull = context.trySubmit('address');
 
 > We recommend using it with `flutter_async` to handle errors effortlessly.
 
-## FromMap.of shortcut
-
-Performs .submit() in any .fromMap/fromJson constructor.
-  
-```dart
-final user = User.fromMap.of(context);
-final userOrNull = User.fromMap.maybeOf(context);
-```
-
 ## FormState extensions
 
 - `.toMap({FormxOptions? options})`, a structured `Map` with all the values of the form.

@@ -38,7 +38,7 @@ class FileListFormField extends FormxField<List<XFile>> {
     bool autofocus = false,
     AutovalidateMode? autovalidateMode,
     InputDecoration? decoration = const InputDecoration(),
-    InputDecoration? Function(FormFieldState<List<String>> urls)? decorator,
+    FormxFieldDecorator<List<String>>? decorator,
     bool enabled = true,
     Future<void> Function(String url)? fileDeleter,
     Future<String> Function(XFile file, String? url)? fileUploader,
@@ -95,19 +95,22 @@ class FileListFormField extends FormxField<List<XFile>> {
   final void Function(XFile file)? onFilePressed;
 
   @override
-  InputDecoration? decorate(FormFieldState<List<XFile>> state) {
+  Widget buildDecorator(FormxFieldState<List<XFile>> state, Widget child) {
     final filesPicker = this.filesPicker ?? Formx.setup.filesPicker;
 
-    return decoration?.applyDefaultWidgets(
-      suffixIcon: IconLoadingButton(
-        icon: uploadIcon,
-        onPressed: () async {
-          final files = state.value ?? [];
-          final newFiles = files + await filesPicker(state);
+    return InputDecoratorx(
+      decoration: decoration?.applyDefaultWidgets(
+        suffixIcon: IconLoadingButton(
+          icon: uploadIcon,
+          onPressed: () async {
+            final files = state.value ?? [];
+            final newFiles = files + await filesPicker(state);
 
-          state.didChange(newFiles);
-        },
+            state.didChange(newFiles);
+          },
+        ),
       ),
+      child: child,
     );
   }
 
@@ -173,31 +176,34 @@ class _FileUrlListFormField extends FormxField<List<String>> {
   FormFieldState<List<String>> createState() => _FormFieldState();
 
   @override
-  InputDecoration? decorate(FormFieldState<List<String>> state) {
+  Widget buildDecorator(FormxFieldState<List<String>> state, Widget child) {
     if (state is! _FormFieldState) throw UnimplementedError();
     final filesPicker = this.filesPicker ?? Formx.setup.filesPicker;
     final fileUploader = this.fileUploader ?? Formx.setup.fileUploader;
 
-    return decoration?.applyDefaultWidgets(
-      suffixIcon: IconLoadingButton(
-        icon: uploadIcon,
-        onPressed: () async {
-          final files = state.files;
-          final newFiles = await filesPicker(state);
-          final futures = <Future>[];
+    return InputDecoratorx(
+      decoration: decoration?.applyDefaultWidgets(
+        suffixIcon: IconLoadingButton(
+          icon: uploadIcon,
+          onPressed: () async {
+            final files = state.files;
+            final newFiles = await filesPicker(state);
+            final futures = <Future>[];
 
-          for (final file in newFiles) {
-            final path = await this.path?.call(file);
-            final future = fileUploader(file, path).then((url) {
-              files[url] = file;
-              state.didChange(files.keys.toList(), files.values.toList());
-            });
-            futures.add(future);
-          }
+            for (final file in newFiles) {
+              final path = await this.path?.call(file);
+              final future = fileUploader(file, path).then((url) {
+                files[url] = file;
+                state.didChange(files.keys.toList(), files.values.toList());
+              });
+              futures.add(future);
+            }
 
-          await futures.wait;
-        },
+            await futures.wait;
+          },
+        ),
       ),
+      child: child,
     );
   }
 

@@ -7,6 +7,7 @@ import '../extensions/formx_state.dart';
 import '../models/formx_setup.dart';
 import 'file_list_form_field.dart';
 import 'image_form_field.dart';
+import 'widgets/formx_field.dart';
 
 /// A [FormField] that allows the user to pick images.
 class ImageListFormField extends FileListFormField {
@@ -36,7 +37,7 @@ class ImageListFormField extends FileListFormField {
     bool autofocus = false,
     AutovalidateMode? autovalidateMode,
     InputDecoration? decoration = const InputDecoration(),
-    InputDecoration? Function(FormFieldState<List<String>> state)? decorator,
+    FormxFieldDecorator<List<String>>? decorator,
     bool enabled = true,
     Future<void> Function(String url)? imageDeleter,
     Future<String> Function(XFile file, String? path)? imageUploader,

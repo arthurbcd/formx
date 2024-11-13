@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../extensions/formx_state.dart';
 import '../models/formx_setup.dart';
 import 'file_form_field.dart';
+import 'widgets/formx_field.dart';
 
 /// A [FormField] that allows the user to pick an image.
 class ImageFormField extends FileFormField {
@@ -43,7 +44,7 @@ class ImageFormField extends FileFormField {
     InputDecoration? decoration = const InputDecoration(),
     void Function(String? url)? onChanged,
     bool autofocus = false,
-    InputDecoration? Function(FormFieldState<String> url)? decorator,
+    FormxFieldDecorator<String?>? decorator,
     FocusNode? focusNode,
     Future<XFile?> Function(FormFieldState<dynamic> state)? imagePicker,
     FutureOr<String> Function(XFile file)? path,

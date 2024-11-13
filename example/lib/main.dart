@@ -58,6 +58,10 @@ class FormxExample extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  DateFormField(
+                    key: const Key('datex'),
+                    validator: Validator().isAfter(DateTime.now()),
+                  ),
                   SizedBox(
                     width: 300,
                     child: AutocompleteFormField.paged(
