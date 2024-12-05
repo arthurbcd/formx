@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 
-import 'package:dartx/dartx.dart' hide IterableSortedBy;
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 
-import '../extensions/sanitizers.dart';
 import '../extensions/string_extension.dart';
 import 'country_code_extension.dart';
 import 'fiat_code_extension.dart';
@@ -92,7 +91,7 @@ extension FormatterExtension on Formatter {
   Formatter masks(List<String> masks) => onFormat((old, value) {
         TextInputFormatter? formatter;
 
-        for (final mask in masks.sortedBy((e) => e.length)) {
+        for (final mask in masks.sortedBy<num>((e) => e.length)) {
           formatter = MaskedInputFormatter(mask);
           if (value.text.length <= mask.length) break;
         }

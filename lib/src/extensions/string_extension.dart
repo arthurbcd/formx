@@ -1,5 +1,3 @@
-import 'package:dartx/dartx.dart';
-
 /// Extension for [String] for validations.
 extension FormxAlphaNumExtension on String {
   /// Returns the alpha characters of this [String].
@@ -49,6 +47,12 @@ extension FormxStringCaseExtension on String {
   /// - John    -> J
   String get initials =>
       isEmpty ? '' : split(' ').map((e) => e[0]).take(2).join().toUpperCase();
+
+  /// Returns a new [String] with the first letter capitalized.
+  String capitalize() {
+    if (isEmpty) return '';
+    return this[0].toUpperCase() + substring(1).toLowerCase();
+  }
 
   /// Returns a new [String] with all words capitalized.
   String capitalizeWords() {

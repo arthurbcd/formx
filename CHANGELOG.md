@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Added `Iterable.toMap` extension.
 - Added `Separator` enum for `FormatterExtension.currency/pos`.
 - Removed `multi_input_formatter` dependency.
+- Removed `dartx` dependency.
 - Removed all dependency assets.
 - Updated docs & README.
 

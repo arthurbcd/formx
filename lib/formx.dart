@@ -1,8 +1,8 @@
 /// Access, build, validate, sanitize and fill forms easily with Form/Field extensions.
 library formx;
 
+export 'package:collection/collection.dart';
 export 'package:cross_file/cross_file.dart';
-export 'package:dartx/dartx.dart' hide IterableSortedBy;
 export 'package:recase/recase.dart';
 
 export '/src/extensions/widgets_extension.dart';

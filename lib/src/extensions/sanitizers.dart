@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:dartx/dartx.dart';
 import 'package:recase/recase.dart';
 
 /// A set of extensions to sanitize maps.
@@ -103,11 +102,6 @@ extension FormxAdaptersExtension<T> on Iterable<T> {
   List<R> mapJson<R>(R Function(Map<String, dynamic>) toElement) => [
         for (final e in this) toElement(Map.castFrom(e as Map)),
       ];
-
-  /// Converts this [Iterable] to a [Map] using [toKey] as the key.
-  Map<R, T> toMap<R>(R Function(T e) toKey) => {
-        for (final e in this) toKey(e): e,
-      };
 }
 
 /// A list extension that removes all null or empty values.
@@ -349,15 +343,15 @@ extension IterableSortedByWithAscending<E> on Iterable<E> {
   ///
   /// **Note:** The actual sorting is performed when an element is accessed for
   /// the first time.
-  SortedList<E> sortedBy(
-    Comparable Function(E element) selector, {
-    bool ascending = true,
-  }) {
-    return SortedList<E>.withSelector(
-      this,
-      selector,
-      ascending ? 1 : -1,
-      null,
-    );
-  }
+  // SortedList<E> sortedBy(
+  //   Comparable Function(E element) selector, {
+  //   bool ascending = true,
+  // }) {
+  //   return SortedList<E>.withSelector(
+  //     this,
+  //     selector,
+  //     ascending ? 1 : -1,
+  //     null,
+  //   );
+  // }
 }
