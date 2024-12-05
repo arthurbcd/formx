@@ -1,7 +1,6 @@
 /// Access, build, validate, sanitize and fill forms easily with Form/Field extensions.
 library formx;
 
-// TODO(art): fork flutter_multi_formatter and add the formatters here?
 export 'package:cross_file/cross_file.dart';
 export 'package:dartx/dartx.dart' hide IterableSortedBy;
 export 'package:recase/recase.dart';
@@ -25,6 +24,7 @@ export 'src/fields/image_form_field.dart';
 export 'src/fields/image_list_form_field.dart';
 export 'src/fields/radio_list_form_field.dart';
 export 'src/fields/search_form_field.dart';
+export 'src/form/formx2.dart';
 export 'src/formatter/country_code_extension.dart';
 export 'src/formatter/fiat_code_extension.dart';
 export 'src/formatter/formatter.dart';

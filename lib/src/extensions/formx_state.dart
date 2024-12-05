@@ -21,8 +21,9 @@ import 'sanitizers.dart';
 ///
 /// Additionally, you can pass a list of keys to apply the method only to
 /// specific form/fields.
+///
+/// WIP - Update to reflect AutovalidateMode.onUnfocus.
 extension type FormxState(FormState state) implements FormState {
-  // TODO(art): update to reflect AutovalidateMode.onUnfocus.
   @redeclare
   bool validate([List<String>? keys]) {
     return !visit(
@@ -50,7 +51,7 @@ extension type FormxState(FormState state) implements FormState {
     );
   }
 
-  // TODO(art): implement this method.
+  // WIP - implement this method.
   // @redeclare
   // Set<FormFieldState<Object?>> validateGranularly([List<String>? keys]) {
   //   return visit(
@@ -316,26 +317,26 @@ extension on FormFieldState {
     return value;
   }
 
-  Focus? get focus {
-    Focus? focus;
+  // Focus? get focus {
+  //   Focus? focus;
 
-    void visit(Element el) {
-      if (el.widget case Focus it) {
-        focus = it;
-        return;
-      }
-      el.visitChildren(visit);
-    }
+  //   void visit(Element el) {
+  //     if (el.widget case Focus it) {
+  //       focus = it;
+  //       return;
+  //     }
+  //     el.visitChildren(visit);
+  //   }
 
-    if (Form.maybeOf(context)?.widget.autovalidateMode ==
-                AutovalidateMode.onUnfocus &&
-            widget.autovalidateMode != AutovalidateMode.always ||
-        widget.autovalidateMode == AutovalidateMode.onUnfocus) {
-      context.visitChildElements(visit);
-    }
+  //   if (Form.maybeOf(context)?.widget.autovalidateMode ==
+  //               AutovalidateMode.onUnfocus &&
+  //           widget.autovalidateMode != AutovalidateMode.always ||
+  //       widget.autovalidateMode == AutovalidateMode.onUnfocus) {
+  //     context.visitChildElements(visit);
+  //   }
 
-    return focus;
-  }
+  //   return focus;
+  // }
 
   String get debugText {
     var text = '$value"/';

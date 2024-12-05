@@ -96,15 +96,18 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
 extension FormxAdaptersExtension<T> on Iterable<T> {
   /// Returns a new [List] with values casted as `Map<String, dynamic>`.
   List<Map<String, dynamic>> castJson() => [
-        for (final item in this) Map.castFrom(item as Map),
+        for (final e in this) Map.castFrom(e as Map),
       ];
 
   /// Returns a new [List] with values casted as `Map<String, dynamic>`.
-  List<R> mapJson<R>(R Function(Map<String, dynamic>) toElement) {
-    return [
-      for (final item in this) toElement(Map.castFrom(item as Map)),
-    ];
-  }
+  List<R> mapJson<R>(R Function(Map<String, dynamic>) toElement) => [
+        for (final e in this) toElement(Map.castFrom(e as Map)),
+      ];
+
+  /// Converts this [Iterable] to a [Map] using [toKey] as the key.
+  Map<R, T> toMap<R>(R Function(T e) toKey) => {
+        for (final e in this) toKey(e): e,
+      };
 }
 
 /// A list extension that removes all null or empty values.

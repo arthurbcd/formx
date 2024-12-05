@@ -2,6 +2,14 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.28.0 - Dec 05, 2024
+
+- Added `Iterable.toMap` extension.
+- Added `Separator` enum for `FormatterExtension.currency/pos`.
+- Removed `multi_input_formatter` dependency.
+- Removed all dependency assets.
+- Updated docs & README.
+
 ## 0.27.0 - Nov 13, 2024
 
 - Improved `FormxField` widgets.

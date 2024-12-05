@@ -112,7 +112,7 @@ class FormxExample extends StatelessWidget {
                   TextFormField(
                     key: const Key('age'),
                     initialValue: '1',
-                    inputFormatters: Formatter().phone.br(),
+                    inputFormatters: Formatter().phone(),
                     validator: Validator(),
                   ),
                   TextFormField(

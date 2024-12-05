@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/services.dart';
-import 'package:flutter_multi_formatter/formatters/money_input_enums.dart';
+
+import '../../formx.dart';
+import 'formatters/money_input_enums.dart';
 
 /// Shortcut to select a fiat code.
 extension FiatCodeExtension<T> on T Function({
@@ -11,7 +13,7 @@ extension FiatCodeExtension<T> on T Function({
   int? mantissa,
   int? maxLength,
   bool? usePadding,
-  ThousandSeparator? separator,
+  Separator? separator,
   void Function(num)? onChanged,
 }) {
   T _this(String? code, void Function(num)? onChanged) {

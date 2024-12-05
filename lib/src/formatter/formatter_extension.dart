@@ -2,21 +2,21 @@ import 'dart:math' as math;
 
 import 'package:dartx/dartx.dart' hide IterableSortedBy;
 import 'package:flutter/services.dart';
-import 'package:flutter_multi_formatter/formatters/credit_card_cvc_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/credit_card_expiration_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/credit_card_number_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/money_input_enums.dart';
-import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/pinyin_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/pos_input_formatter.dart';
 
 import '../extensions/sanitizers.dart';
 import '../extensions/string_extension.dart';
 import 'country_code_extension.dart';
 import 'fiat_code_extension.dart';
 import 'formatter.dart';
+import 'formatters/credit_card_cvc_input_formatter.dart';
+import 'formatters/credit_card_expiration_input_formatter.dart';
+import 'formatters/credit_card_number_input_formatter.dart';
+import 'formatters/currency_input_formatter.dart';
+import 'formatters/masked_input_formatter.dart';
+import 'formatters/money_input_enums.dart';
+import 'formatters/phone_input_formatter.dart';
+import 'formatters/pinyin_formatter.dart';
+import 'formatters/pos_input_formatter.dart';
 
 /// The [Formatter] extension modifiers.
 extension FormatterExtension on Formatter {
@@ -111,32 +111,46 @@ extension FormatterExtension on Formatter {
 
   /// Formats the value as a phone number.
   ///
-  /// Use [CountryCodeExtension] to apply a country [code].
+  /// Supply a [countryCode] or let the formatter detect it.
+  /// Calls [onSelected] with the detected country code.
+  ///
+  /// Use [CountryCodeExtension] to apply a [countryCode].
   /// Ex: `Formatter().phone.br()`.
+  ///
   Formatter phone({
-    String? code, // US, BR, etc
+    String? countryCode, // US, BR, etc
     bool endless = false,
     bool autocorrect = true,
-    void Function(PhoneCountryData? data)? onSelected,
+    void Function(String? countryCode)? onSelected,
   }) =>
       addFormatter(
         PhoneInputFormatter(
-          defaultCountryCode: code,
+          defaultCountryCode: countryCode,
           allowEndlessPhone: endless,
           shouldCorrectNumber: autocorrect,
-          onCountrySelected: onSelected,
+          onCountrySelected: onSelected != null
+              ? (data) => onSelected(data?.countryCode)
+              : null,
         ),
       );
 
   /// Formats the value as a credit card number.
+  ///
+  /// It automatically detects the credit card system.
+  /// Calls [onSelected] with the detected system.
+  ///
+  /// Detectable Systems: Visa, Mastercard, Maestro, Amex, MIR, UnionPay,
+  /// JCB, Discover, DinersClub, UzCard, HUMO.
+  ///
   Formatter creditCard({
     bool useSeparators = true,
-    void Function(CardSystemData? data)? onSelected,
+    void Function(String? system)? onSelected,
   }) =>
       addFormatter(
         CreditCardNumberInputFormatter(
           useSeparators: useSeparators,
-          onCardSystemSelected: onSelected,
+          onCardSystemSelected:
+              onSelected != null ? (data) => onSelected(data?.system) : null,
         ),
       );
 
@@ -153,14 +167,18 @@ extension FormatterExtension on Formatter {
       addFormatter(CreditCardExpirationDateFormatter());
 
   /// Formats the value in a currency format.
+  ///
+  /// If [code] and [separator] are not provided, the formatter will use
+  /// [Separator.commaAndDot] by default.
+  ///
   Formatter currency({
-    String? code,
+    String? code, // USD, BRL, etc
     String? leading,
     String? trailing,
-    int? mantissa,
+    int? mantissa, // decimal places
     int? maxLength,
     bool? usePadding,
-    ThousandSeparator? separator,
+    Separator? separator,
     ValueChanged<num>? onChanged,
   }) {
     V? get<V>(String key) {
@@ -170,8 +188,7 @@ extension FormatterExtension on Formatter {
 
     return addFormatter(
       CurrencyInputFormatter(
-        thousandSeparator:
-            separator ?? get('separator') ?? ThousandSeparator.Comma,
+        thousandSeparator: separator?.thousandSeparator ?? get('separator'),
         mantissaLength: mantissa ?? get('mantissa') ?? 2,
         leadingSymbol: leading ?? get('leading') ?? '',
         trailingSymbol: trailing ?? get('trailing') ?? '',
@@ -182,16 +199,15 @@ extension FormatterExtension on Formatter {
     );
   }
 
-  /// Formats as you would in a point of sale. Ex: 1.000,00
+  /// Formats as you would in a point of sale. Ex: 1.000,00.
   Formatter pos({
-    DecimalPosSeparator decimalSeparator = DecimalPosSeparator.dot,
-    ThousandsPosSeparator? thousandsSeparator,
-    int mantissa = 2,
+    Separator separator = Separator.dotAndComma,
+    int mantissa = 2, // decimal places
   }) =>
       addFormatter(
         PosInputFormatter(
-          decimalSeparator: decimalSeparator,
-          thousandsSeparator: thousandsSeparator,
+          decimalSeparator: separator.decimalSeparator,
+          thousandsSeparator: separator.thousandsSeparator,
           mantissaLength: mantissa,
         ),
       );
@@ -216,5 +232,57 @@ extension FormxTextEditingValueExtension on TextEditingValue {
       return RegExp(r'\p{P}', unicode: true).hasMatch(it);
     }
     return false;
+  }
+}
+
+/// The separators for [FormatterExtension.currency].
+enum Separator {
+  /// 1,000,000.00
+  commaAndDot(',', '.'),
+
+  /// 1 000 000 00
+  space(' '),
+
+  /// 1.000.000,00
+  dotAndComma('.', ','),
+
+  /// 100000000. Incompatible w/ [FormatterExtension.pos] -> [dotAndComma].
+  none(null),
+
+  /// 1 000 000.00
+  spaceAndDot(' ', '.'),
+
+  /// 1 000 000,00
+  spaceAndComma(' ', ','),
+
+  /// 1'000.00. Incompatible w/ [FormatterExtension.currency] -> [commaAndDot].
+  quoteAndDot("'", '.'),
+
+  /// 1'000,00. Incompatible w/ [FormatterExtension.currency] -> [dotAndComma].
+  quoteAndComma("'", ',');
+
+  const Separator(this.thousand, [this.decimal]);
+
+  /// The thousand separator.
+  final String? thousand;
+
+  /// The decimal separator.
+  final String? decimal;
+}
+
+extension on Separator {
+  DecimalPosSeparator get decimalSeparator {
+    return DecimalPosSeparator.parse(decimal ?? '.');
+  }
+
+  ThousandsPosSeparator? get thousandsSeparator {
+    return thousand != null ? ThousandsPosSeparator.parse(thousand!) : null;
+  }
+
+  ThousandSeparator get thousandSeparator {
+    var separator = this;
+    if (this == Separator.quoteAndComma) separator = Separator.dotAndComma;
+    if (this == Separator.quoteAndDot) separator = Separator.commaAndDot;
+    return ThousandSeparator.values[separator.index];
   }
 }

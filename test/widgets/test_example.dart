@@ -41,7 +41,7 @@ class _Example extends StatelessWidget {
           TextFormField(
             key: const Key('phone'),
             initialValue: '11999999999',
-            inputFormatters: Formatter().phone(code: 'BR'),
+            inputFormatters: Formatter().phone(countryCode: 'BR'),
           ),
         ],
       ),

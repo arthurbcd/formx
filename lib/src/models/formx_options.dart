@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 
 import '../../formx.dart';
+import '../formatter/formatters/masked_input_formatter.dart';
+import '../formatter/formatters/phone_input_formatter.dart';
 
 /// A function to adapt a [value] to any other.
 typedef FieldAdapter<T> = dynamic Function(T value);

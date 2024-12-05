@@ -122,7 +122,7 @@ Looking for a way to create validators declaratively? The `Validator` class prov
 ```dart
 TextFormField(
   validator: Validator<String>(
-    isRequired: true,
+    required: true,
     test: (value) => value.isEmail,
   ),
 ),
@@ -201,6 +201,12 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.hasSpecialCharacters`
 - `.equalsIgnoreCase(String)`
 
+### `Iterable`
+
+- `.castJson()` for casting any List as List<Map<String, dynamic>>.
+- `.mapJson()` for mapping any jsonList to List<T>.
+- `.toMap(K toKey(T value))` for converting a list to a map by a key.
+
 ### `Map`
 
 - `.pairs` for getting a list of key-value pairs.
@@ -209,8 +215,6 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 - `.deepMap()` for mapping nested maps.
 - `.clean()` for values that are `null` or empty string/iterable/map.
 - `.cleaned()` for a new map with all `null` or empty values removed.
-- `.castJson()` for casting any List as List<Map<String, dynamic>>.
-- `.mapJson()` for mapping any jsonList to List<T>.
 
 Deeply recases all your map keys:
 
