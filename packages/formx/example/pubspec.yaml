@@ -1,0 +1,21 @@
+name: formx_examples
+description: examples for formx package
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  formx:
+    path: ../../formx
+  file_picker: ^8.1.4
+
+flutter:
+  uses-material-design: true

@@ -77,10 +77,10 @@ You can use `Formx.setup` to set global options for all formx widgets.
 
 - `defaultTitle` to set the default title for fields that internally use `ListTile`. 
 - `datePicker` to pick a date in `FormField<DateTime>` fields.
-- `image/filePicker` to pick a file in `FormField<XFile>` fields.
-- `image/filesPicker` to pick a file in `FormField<List<XFile>>` fields.
-- `image/fileUploader` to upload a file in `FormField<XFile>` fields.
-- `image/fileDeleter` to delete a file in `FormField<XFile>` fields.
+- `filePicker` to pick a file in `FormField<XFile>` fields.
+- `filesPicker` to pick a file in `FormField<List<XFile>>` fields.
+- `fileUploader` to upload a file in `FormField<XFile>` fields.
+- `fileDeleter` to delete a file in `FormField<XFile>` fields.
 
 ## FormxOptions
 
@@ -92,6 +92,8 @@ You can use `Formx.options` to modify `FormState.values` output.
 - `nonEmptyMaps` removes all empty maps.
 - `nonEmptyStrings` removes all empty strings.
 - `nonEmptyIterables` removes all empty iterables.
+- `dateAdapter` to format date in `FormState.values`.
+- `enumAdapter` to format enum in `FormState.values`.
 
 By default, all options are enabled, except for [nonEmptyIterables].
 
@@ -203,7 +205,7 @@ Formx comes bundled with a set of built-in validators and sanitizers, which you 
 
 - `.castJson()` for casting any List as List<Map<String, dynamic>>.
 - `.mapJson()` for mapping any jsonList to List<T>.
-- `.orderedBy(R selector(T), {bool ascending})` for ordering.
+- `.toMap(K toKey(T value))` for converting a list to a map by a key.
 
 ### `Map`
 

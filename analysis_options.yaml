@@ -26,7 +26,7 @@ analyzer:
     deprecated_member_use_from_same_package: ignore
     use_function_type_syntax_for_parameters: ignore
     discarded_futures: ignore
-    depend_on_referenced_packages: ignore
+    # depend_on_referenced_packages: ignore
     avoid_dynamic_calls: ignore
     implicit_call_tearoffs: ignore
     cascade_invocations: ignore
