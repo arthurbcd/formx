@@ -10,7 +10,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Added `AutocompleteFormField.emptyBuilder`.
 - Added `Iterable.orderedBy`.
 - Exported `FormxField`.
-- Removed `meta` dependency.
 - Removed `image_picker` dependency.
 - Moved to formx/formx monorepo.
 
