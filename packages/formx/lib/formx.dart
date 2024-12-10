@@ -4,6 +4,7 @@ library formx;
 export 'package:recase/recase.dart';
 
 export '/src/extensions/widgets_extension.dart';
+export 'src/extensions/comparable_extension.dart';
 export 'src/extensions/context_extension.dart';
 export 'src/extensions/date_extension.dart';
 export 'src/extensions/form_field_state_extension.dart'

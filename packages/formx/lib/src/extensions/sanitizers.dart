@@ -307,7 +307,7 @@ extension JsonValidatorExtension on String {
 }
 
 /// A set of extensions to sanitize objects.
-extension ObjectExtensionT<T extends Object> on T {
+extension FormxObjectExtensionT<T extends Object> on T {
   /// Returns itself and applies [transform] to it.
   R let<R>(R transform(T it)) => transform(this);
 }
@@ -340,31 +340,4 @@ class IndentedMap<K, V> extends MapBase<K, V> {
   String toString() {
     return JsonEncoder.withIndent('  ', (e) => e.toString()).convert(_map);
   }
-}
-
-///
-extension IterableSortedByWithAscending<E> on Iterable<E> {
-  /// Returns a new list with all elements sorted according to natural sort
-  /// order of the values returned by specified [selector] function.
-  ///
-  /// The [ascending] parameter controls the order of sorting:
-  /// - Defaults to `true`, sorting elements in ascending order.
-  /// - Set to `false` to sort elements in descending order.
-  ///
-  /// To sort by more than one property, `thenBy()` or `thenByDescending()` can
-  /// be called afterwards.
-  ///
-  /// **Note:** The actual sorting is performed when an element is accessed for
-  /// the first time.
-  // SortedList<E> sortedBy(
-  //   Comparable Function(E element) selector, {
-  //   bool ascending = true,
-  // }) {
-  //   return SortedList<E>.withSelector(
-  //     this,
-  //     selector,
-  //     ascending ? 1 : -1,
-  //     null,
-  //   );
-  // }
 }

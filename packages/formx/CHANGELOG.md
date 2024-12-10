@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.29.1 - Dec 10, 2024
+
+- Added `Comparable` extensions.
+
 ## 0.29.0 - Dec 09, 2024
 
 - Added `SearchFormField.errorBuilder`.
@@ -15,7 +19,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 0.28.0 - Dec 05, 2024
 
-- Added `Iterable.reverse` extension.
 - Added `Separator` enum for `FormatterExtension.currency/pos`.
 - Removed `multi_input_formatter` dependency.
 - Removed `dartx` dependency.
