@@ -2,9 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.29.1 - Dec 10, 2024
+## 0.29.1/2 - Dec 10, 2024
 
 - Added `Comparable` extensions.
+- Added async `Autocomplete`/`Search` fields.
 
 ## 0.29.0 - Dec 09, 2024
 
