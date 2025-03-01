@@ -2,7 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.29.1/2 - Dec 10, 2024
+## 0.30.0 - Feb 28, 2025
+
+- Improved `context.field` visitors.
+- Improved `FormFieldState.date` to include `MaterialLocalizations.parseCompactDate`.
+- Fixed wrong formatting when unmasking.
+- Fixed `FieldKey.adapter` overriding default when null.
+- Added `FieldKey.adapter` asserts.
+- Added widget tests.`
+- Changed min sdk constraints to Dart 3.3.0 & Flutter 3.19.0.
+
+## 0.29.1 - Dec 10, 2024
 
 - Added `Comparable` extensions.
 - Added async `Autocomplete`/`Search` fields.

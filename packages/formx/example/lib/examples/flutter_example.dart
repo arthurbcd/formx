@@ -152,22 +152,12 @@ class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
 
   Future<void> fill(BuildContext context, Map<String, dynamic> map) async {
-    context.formx().fill(map);
+    context.fill(map);
   }
 
   Future<void> submit(BuildContext context) async {
-    final state = context.formx();
-
-    if (state.validate()) {
-      state.save();
-      print('Form is valid: ${state.toMap()}');
-    } else {
-      print('Form is invalid: ${state.errorTexts}');
-    }
-
-    // Or simply.
     try {
-      final map = context.submit(); // validate, save and toMap
+      final map = context.submit(); // validate() + save() + toMap()
       print('Form is valid: $map');
     } on FormxException catch (e) {
       print('Form is invalid: ${e.errorTexts}');

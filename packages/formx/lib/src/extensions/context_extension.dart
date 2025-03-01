@@ -89,6 +89,7 @@ extension FormxContextExtension on BuildContext {
     );
 
     final fieldState = _visitField<T>(key) ??
+        findAncestorStateOfType<FormState>()?.context._visitField<T>(key) ??
         Navigator.maybeOf(this)?.context._visitField<T>(key);
 
     assert(fieldState != null, 'No [FormFieldState<$T>] found. key: $key');

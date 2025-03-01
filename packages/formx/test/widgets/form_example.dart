@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:formx/formx.dart';
 
-class TestExample extends StatelessWidget {
-  const TestExample({super.key});
+class FormExample extends StatelessWidget {
+  const FormExample({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +34,8 @@ class _Example extends StatelessWidget {
           ),
           TextFormField(
             key: const Key('cpf'),
-            initialValue: '00252054202',
+            initialValue: '99999999922',
             inputFormatters: Formatter().mask('000.000.000-00'),
-            validator: Validator().minWords(2),
           ),
           TextFormField(
             key: const Key('phone'),

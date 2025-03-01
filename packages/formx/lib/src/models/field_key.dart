@@ -33,15 +33,26 @@ class FieldKey<T> extends GlobalObjectKey<FormFieldState<T>> {
     return options.copyWith(
       keepMask: keepMask,
       unmasker: unmasker,
-      adapter: maybeAdapt,
+      adapter: adapter != null ? _maybeAdapt : null,
     );
   }
 
   /// Adapts the [value] if same type. Otherwise, returns the same [value].
-  dynamic maybeAdapt(Object value) {
+  dynamic _maybeAdapt(Object value) {
+    final t = value.runtimeType;
+    final key = this.value;
+    assert(
+      value is T,
+      "Invalid `Key('$key')` adapter: $t is not a subtype of $T.\n\n"
+      ' ❌ Invalid:\n'
+      '`adapter: ($T value) => value.toSomething()`\n\n'
+      ' ✅ Valid:\n'
+      '`adapter: ($t value) => value.toSomething()`\n\n'
+      'You should use an adapter compatible with this `FormState<$t>`\n',
+    );
     if (value is! T) return value;
 
-    return adapter?.call(value as T) ?? value;
+    return adapter!(value as T);
   }
 }
 

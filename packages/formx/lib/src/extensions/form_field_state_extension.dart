@@ -1,7 +1,7 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
+import '../formatter/formatter.dart';
 import '../models/field_key.dart';
 import '../models/formx_exception.dart';
 import '../models/formx_options.dart';
@@ -62,7 +62,11 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
   num? get number => value?.tryCast<num>() ?? num.tryParse(text);
 
   /// Returns the [FormFieldState.value] as a [DateTime].
-  DateTime? get date => value?.tryCast<DateTime>() ?? DateTime.tryParse(text);
+  DateTime? get date =>
+      value?.tryCast<DateTime>() ??
+      DateTime.tryParse(text) ??
+      Localizations.of<MaterialLocalizations>(context, MaterialLocalizations)
+          ?.parseCompactDate(text);
 
   /// Whether [value] is empty.
   bool? get isEmpty {
@@ -138,8 +142,15 @@ extension on TextFormField {
     final field = (builder(state) as dynamic).child as TextField;
     final value = state.value ?? '';
 
-    for (final formatter in field.inputFormatters ?? <TextInputFormatter>[]) {
-      if (options.unmasker(value, formatter) case var it?) return it;
+    if (field.inputFormatters case var it?) {
+      // when in initial state, formatter is still not applied, so we do it
+      final formatted = state.isInitial
+          ? it.fold<String>(value, (value, f) => f.format(value))
+          : value;
+
+      for (final formatter in it) {
+        if (options.unmasker(formatted, formatter) case var it?) return it;
+      }
     }
 
     return value;

@@ -33,6 +33,7 @@ analyzer:
     inference_failure_on_instance_creation: ignore
     prefer_asserts_with_message: ignore
     use_if_null_to_convert_nulls_to_bools: ignore
+    avoid_types_on_closure_parameters: ignore
     # strict_raw_type: ignore
 linter:
   rules:

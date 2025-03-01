@@ -2,23 +2,27 @@
 
 <!-- markdownlint-disable no-inline-html -->
 <p align="center">
-  <img src="https://raw.githubusercontent.com/arthurbcd/formx/ea6d5d36ea384399838f650c8ca124743f43f40e/image-1.png" alt="Image 1" height="600"/>
-  <img src="https://raw.githubusercontent.com/arthurbcd/formx/ea6d5d36ea384399838f650c8ca124743f43f40e/image-2.png" alt="Image 2" height="600"/>
+  <img src="https://raw.githubusercontent.com/arthurbcd/formx/6f4c8fec8c107c7c3d091855bd8404541b9c04b6/packages/formx/image-1.png" alt="Image 1" height="600"/>
+  <img src="https://raw.githubusercontent.com/arthurbcd/formx/6f4c8fec8c107c7c3d091855bd8404541b9c04b6/packages/formx/image-2.png" alt="Image 2" height="600"/>
 </p>
 <!-- markdownlint-enable no-inline-html -->
 
 ## Acessing the state
 
-`BuildContext.formx([String? key])` automatically retrieves the appropriate `FormState` for you, though you can specify a key if necessary.
+`BuildContext.formx([String? key])` automatically retrieves `FormState` by key value.
 
 ```dart
+// when key is null, it returns the first FormState where key is null
 final addressState = context.formx();
+
 // specify if multiple forms:
 final addressState = context.formx('address'); 
 
 if (addressState.validate()) {
   final map = addressState.toMap();
-  addressState.save(); // do something with map
+  addressState.save();
+  // do your logic
+
 } else {
   throw FormxException(addressState.errorTexts);
 }
@@ -87,7 +91,7 @@ You can use `Formx.setup` to set global options for all formx widgets.
 You can use `Formx.options` to modify `FormState.values` output.
 
 - `trim` removes leading and trailing whitespaces.
-- `unmask` removes all [MaskTextInputFormatter] masks.
+- `unmask` removes all [MaskedInputFormatter] masks.
 - `nonNull` removes all `null` values.
 - `nonEmptyMaps` removes all empty maps.
 - `nonEmptyStrings` removes all empty strings.
@@ -96,8 +100,6 @@ You can use `Formx.options` to modify `FormState.values` output.
 By default, all options are enabled, except for [nonEmptyIterables].
 
 > To get the unmodified values, use `FormState.rawValues`.
-
-To understand how masks are applied, see [mask_text_input_formatter](https://pub.dev/packages/mask_text_input_formatter) library, also exported by this package.
 
 ## FieldKey options
 
@@ -115,7 +117,7 @@ TextFormField(
 
 ## Validator class
 
-Looking for a way to create validators declaratively? The `Validator` class provides a readable and declarative approach to defining validation rules for your Dart applications.
+Looking for a way to create validators declaratively? `Validator` class provides a readable and declarative approach to defining validation rules for your Dart applications.
 
 ```dart
 TextFormField(
@@ -144,7 +146,7 @@ Validator.defaultInvalidText = 'This field is invalid';
 // You can also modify the errorText of a validator:
 Validator.translator = (key, errorText) => errorText; // good for translations
 
-// And disable them all:
+// In case you need to temporarily disable all validators:
 Validator.disableOnDebug = true; // only works on debug mode
 ```
 
