@@ -7,9 +7,7 @@ export '/src/extensions/widgets_extension.dart';
 export 'src/extensions/comparable_extension.dart';
 export 'src/extensions/context_extension.dart';
 export 'src/extensions/date_extension.dart';
-export 'src/extensions/form_field_state_extension.dart'
-    hide FormFieldData, FormFieldStateAttacher;
-export 'src/extensions/formx_state.dart';
+export 'src/extensions/form_field_state_extension.dart';
 export 'src/extensions/sanitizers.dart';
 export 'src/extensions/string_extension.dart';
 export 'src/extensions/validator_extension.dart';
@@ -25,13 +23,14 @@ export 'src/fields/search/async_search.dart';
 export 'src/fields/search/async_search_base.dart';
 export 'src/fields/search_form_field.dart';
 export 'src/fields/widgets/formx_field.dart';
-export 'src/form/formx2.dart';
 export 'src/formatter/country_code_extension.dart';
 export 'src/formatter/fiat_code_extension.dart';
 export 'src/formatter/formatter.dart';
 export 'src/formatter/formatter_extension.dart';
+export 'src/formx_state.dart';
 export 'src/models/field_key.dart';
 export 'src/models/formx_exception.dart';
 export 'src/models/formx_options.dart';
 export 'src/models/formx_setup.dart';
-export 'src/validator/validator.dart';
+export 'src/validator/validator.dart'
+    hide FormFieldData, FormFieldStateAttacher;

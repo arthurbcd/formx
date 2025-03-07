@@ -1,9 +1,9 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formx/formx.dart';
 
-import 'adapter_exemple.dart';
-import 'form_example.dart';
+import 'utils/finders.dart';
+import 'widgets/adapter_exemple.dart';
+import 'widgets/form_example.dart';
 
 void main() {
   group(
@@ -69,43 +69,36 @@ void main() {
           expect(dateState.toValue, throwsAssertionError);
         },
       );
+
+      testWidgets(
+        'should a nested key',
+        (tester) async {
+          var key = 'name';
+          final keys = key.split('.');
+
+          expect(keys, ['name']);
+
+          key = keys.removeLast();
+
+          expect(key, 'name');
+          expect(keys, <String>[]);
+        },
+      );
+
+      testWidgets(
+        'should a nested key',
+        (tester) async {
+          var key = 'user.name';
+          final keys = key.split('.');
+
+          expect(keys, ['user', 'name']);
+
+          key = keys.removeLast();
+
+          expect(key, 'name');
+          expect(keys, ['user']);
+        },
+      );
     },
   );
-}
-
-/// Extension for [WidgetController] to access the [FormxState].
-extension WidgetControllerExtension on WidgetTester {
-  /// Returns the [FormxState] of the [Form] with the given [key].
-  FormxState formx(String key) {
-    final state = this.state<FormState>(find.byKeyValue(key));
-    return FormxState(state);
-  }
-
-  FormFieldState<T> field<T>(String key) {
-    final state = this.state<FormFieldState<T>>(find.byKeyValue(key));
-    return state;
-  }
-
-  /// Returns the [FormFieldState] of the [FormField] with the given [key].
-  // FormFieldState<T> field<T>(String key) {
-  //   final state = this.state<FormFieldState<T>>(find.byKey(Key(key)));
-  //   return state;
-  // }
-}
-
-extension on CommonFinders {
-  MatchFinder byKeyValue(String key) => _KeyValueFinder(key);
-}
-
-class _KeyValueFinder extends MatchFinder {
-  _KeyValueFinder(this.value);
-  final String value;
-
-  @override
-  String get description => 'key $value';
-
-  @override
-  bool matches(Element candidate) {
-    return candidate.widget.key?.value == value;
-  }
 }

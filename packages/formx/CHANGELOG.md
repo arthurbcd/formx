@@ -1,6 +1,14 @@
 # Changelog
 
-This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## 0.31.0 - Mar 07, 2025
+
+- Now `context.formx` & `context.field` are 0(1) on consecutive calls.
+- Now consecutive visits are cached.
+- Now it's possible to refine a visit. Ex: `context.field('address.street')`.
+- Added assertion for duplicate [Form.key] & [FormField.key].
+- Fix mismatch type exception when using validators.
+- Updated README.
+- Added tests.
 
 ## 0.30.0 - Feb 28, 2025
 
@@ -49,7 +57,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Added `Validator.enabled` to enable/disable a validator.
 - Added enabled to `Validator.or/and`.
-- Added `ValidatorExtension.cpfCnpj`.
+- Added `45 dn].cpfCnpj`.
 - Added `FormxContextExtension.fill`.
 - Renamed `isRequired` to `required` in `Validator`.
 - Removed `FromMapExtension.of/maybeOf`.

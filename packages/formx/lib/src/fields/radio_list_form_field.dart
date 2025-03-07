@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../extensions/formx_state.dart';
+import '../formx_state.dart';
 import 'widgets/formx_field.dart';
 
 /// A `FormField<T>` that builds a list of [RadioListTile].

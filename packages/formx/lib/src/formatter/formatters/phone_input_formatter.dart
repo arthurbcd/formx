@@ -131,7 +131,8 @@ class PhoneInputFormatter extends TextInputFormatter {
     }
 
     final endOffset = newValue.text.length - newValue.selection.end;
-    final selectionEnd = maskedValue.length - endOffset;
+    var selectionEnd = maskedValue.length - endOffset;
+    selectionEnd = selectionEnd.clamp(-1, maskedValue.length);
 
     _lastValue = maskedValue;
     return TextEditingValue(

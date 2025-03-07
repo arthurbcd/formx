@@ -1,4 +1,4 @@
-import '../extensions/formx_state.dart';
+import '../formx_state.dart';
 
 /// Exception thrown by [FormxState] when the form is invalid.
 class FormxException implements Exception {

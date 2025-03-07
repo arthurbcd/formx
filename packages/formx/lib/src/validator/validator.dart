@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../extensions/form_field_state_extension.dart';
 import '../models/field_key.dart';
 
 /// A class that handles the validation of a [FormField].
@@ -74,26 +73,27 @@ class Validator<T> {
   static ValidatorModifier translator = (key, errorText) => errorText;
 
   // States
-  String? _errorText;
-  FormFieldState<T>? _state;
+  static FormFieldData? _currentData;
+  FormFieldState? _state;
   final String? _key;
 
   /// The [Key] value of the [FormField] that this [Validator] is attached.
   String? get key => _key ?? _state?.widget.key?.value;
 
   /// The [FormFieldState] of the [FormField] that this [Validator] is attached.
-  FormFieldState<T>? get state => _state;
+  FormFieldState<T>? get state => _state as FormFieldState<T>?;
 
   /// The resolved [FormField.validator] for this [Validator].
   FormFieldValidator<Object> get validator {
     return (value) {
+      if (_currentData != null) _state = _currentData!.state;
+
       // 0. Check if it is disabled.
       if (!enabled || (Validator.disableOnDebug && kDebugMode)) return null;
 
       // 1. Check if errorText was set programatically.
-      if (_errorText case String errorText) {
-        _errorText = null;
-        return errorText;
+      if (_currentData case FormFieldData data when data.setError) {
+        return data.errorText;
       }
 
       // 2. Check if it is required.
@@ -120,12 +120,6 @@ class Validator<T> {
   ///
   /// Applies the [Validator.translator] before calling it.
   String? call(Object? value) {
-    if (value case FormFieldData<T> data) {
-      if (data.errorText != null) _errorText = data.errorText;
-      _state = data.state;
-      return null;
-    }
-
     if (validator(value) case String errorText) {
       if (defaultInvalidText == errorText) return translator(key, errorText);
       if (defaultRequiredText == errorText) return translator(key, errorText);
@@ -165,6 +159,55 @@ typedef ValidatorModifier = String Function(
   String? key,
   String errorText,
 );
+
+/// Signature for attaching a [FormFieldState] to a [FormFieldValidator].
+typedef FormFieldData<T> = ({
+  FormFieldState<T> state,
+  String? errorText,
+  bool setError,
+});
+
+extension ValidatorSetError<T> on FormFieldState<T> {
+  /// Sets the [errorText] of this [FormFieldState].
+  void setErrorText(String? errorText) {
+    Validator._currentData = (
+      state: this,
+      setError: true,
+      errorText: errorText,
+    );
+    validate();
+    Validator._currentData = null;
+
+    assert(
+      errorText == this.errorText,
+      'No `Validator` was set for this `$this`.\n'
+      'You must set `Validator` class in order to call `setErrorText`.\n'
+      'Ex:\n'
+      '```dart\n'
+      'TextFormField(\n'
+      "   key: const Key('email'),\n "
+      '  validator: Validator(), // <-- set your `Validator` here\n'
+      ')\n'
+      '```\n'
+      'Then call:\n'
+      '```dart\n'
+      "emailState?.setErrorText('errorText');\n"
+      '```\n',
+    );
+  }
+}
+
+/// Attaches a [FormFieldState] to a [Validator].
+extension FormFieldStateAttacher<T> on FormFieldState<T> {
+  @protected
+  void attachToValidator() {
+    if (Validator._currentData != null) return; // stack overflow
+
+    Validator._currentData = (state: this, errorText: null, setError: false);
+    (widget as dynamic).validator?.call(null);
+    Validator._currentData = null;
+  }
+}
 
 extension on Object {
   bool get isEmpty {

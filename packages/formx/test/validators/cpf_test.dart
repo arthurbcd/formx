@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:formx/formx.dart';
 
 void main() {
-  test('CPF Validation', () {
+  test('should correctly check cpf validation', () {
     for (final cpf in validCPFs) {
       expect(
         cpf.isCpf,

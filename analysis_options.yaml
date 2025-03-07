@@ -34,6 +34,8 @@ analyzer:
     prefer_asserts_with_message: ignore
     use_if_null_to_convert_nulls_to_bools: ignore
     avoid_types_on_closure_parameters: ignore
+    public_member_api_docs: ignore
+    inference_failure_on_function_invocation: ignore
     # strict_raw_type: ignore
 linter:
   rules:

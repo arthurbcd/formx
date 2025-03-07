@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
-import '../extensions/formx_state.dart';
+import '../formx_state.dart';
 import '../models/formx_setup.dart';
 import 'file_form_field.dart';
 import 'widgets/formx_field.dart';

@@ -5,44 +5,7 @@ import '../formatter/formatter.dart';
 import '../models/field_key.dart';
 import '../models/formx_exception.dart';
 import '../models/formx_options.dart';
-import '../validator/validator.dart';
 import 'sanitizers.dart';
-
-/// Signature for attaching a [FormFieldState] to a [FormFieldValidator].
-typedef FormFieldData<T> = ({FormFieldState<T> state, String? errorText});
-
-/// Attaches a [FormFieldState] to a [Validator].
-extension FormFieldStateAttacher on FormFieldState {
-  /// Attaches this [FormFieldState] to the [Validator].
-  @protected
-  void attachToValidator({String? errorText}) {
-    final FormFieldData data;
-    try {
-      data = (
-        state: this,
-        errorText: errorText,
-      );
-      widget.validator?.call(data);
-    } catch (_) {
-      assert(
-        errorText == null,
-        'No `Validator` was set for this `$this`.\n'
-        'You must set `Validator` class in order to call `setErrorText`.\n'
-        'Ex:\n'
-        '```dart\n'
-        'TextFormField(\n'
-        "   key: const Key('email'),\n "
-        '  validator: Validator(), // <-- set your `Validator` here\n'
-        ')\n'
-        '```\n'
-        'Then call:\n'
-        '```dart\n'
-        "emailState?.setErrorText('errorText');\n"
-        '```\n',
-      );
-    }
-  }
-}
 
 /// Extends [FormFieldState] with a programatic way to set [errorText].
 extension FormFieldStateExtension<T> on FormFieldState<T> {
@@ -112,12 +75,6 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
     } catch (_) {
       return null;
     }
-  }
-
-  /// Sets the [errorText] of this [FormFieldState].
-  void setErrorText(String? errorText) {
-    attachToValidator(errorText: errorText);
-    validate();
   }
 }
 
