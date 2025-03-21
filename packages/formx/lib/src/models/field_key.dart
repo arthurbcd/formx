@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../../formx.dart';
 
 /// A [Key] for customizing [Formx.toMap] & other outputs.
-class FieldKey<T> extends GlobalObjectKey<FormFieldState<T>> {
+class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
   /// Creates a [FieldKey] with a [value].
-  const FieldKey(
+  FieldKey(
     this.value, {
     this.keepMask,
     this.unmasker,
     this.adapter,
-  }) : super(value);
+  }) : super.constructor() {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final (state, element) = (currentState, currentContext);
+      if (state == null && element is! Element) return;
 
-  @override
-  // ignore: overridden_fields
+      final field = (element! as StatefulElement).state;
+      String? subtype;
+
+      if (field is FormFieldState) {
+        subtype = field.value?.runtimeType.toString();
+      }
+      assert(
+        state != null,
+        'Field key type `$T` incompatible '
+        'with ${field.widget.runtimeType} `$subtype`',
+      );
+    });
+  }
+
+  /// The [FormField.key] value.
   final String value;
 
   /// Whether to unmask the value. Overrides [FormxOptions.keepMask].
@@ -56,6 +73,34 @@ class FieldKey<T> extends GlobalObjectKey<FormFieldState<T>> {
   }
 }
 
+class FormKey extends GlobalKey<FormState> {
+  // factory FormKey(String value) => FormKey._(value);
+  FormKey(this.value) : super.constructor() {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final (state, element) = (currentState, currentContext);
+      if (state == null && element is! Element) return;
+
+      assert(
+        state != null,
+        '${element?.widget.runtimeType} is not a Form widget',
+      );
+    });
+  }
+
+  /// The [Form.key] value.
+  final String? value;
+}
+
+extension FormxFormKeyExtension on GlobalKey<FormState> {
+  /// Requires the [FormxState] of this [FormState].
+  FormxState get state => FormxState(currentState!);
+}
+
+extension FormxFormFieldKeyExtension on GlobalKey<FormFieldState> {
+  /// Requires the [FormxFieldState] of this [FormFieldState].
+  FormFieldState get state => currentState!;
+}
+
 /// Extension for [Key] value.
 extension FormFieldKeyExtension on Key {
   /// Creates a [FieldKey] of type [T] of this [Key].
@@ -80,6 +125,8 @@ extension FormFieldKeyExtension on Key {
 
   /// Attempts to get the [value] of this [Key] if it is an [String].
   String? get value {
+    if (this case FormKey(:String value)) return value;
+    if (this case FieldKey(:String value)) return value;
     if (this case ValueKey(:String value)) return value;
     if (this case ObjectKey(:String value)) return value;
     if (this case GlobalObjectKey(:String value)) return value;

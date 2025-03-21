@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.32.0 - Mar 21, 2025
+
+- Added `FormKey`, shorthand for `GlobalKey<FormState>` with key value.
+- Fixes `FieldKey` using `Key.value` identity instead of `Key`.
+- Improved `FieldKey` type assertions. 
+
 ## 0.31.0 - Mar 07, 2025
 
 - Now `context.formx` & `context.field` are 0(1) on consecutive calls.
