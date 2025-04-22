@@ -5,9 +5,9 @@ import '../../formx.dart';
 
 /// A [Key] for customizing [Formx.toMap] & other outputs.
 class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
-  /// Creates a [FieldKey] with a [value].
+  /// Creates a [FieldKey] with a [key].
   FieldKey(
-    this.value, {
+    this.key, {
     this.keepMask,
     this.unmasker,
     this.adapter,
@@ -31,7 +31,8 @@ class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
   }
 
   /// The [FormField.key] value.
-  final String value;
+  @protected
+  final String key;
 
   /// Whether to unmask the value. Overrides [FormxOptions.keepMask].
   final bool? keepMask;
@@ -57,7 +58,7 @@ class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
   /// Adapts the [value] if same type. Otherwise, returns the same [value].
   dynamic _maybeAdapt(Object value) {
     final t = value.runtimeType;
-    final key = this.value;
+    final key = this.key;
     assert(
       value is T,
       "Invalid `Key('$key')` adapter: $t is not a subtype of $T.\n\n"
@@ -75,7 +76,7 @@ class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
 
 class FormKey extends GlobalKey<FormState> {
   // factory FormKey(String value) => FormKey._(value);
-  FormKey(this.value) : super.constructor() {
+  FormKey([this.key]) : super.constructor() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       final (state, element) = (currentState, currentContext);
       if (state == null && element is! Element) return;
@@ -88,7 +89,8 @@ class FormKey extends GlobalKey<FormState> {
   }
 
   /// The [Form.key] value.
-  final String? value;
+  @protected
+  final String? key;
 }
 
 extension FormxFormKeyExtension on GlobalKey<FormState> {
@@ -125,8 +127,8 @@ extension FormFieldKeyExtension on Key {
 
   /// Attempts to get the [value] of this [Key] if it is an [String].
   String? get value {
-    if (this case FormKey(:String value)) return value;
-    if (this case FieldKey(:String value)) return value;
+    if (this case FormKey(key: String value)) return value;
+    if (this case FieldKey(key: String value)) return value;
     if (this case ValueKey(:String value)) return value;
     if (this case ObjectKey(:String value)) return value;
     if (this case GlobalObjectKey(:String value)) return value;

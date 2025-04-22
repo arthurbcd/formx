@@ -16,6 +16,8 @@ void main() {
   );
 }
 
+final userKey = FormKey();
+
 class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
 
@@ -41,7 +43,7 @@ class FormxExample extends StatelessWidget {
       floatingActionButton: const MyWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Form(
-        key: const Key('user'),
+        key: userKey,
 
         // Check your console and type, it's alive!
         onChanged: () {
@@ -174,7 +176,8 @@ class FormxExample extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      context.submit();
+                      userKey.state.submit();
+                      // context.submit();
                     },
                     child: const Text('Submit'),
                   ),

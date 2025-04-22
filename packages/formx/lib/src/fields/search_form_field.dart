@@ -24,7 +24,7 @@ class SearchFormField<T extends Object> extends FormField<T> {
     this.onResults,
     this.debounce = const Duration(milliseconds: 600),
     this.loadingBuilder = AsyncSearchBase.defaultLoadingBuilder,
-    this.errorBuilder = AsyncSearchBase.defaultErrorBuilder,
+    this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
     this.emptyBuilder,
     this.scrollLoadingBuilder,
     super.key,
@@ -50,7 +50,7 @@ class SearchFormField<T extends Object> extends FormField<T> {
     this.onResults,
     this.debounce = const Duration(milliseconds: 600),
     this.loadingBuilder = AsyncSearchBase.defaultLoadingBuilder,
-    this.errorBuilder = AsyncSearchBase.defaultErrorBuilder,
+    this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
     this.emptyBuilder,
     this.scrollLoadingBuilder,
     super.key,
@@ -102,7 +102,7 @@ class SearchFormField<T extends Object> extends FormField<T> {
     BuildContext context,
     Object error,
     StackTrace stackTrace,
-  )? errorBuilder;
+  )? viewErrorBuilder;
 
   /// The loading builder to show while paging.
   ///

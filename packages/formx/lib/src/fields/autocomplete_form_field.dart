@@ -20,8 +20,8 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
     this.onResults,
     this.debounce = const Duration(milliseconds: 600),
     this.loadingBuilder = AsyncSearchBase.defaultLoadingBuilder,
-    this.errorBuilder = AsyncSearchBase.defaultErrorBuilder,
-    this.emptyBuilder,
+    this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
+    this.viewEmptyBuilder,
     this.scrollLoadingBuilder,
     super.decoration,
     super.key,
@@ -45,8 +45,8 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
     this.onResults,
     this.debounce = const Duration(milliseconds: 600),
     this.loadingBuilder = AsyncSearchBase.defaultLoadingBuilder,
-    this.errorBuilder = AsyncSearchBase.defaultErrorBuilder,
-    this.emptyBuilder,
+    this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
+    this.viewEmptyBuilder,
     this.scrollLoadingBuilder,
     super.key,
     super.autofocus,
@@ -94,14 +94,14 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
   final WidgetBuilder loadingBuilder;
 
   /// The view builder to show when results are empty. If null, shows nothing.
-  final WidgetBuilder? emptyBuilder;
+  final WidgetBuilder? viewEmptyBuilder;
 
   /// The view builder to show when an error occurs. If null, shows nothing.
   final Widget Function(
     BuildContext context,
     Object error,
     StackTrace stackTrace,
-  )? errorBuilder;
+  )? viewErrorBuilder;
 
   /// The loading builder to show while paging.
   ///

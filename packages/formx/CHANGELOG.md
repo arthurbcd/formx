@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.33.0 - Mar 25, 2025
+
+- Renamed `FormKey.value` to `FormKey.key`.
+- Renamed `FieldKey.value` to `FieldKey.key`.
+- Renamed `FormxField.errorBuilder` to `viewErrorBuilder`.
+- Renamed `FormxField.emptyBuilder` to `viewEmptyBuilder`.
+
 ## 0.32.0 - Mar 21, 2025
 
 - Added `FormKey`, shorthand for `GlobalKey<FormState>` with key value.
