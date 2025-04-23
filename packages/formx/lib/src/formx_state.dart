@@ -266,7 +266,7 @@ extension Formx on FormxState {
     final foundKeys = found.entries.where((e) => e.value).map((e) => e.key);
 
     assert(
-      foundKeys.isNotEmpty && missingKeys.isEmpty,
+      keys == null || missingKeys.isEmpty,
       'No [Form] or [FormField] found with keys in this context.\n'
       'Keys found: $foundKeys\n'
       'Keys missing: $missingKeys\n'

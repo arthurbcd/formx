@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.33.1 - Apr 23, 2025
+
+- Relaxed assertion on `Formx.visit`.
+
 ## 0.33.0 - Mar 25, 2025
 
 - Renamed `FormKey.value` to `FormKey.key`.
