@@ -16,7 +16,7 @@ extension ContextFormx on BuildContext {
   ///
   /// Provide a [key] to search for a specific [Form] by its key. If absent,
   /// the root [Form] is returned.
-  FormxState formx([String? key]) => FormxState(_form(key));
+  FormxState formx(String key) => FormxState(_form(key));
 
   /// Gets the [FormFieldState] of type [T] by [key].
   FormFieldState<T> field<T>(String key) => _field<T>(key)..attachToValidator();
@@ -25,8 +25,8 @@ extension ContextFormx on BuildContext {
   ///
   /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
   /// - Throws an [Exception] with [Formx.errorTexts] if invalid.
-  Map<String, dynamic> submit({
-    String? key,
+  Map<String, dynamic> submit(
+    String key, {
     FormxOptions? options,
     String? errorMessage,
     List<String>? keys,
@@ -42,13 +42,13 @@ extension ContextFormx on BuildContext {
   ///
   /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
   /// - Returns `null` if the form is invalid.
-  Map<String, dynamic>? trySubmit({
-    String? key,
+  Map<String, dynamic>? trySubmit(
+    String key, {
     FormxOptions? options,
     List<String>? keys,
   }) {
     try {
-      return submit(key: key, options: options, keys: keys);
+      return submit(key, options: options, keys: keys);
     } catch (_) {
       return null;
     }
@@ -57,16 +57,16 @@ extension ContextFormx on BuildContext {
   /// Fills this [FormState] with new [map].
   ///
   /// If [format] is true, [TextField.inputFormatters] will be applied.
-  void fill(Map<String, dynamic> map, {String? key, bool format = true}) {
+  void fill(String key, Map<String, dynamic> map, {bool format = true}) {
     formx(key).fill(map, format: format);
   }
 
   /// Calls [callback] when [FormState] is on its initial state.
   ///
   /// This is useful for setting initial values, for example.
-  void onInitialForm(ValueSetter<FormxState> callback) {
+  void onInitialForm(String key, ValueSetter<FormxState> callback) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = formx();
+      final state = formx(key);
       if (!state.hasInteractedByUser && state.isInitial) {
         callback(state);
       }
@@ -74,7 +74,7 @@ extension ContextFormx on BuildContext {
   }
 
   /// Debugs the [FormState] of this [BuildContext].
-  void debugForm([String? key]) {
+  void debugForm(String key) {
     if (kDebugMode) formx(key).debug();
   }
 
@@ -107,7 +107,7 @@ extension ContextFormx on BuildContext {
 
   static final _formCache = _StateCache<FormState>();
 
-  FormState _form([String? key]) {
+  FormState _form(String key) {
     assert(
       !debugDoingBuild,
       'Called `context.formx` during build, which is not allowed.\n'
@@ -115,7 +115,7 @@ extension ContextFormx on BuildContext {
       'onChanged, onPressed, etc.\n\n'
       'Ex:\n'
       'Form(\n'
-      '  onChanged: () => print(context.formx().toMap()),\n'
+      '  onChanged: () => print(context.formx("key").toMap()),\n'
       ')\n',
     );
 
@@ -129,8 +129,8 @@ extension ContextFormx on BuildContext {
     return formState!;
   }
 
-  FormState? _visitForm(String? key) {
-    final keys = key?.split('.') ?? [];
+  FormState? _visitForm(String key) {
+    final keys = key.split('.');
 
     FormState? formState;
     void visit(Element el) {
@@ -142,15 +142,6 @@ extension ContextFormx on BuildContext {
           return el.visitChildren(visit);
         }
 
-        assert(
-          formState == null || state.keys.isEmpty && key == null,
-          'Duplicate [Form] without keys found.\n\n'
-          'Only one keyless [Form] is allowed in the widget tree.\n'
-          'Otherwise, provide a key to your [Form]:\n'
-          '${state.widget.runtimeType}(\n'
-          "  key: Key('my_form_key'), <- add a key  \n"
-          ')\n',
-        );
         assert(
           formState == null || state.keys.isEmpty,
           'Duplicate [Form.key] found: $key.\n\n'
@@ -244,7 +235,7 @@ extension on FormFieldState {
 extension on FormState {
   List<String> get keys => [...?parent?.keys, if (key != null) key!];
 
-  FormState? byKey(String? key) {
+  FormState? byKey(String key) {
     if (key == this.key) {
       assert(
         parent?.key != key,
@@ -262,7 +253,7 @@ extension on FormState {
     }
 
     // look for nested forms, ex: 'nested.form'
-    if (key?.split('.') case var keys? when keys.length > 1) {
+    if (key.split('.') case var keys when keys.length > 1) {
       FormState? state = this;
 
       for (final (index, key) in keys.indexed) {
@@ -278,9 +269,8 @@ extension on FormState {
   }
 }
 
-class _StateCache<T extends State>
-    extends MapBase<(BuildContext, String?), T?> {
-  final cache = <(BuildContext, String?), T>{};
+class _StateCache<T extends State> extends MapBase<(BuildContext, String), T?> {
+  final cache = <(BuildContext, String), T>{};
 
   @override
   T? operator [](key) {
@@ -303,7 +293,7 @@ class _StateCache<T extends State>
   }
 
   @override
-  Iterable<(BuildContext, String?)> get keys sync* {
+  Iterable<(BuildContext, String)> get keys sync* {
     final garbage = <Object?>[];
 
     for (final key in cache.keys) {

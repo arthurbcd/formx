@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.34.0 - Apr 25, 2025
+
+- Breaking change: visiting a form explicitly requires a `Key` value.
+- Fix missing `enabled` state in fields.
+- Introduces `Formx` experimental api.
+  
 ## 0.33.1 - Apr 23, 2025
 
 - Relaxed assertion on `Formx.visit`.

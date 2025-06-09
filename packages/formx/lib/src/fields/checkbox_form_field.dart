@@ -35,7 +35,7 @@ class CheckboxFormField extends FormxField<bool> {
 
     return CheckboxListTile(
       value: state.value,
-      onChanged: state.didChange,
+      onChanged: state.widget.enabled ? state.didChange : null,
       title: title,
       subtitle: switch (state.errorText) {
         null => subtitle,

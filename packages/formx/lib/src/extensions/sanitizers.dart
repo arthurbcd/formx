@@ -90,7 +90,7 @@ extension FormxIndentedExtension<K, V> on Map<K, V> {
   Map<K, V> get indented => IndentedMap(this);
 
   /// Pairs of the entries of this map.
-  List<(K, V)> get pairs => [for (final e in entries) (e.key, e.value)];
+  Iterable<(K, V)> get pairs => keys.map((key) => (key, this[key] as V));
 }
 
 /// Extension for casting lists.

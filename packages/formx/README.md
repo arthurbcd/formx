@@ -9,13 +9,10 @@
 
 ## Acessing the state
 
-`BuildContext.formx([String? key])` automatically retrieves `FormState` by key value.
+`BuildContext.formx(String key)` automatically retrieves `FormState` by key value.
 
 ```dart
-// when key is null, it returns the first FormState where key is null
-final addressState = context.formx();
-
-// specify if multiple forms:
+// specify the form key:
 final addressState = context.formx('address'); 
 
 if (addressState.validate()) {

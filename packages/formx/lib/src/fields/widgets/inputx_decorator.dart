@@ -31,18 +31,21 @@ class _InputxDecoratorState extends State<InputxDecorator> {
   Widget build(BuildContext context) {
     final decoration = widget.decoration ?? const InputDecoration();
     final state = context.findAncestorStateOfType<FormFieldState>()!;
+    final enabled = state.widget.enabled;
 
     return Focus(
-      autofocus: widget.autofocus,
+      autofocus: enabled && widget.autofocus,
       focusNode: widget.focusNode,
-      onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
+      onFocusChange:
+          enabled ? (hasFocus) => setState(() => _hasFocus = hasFocus) : null,
       child: MouseRegion(
-        onEnter: (_) => setState(() => _hovering = true),
-        onExit: (_) => setState(() => _hovering = false),
+        onEnter: enabled ? (_) => setState(() => _hovering = true) : null,
+        onExit: enabled ? (_) => setState(() => _hovering = false) : null,
         child: InputDecorator(
-          isFocused: _hasFocus,
-          isHovering: _hovering,
+          isFocused: _hasFocus && enabled,
+          isHovering: _hovering && enabled,
           decoration: decoration.copyWith(
+            enabled: enabled,
             errorText: decoration.errorText ?? state.errorText,
             suffix: decoration.suffix ?? widget.suffix,
           ),

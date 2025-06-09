@@ -27,13 +27,12 @@ class ComplexStructureExample extends StatelessWidget {
 
     return Center(
       child: Form(
-        onChanged: () => print(context.formx().initialValues),
+        key: const Key('form'),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Form(
               key: const Key('user'),
-              onChanged: context.debugForm,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -60,7 +59,7 @@ class ComplexStructureExample extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                context.formx().validate();
+                context.formx('form').validate();
               },
               child: const Text('validate'),
             ),
@@ -73,7 +72,7 @@ class ComplexStructureExample extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                context.formx().reset();
+                context.formx('form').reset();
               },
               child: const Text('reset'),
             ),

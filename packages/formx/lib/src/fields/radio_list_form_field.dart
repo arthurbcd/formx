@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../formx_state.dart';
-import 'widgets/formx_field.dart';
+import '../../formx.dart';
 
 /// A `FormField<T>` that builds a list of [RadioListTile].
 class RadioListFormField<T extends Object> extends FormxField<T> {
@@ -93,7 +92,7 @@ class RadioListFormField<T extends Object> extends FormxField<T> {
             title: title?.call(item),
             subtitle: subtitle?.call(item),
             controlAffinity: controlAffinity,
-            onChanged: state.didChange,
+            onChanged: enabled ? state.didChange : null,
           ),
         ).useIntrinsicWidth(!isExpanded),
     ];

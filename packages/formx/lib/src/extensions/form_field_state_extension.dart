@@ -1,11 +1,7 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
-import '../formatter/formatter.dart';
-import '../models/field_key.dart';
-import '../models/formx_exception.dart';
-import '../models/formx_options.dart';
-import 'sanitizers.dart';
+import '../../formx.dart';
 
 /// Extends [FormFieldState] with a programatic way to set [errorText].
 extension FormFieldStateExtension<T> on FormFieldState<T> {
@@ -16,7 +12,7 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
   FieldKey<T>? get fieldKey => widget.key?.tryCast<FieldKey<T>>();
 
   /// Whether [FormFieldState.value] is the same as [FormField.initialValue].
-  bool get isInitial => value == widget.initialValue;
+  bool get isInitial => Formx.equals(value, widget.initialValue);
 
   /// Returns the [FormFieldState.value] as a [String].
   String get text => value?.toString() ?? '';

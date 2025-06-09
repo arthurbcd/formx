@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../formx_state.dart';
-import 'widgets/formx_field.dart';
+import '../../formx.dart';
 
 /// A `FormField<List<T>>` that builds a list of [CheckboxListTile].
 class CheckboxListFormField<T extends Object> extends FormxField<List<T>> {
@@ -94,19 +93,21 @@ class CheckboxListFormField<T extends Object> extends FormxField<List<T>> {
             title: title?.call(item),
             subtitle: subtitle?.call(item),
             value: state.value?.contains(item) ?? false,
-            onChanged: (value) {
-              final list = [...?state.value];
+            onChanged: state.widget.enabled
+                ? (value) {
+                    final list = [...?state.value];
 
-              if (isExclusive) {
-                state.didChange(value ?? false ? [item] : []);
-              } else if (value ?? false) {
-                state.didChange(list..add(item));
-              } else {
-                state.didChange(list..remove(item));
-              }
+                    if (isExclusive) {
+                      state.didChange(value ?? false ? [item] : []);
+                    } else if (value ?? false) {
+                      state.didChange(list..add(item));
+                    } else {
+                      state.didChange(list..remove(item));
+                    }
 
-              onChanged?.call(list);
-            },
+                    onChanged?.call(list);
+                  }
+                : null,
           ),
         ).useIntrinsicWidth(!isExpanded),
     ];

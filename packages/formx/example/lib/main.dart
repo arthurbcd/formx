@@ -16,7 +16,17 @@ void main() {
   );
 }
 
-final userKey = FormKey();
+final userKey = FormKey('user');
+
+final userForm = Formx(
+  initialValues: {
+    'name': 'Arthur',
+    'age': '18',
+    'cpf': '00252054202',
+    'email': 'some@email',
+    'phone': '91982224111',
+  },
+);
 
 class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
@@ -40,149 +50,141 @@ class FormxExample extends StatelessWidget {
     final phoneFormatter = Formatter().phone.br();
 
     return Scaffold(
-      floatingActionButton: const MyWidget(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Form(
-        key: userKey,
+        // key: userKey,
 
         // Check your console and type, it's alive!
         onChanged: () {
-          final state = context.formx();
-          print(state.toMap());
+          final map = userForm.values;
+          print(map);
         },
 
         // Builder shortcut to access the form state.
         child: Center(
-          child: SingleChildScrollView(
-            child: Form(
-              key: const Key('sub'),
-              onChanged: context.debugForm,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DateFormField(
-                    key: const Key('datex'),
-                    validator: Validator().isAfter(DateTime.now()),
+          child: Form(
+            onChanged: () {
+              final map = userForm.values;
+              print(map);
+            },
+            // key: const Key('sub'),
+            child: ListView(
+              // mainAxisSize: MainAxisSize.min,
+              children: [
+                DateFormField(
+                  key: userForm.key('date'),
+                  validator: Validator().isAfter(DateTime.now()),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: AutocompleteFormField.paged(
+                    key: userForm.key('autocomplete'),
+                    search: search,
+                    onResults: print,
                   ),
-                  SizedBox(
-                    width: 300,
-                    child: AutocompleteFormField.paged(
-                      key: const Key('autocomplete'),
-                      search: search,
-                      onResults: print,
+                ),
+                SizedBox(
+                  width: 200,
+                  child: SearchFormField.paged(
+                    search: search,
+                  ),
+                ),
+                const Text('USER'),
+                // FileListFormField.url(
+                //   key: const Key('file'),
+                // ),
+                // ImageListFormField.url(
+                //   initialValue: ['https://via.placeholder.com/150'],
+                //   // imageUploader: (file, path) async {
+                //   //   return 'url';
+                //   // },
+                // ),
+                // DateFormField(
+                //   key: formController['date'],
+                // ),
+
+                TextFormField(
+                  key: userForm.key('price'),
+                  inputFormatters: Formatter().currency(code: 'BRL'),
+                ),
+
+                TextFormField(
+                  key: userForm.key('name'),
+                  // inputFormatters: Formatter().pinyin(),
+                  // validator: Validator().required().minLength(2),
+                ),
+
+                // Just add a key to your fields and you're good to go.
+                TextFormField(
+                  key: userForm.key('phone'),
+                  // initialValue: phoneFormatter.format('91982224111'),
+                  inputFormatters: phoneFormatter,
+                  validator: Validator().minWords(2),
+                ),
+
+                TextFormField(
+                  key: userForm.key('age'),
+                  inputFormatters: Formatter().phone(),
+                  validator: Validator(),
+                ),
+                TextFormField(
+                  key: userForm.key('cpf'),
+                  inputFormatters: Formatter().cpfCnpj(),
+                  validator: Validator().cpfCnpj(),
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        // final isValid = formController['cpf'].validate();
+                        // print(isValid);
+                      },
+                      icon: const Icon(Icons.check),
                     ),
                   ),
-                  SizedBox(
-                    width: 200,
-                    child: SearchFormField.paged(
-                      search: search,
-                    ),
-                  ),
-                  const Text('USER'),
-                  // FileListFormField.url(
-                  //   key: const Key('file'),
-                  // ),
-                  // ImageListFormField.url(
-                  //   initialValue: ['https://via.placeholder.com/150'],
-                  //   // imageUploader: (file, path) async {
-                  //   //   return 'url';
-                  //   // },
-                  // ),
-                  const DateFormField(
-                    key: Key('date'),
-                  ),
+                ),
+                TextFormField(
+                  key: userForm.key('email', keepMask: true),
+                  validator: Validator().required().email(),
+                ),
 
-                  TextFormField(
-                    key: const Key('price'),
-                    inputFormatters: Formatter().currency(code: 'BRL'),
-                  ),
-
-                  TextFormField(
-                    key: const Key('name'),
-                    inputFormatters: Formatter().pinyin(),
-                    // validator: Validator().required().minLength(2),
-                  ),
-
-                  // Just add a key to your fields and you're good to go.
-                  TextFormField(
-                    key: const Key('phone'),
-                    initialValue: phoneFormatter.format('91982224111'),
-                    inputFormatters: phoneFormatter,
-                    validator: Validator().minWords(2),
-                  ),
-
-                  TextFormField(
-                    key: const Key('age'),
-                    initialValue: '1',
-                    inputFormatters: Formatter().phone(),
-                    validator: Validator(),
-                  ),
-                  TextFormField(
-                    key: const Key('cpf'),
-                    initialValue: '00252054202',
-                    inputFormatters: Formatter().cpfCnpj(),
-                    validator: Validator().cpfCnpj(),
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          final isValid = context.field('cpf').validate();
-                          print(isValid);
-                        },
-                        icon: const Icon(Icons.check),
-                      ),
-                    ),
-                  ),
-                  TextFormField(
-                    key: const Key('email'),
-                    initialValue: 'some@email',
-                    validator: Validator().required().email(),
-                  ),
-
-                  /// You can nest [Formx] to create complex structures.
-                  Form(
-                    key: const Key('address'),
-                    onChanged: context.debugForm,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Address:'),
-                        const MyWidget(),
-                        TextFormField(
-                          key: const Key('street'),
-                          initialValue: 'Sesame Street',
-                        ),
-                        TextFormField(
-                          key: const Key('age'),
-                        ),
-                        RadioListFormField(
-                          key: const Key('names'),
-                          items: const ['Arthur', 'Iran', 'Juan'],
-                          validator: Validator().required(),
-                        ),
-                        CheckboxListFormField(
-                          key: const Key('friends').options<List<String>>(
-                            adapter: (v) => [for (final i in v) i],
-                          ),
-                          items: const ['Arthur', 'Iran', 'Juan'],
-                          validator: Validator().minLength(2),
-                        ),
-                        CheckboxFormField(
-                          key: const Key('terms'),
-                          title: const Text('I agree to the terms'),
-                          validator: Validator().required(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      userKey.state.submit();
-                      // context.submit();
-                    },
-                    child: const Text('Submit'),
-                  ),
-                ],
-              ),
+                /// You can nest [Formx] to create complex structures.
+                // Form(
+                //   key: formController['address'],
+                //   child: Column(
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: [
+                //       const Text('Address:'),
+                //       TextFormField(
+                //         key: formController['street'],
+                //         initialValue: 'Sesame Street',
+                //       ),
+                //       TextFormField(
+                //         key: formController['age'],
+                //       ),
+                //       RadioListFormField(
+                //         key: formController['names'],
+                //         items: const ['Arthur', 'Iran', 'Juan'],
+                //         validator: Validator().required(),
+                //       ),
+                //       CheckboxListFormField(
+                //         key: formController['friends'],
+                //         items: const ['Arthur', 'Iran', 'Juan'],
+                //         validator: Validator().minLength(2),
+                //       ),
+                //       CheckboxFormField(
+                //         key: formController['terms'],
+                //         title: const Text('I agree to the terms'),
+                //         validator: Validator().required(),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                ElevatedButton(
+                  onPressed: () {
+                    final map = userForm.values;
+                    print(map);
+                  },
+                  child: const Text('Submit'),
+                ),
+              ],
             ),
           ),
         ),
@@ -198,22 +200,33 @@ class FormxExample extends StatelessWidget {
   }
 }
 
-class Expertise {
-  final String id;
+// class MyForm extends StatefulWidget {
+//   final Widget child;
+//   const MyForm({super.key, required this.child});
 
-  Expertise(this.id);
-}
+//   @override
+//   State<MyForm> createState() => _MyFormState();
+// }
 
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
+// class _MyFormState extends State<MyForm> {
+//   late final formKey = FormKey(widget.key?.value ?? '$hashCode');
 
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        print(context.formx().toMap());
-      },
-      child: const Text('Print Form'),
-    );
-  }
-}
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       // This is a good place to initialize the form state
+//       // or perform any setup that requires the widget to be built.
+//       formKey.state.fill(map);
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Form(
+//       key: formKey,
+//       onChanged: () {},
+//       child: widget.child,
+//     );
+//   }
+// }

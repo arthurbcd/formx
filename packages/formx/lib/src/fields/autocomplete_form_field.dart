@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../formx_state.dart';
-import 'search/async_autocomplete.dart';
-import 'search/async_search_base.dart';
-import 'widgets/formx_field.dart';
+import '../../formx.dart';
 
 /// A `FormField<T>` that contains a [AsyncAutocomplete] widget.
 class AutocompleteFormField<T extends Object> extends FormxField<T> {

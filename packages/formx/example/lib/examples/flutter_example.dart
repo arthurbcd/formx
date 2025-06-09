@@ -152,12 +152,12 @@ class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
 
   Future<void> fill(BuildContext context, Map<String, dynamic> map) async {
-    context.fill(map);
+    context.fill('form', map);
   }
 
   Future<void> submit(BuildContext context) async {
     try {
-      final map = context.submit(); // validate() + save() + toMap()
+      final map = context.submit('form'); // validate() + save() + toMap()
       print('Form is valid: $map');
     } on FormxException catch (e) {
       print('Form is invalid: ${e.errorTexts}');
@@ -169,6 +169,7 @@ class FormxExample extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Form(
+          key: const Key('form'),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -5,10 +5,8 @@ import 'dart:async';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
-import '../formx_state.dart';
-import '../models/formx_setup.dart';
+import '../../formx.dart';
 import 'widgets/file_label.dart';
-import 'widgets/formx_field.dart';
 import 'widgets/icon_loading_button.dart';
 
 /// A [FormField] that allows the user to pick a file.

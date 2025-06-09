@@ -9,13 +9,10 @@
 
 ## Acessing the state
 
-`BuildContext.formx([String? key])` automatically retrieves `FormState` by key value.
+`BuildContext.formx(String key)` automatically retrieves `FormState` by key value.
 
 ```dart
-// when key is null, it returns the first FormState where key is null
-final addressState = context.formx();
-
-// specify if multiple forms:
+// specify the form key:
 final addressState = context.formx('address'); 
 
 if (addressState.validate()) {
@@ -235,6 +232,78 @@ Additionally exports [recase](https://pub.dev/packages/recase) library. See it f
 
 - `.keepAlive` usually needed for building forms with [PageView.children].
 - `.expanded` usually needed for building forms with [Column.children] or [Row.children].
+
+## Experimental Formx Api
+
+Control your form using `Formx` class.
+
+This is a complete replacement of the `Form` and `FormState` api.
+
+`Formx` syncs directly with any `FormFieldState`. State is restored, so you don't need to worry about keeping the widget tree alive. You can even use it before the widget tree is built/rendered.
+
+You can perform any validation, saving or retrieval:
+- `Formx.validate()`
+- `Formx.save()`
+- `Formx.values` (also a setter)
+- `Formx.setValue`.
+
+```dart
+final form = Formx(
+  initialValues: {
+    'name': 'John Doe',
+    'email': 'john.doe@example.com',
+    'street': '123 Main',
+    'number': '456',
+    'phone': '91982224111',
+    'address': {
+      'street': '123 Main',
+      'number': '456',
+    },
+    'nested': {
+      'password': '121212',
+      'confirm': '343434',
+    },
+    'nested2': {
+      'password': '1111111',
+      'confirm': '999999',
+    },
+    'school': 'Equipe',
+  },
+);
+```
+
+Connect it simply with `Formx.key`:
+
+```dart
+TextFormField(
+  key: form.key('name'),
+  validator: Validator().required(),
+  decoration: const InputDecoration(
+    labelText: 'Name',
+  ),
+),
+TextFormField(
+  key: form.key('email'),
+  validator: Validator().required().email(),
+  decoration: const InputDecoration(
+    labelText: 'Email',
+  ),
+),
+Column(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    TextFormField(key: form.key('nested.password')),
+    TextFormField(key: form.key('nested.confirm')),
+  ],
+),
+Column(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    TextFormField(key: form.key('nested2.password')),
+    TextFormField(key: form.key('nested2.confirm')),
+  ],
+),
+```
 
 ## Contributing
 

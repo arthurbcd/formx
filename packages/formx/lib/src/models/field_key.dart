@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -12,6 +13,8 @@ class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
     this.unmasker,
     this.adapter,
   }) : super.constructor() {
+    if (!kDebugMode) return;
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       final (state, element) = (currentState, currentContext);
       if (state == null && element is! Element) return;
@@ -76,7 +79,9 @@ class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
 
 class FormKey extends GlobalKey<FormState> {
   // factory FormKey(String value) => FormKey._(value);
-  FormKey([this.key]) : super.constructor() {
+  FormKey(this.key) : super.constructor() {
+    if (!kDebugMode) return;
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       final (state, element) = (currentState, currentContext);
       if (state == null && element is! Element) return;
@@ -90,7 +95,7 @@ class FormKey extends GlobalKey<FormState> {
 
   /// The [Form.key] value.
   @protected
-  final String? key;
+  final String key;
 }
 
 extension FormxFormKeyExtension on GlobalKey<FormState> {
