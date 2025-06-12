@@ -241,9 +241,8 @@ This is a complete replacement of the `Form` and `FormState` api.
 
 `Formx` syncs directly with any `FormFieldState`. State is restored, so you don't need to worry about keeping the widget tree alive. You can even use it before the widget tree is built/rendered.
 
-You can perform any validation, saving or retrieval:
+You can perform any validation or retrieval:
 - `Formx.validate()`
-- `Formx.save()`
 - `Formx.values` (also a setter)
 - `Formx.setValue`.
 

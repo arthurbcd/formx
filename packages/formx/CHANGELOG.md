@@ -1,6 +1,15 @@
 # Changelog
 
-## 0.34.0 - Apr 25, 2025
+## 0.34.1 - Jun 12, 2025
+
+- Add `Formx.submit`.
+- Add `Formx.trySubmit`.
+- Add `Formx.rawValues`.
+- Add `Formx.errorTexts`.
+- Add `Formx.clear`.
+- Add `FormFieldStateExtension.clear`.
+
+## 0.34.0 - Jun 10, 2025
 
 - Breaking change: visiting a form explicitly requires a `Key` value.
 - Fix missing `enabled` state in fields.

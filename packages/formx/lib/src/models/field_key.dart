@@ -4,7 +4,7 @@ import 'package:flutter/scheduler.dart';
 
 import '../../formx.dart';
 
-/// A [Key] for customizing [Formx.toMap] & other outputs.
+/// A [Key] for customizing [FormxState.toMap] & other outputs.
 class FieldKey<T> extends GlobalKey<FormFieldState<T>> {
   /// Creates a [FieldKey] with a [key].
   FieldKey(

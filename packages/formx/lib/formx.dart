@@ -27,6 +27,7 @@ export 'src/formatter/country_code_extension.dart';
 export 'src/formatter/fiat_code_extension.dart';
 export 'src/formatter/formatter.dart';
 export 'src/formatter/formatter_extension.dart';
+export 'src/formx/formx_class.dart';
 export 'src/formx_state.dart';
 export 'src/models/field_key.dart';
 export 'src/models/formx_exception.dart';

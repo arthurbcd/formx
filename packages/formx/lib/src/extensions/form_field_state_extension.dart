@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
@@ -34,6 +36,21 @@ extension FormFieldStateExtension<T> on FormFieldState<T> {
     if (value is Iterable) return value.isEmpty;
     if (value is Map) return value.isEmpty;
     return null;
+  }
+
+  void clear() {
+    final value = switch (this.value) {
+      _ when widget is TextFormField => '',
+      Iterable _ => <dynamic>[],
+      _ => null,
+    };
+    if (mounted) {
+      didChange(value as T?);
+    } else {
+      // when not mounted, we set the value directly
+      // to avoid the field being marked as dirty
+      setValue(value as T?);
+    }
   }
 
   /// Returns the [FormFieldState.value] modified by form/field options.

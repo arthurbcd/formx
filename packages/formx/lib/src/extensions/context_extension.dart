@@ -22,9 +22,9 @@ extension ContextFormx on BuildContext {
   FormFieldState<T> field<T>(String key) => _field<T>(key)..attachToValidator();
 
   /// Submits the [FormState] of this [BuildContext].
-  ///
-  /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
-  /// - Throws an [Exception] with [Formx.errorTexts] if invalid.
+  ///x
+  /// - Performs [FormState.validate], [FormState.save] and [FormxState.toMap].
+  /// - Throws an [Exception] with [FormxState.errorTexts] if invalid.
   Map<String, dynamic> submit(
     String key, {
     FormxOptions? options,
@@ -40,7 +40,7 @@ extension ContextFormx on BuildContext {
 
   /// Submits the [FormState] of this [BuildContext].
   ///
-  /// - Performs [FormState.validate], [FormState.save] and [Formx.toMap].
+  /// - Performs [FormState.validate], [FormState.save] and [FormxState.toMap].
   /// - Returns `null` if the form is invalid.
   Map<String, dynamic>? trySubmit(
     String key, {
@@ -59,18 +59,6 @@ extension ContextFormx on BuildContext {
   /// If [format] is true, [TextField.inputFormatters] will be applied.
   void fill(String key, Map<String, dynamic> map, {bool format = true}) {
     formx(key).fill(map, format: format);
-  }
-
-  /// Calls [callback] when [FormState] is on its initial state.
-  ///
-  /// This is useful for setting initial values, for example.
-  void onInitialForm(String key, ValueSetter<FormxState> callback) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = formx(key);
-      if (!state.hasInteractedByUser && state.isInitial) {
-        callback(state);
-      }
-    });
   }
 
   /// Debugs the [FormState] of this [BuildContext].
