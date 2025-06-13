@@ -119,14 +119,16 @@ class _InputDecoratorxState extends State<InputDecoratorx> {
   Widget build(BuildContext context) {
     final field = context.findAncestorStateOfType<FormxFieldState>();
     final decoration = widget.decoration;
+    final enabled = field?.widget.enabled ?? true;
 
     Widget child = Focus(
       autofocus: widget.autofocus ?? field?.widget.autofocus ?? false,
       focusNode: widget.focusNode ?? field?.widget.focusNode,
-      onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
+      onFocusChange:
+          enabled ? (hasFocus) => setState(() => _hasFocus = hasFocus) : null,
       child: MouseRegion(
-        onEnter: (_) => setHovering(true),
-        onExit: (_) => setHovering(false),
+        onEnter: enabled ? (_) => setHovering(true) : null,
+        onExit: enabled ? (_) => setHovering(false) : null,
         child: widget.child,
       ),
     );
@@ -135,8 +137,8 @@ class _InputDecoratorxState extends State<InputDecoratorx> {
 
     // add decorator
     return InputDecorator(
-      isFocused: _hasFocus,
-      isHovering: _hovering,
+      isFocused: _hasFocus && enabled,
+      isHovering: _hovering && enabled,
       decoration: decoration.copyWith(
         errorText: decoration.errorText ?? field?.errorText,
       ),

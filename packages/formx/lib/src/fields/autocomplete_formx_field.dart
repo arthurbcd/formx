@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../../formx.dart';
 
 /// A `FormField<T>` that contains a [AsyncAutocomplete] widget.
-class AutocompleteFormField<T extends Object> extends FormxField<T> {
+class AutocompleteFormxField<T extends Object> extends FormxField<T> {
   /// Creates a `FormField<T>` on top of a [ListTile] based [AsyncAutocomplete].
   ///
   /// This field builds results based on the [search] function.
-  const AutocompleteFormField({
+  const AutocompleteFormxField({
     required AsyncSearchCallback<T> this.search,
     this.title = _defaultTitle,
     this.subtitle,
@@ -33,7 +33,7 @@ class AutocompleteFormField<T extends Object> extends FormxField<T> {
   /// Creates a `FormField<T>` on top of a [ListTile] based [AsyncAutocomplete].
   ///
   /// This field builds paged results based on the [search] function.
-  const AutocompleteFormField.paged({
+  const AutocompleteFormxField.paged({
     required AsyncPagedSearchCallback<T> search,
     this.title = _defaultTitle,
     this.subtitle,

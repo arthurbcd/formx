@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'widgets/formx_field.dart';
 
 /// A [FormField] that contains a single [CheckboxListTile].
-class CheckboxFormField extends FormxField<bool> {
+class CheckboxFormxField extends FormxField<bool> {
   /// Creates a [FormField] that contains a single [CheckboxListTile].
-  const CheckboxFormField({
+  const CheckboxFormxField({
     this.title,
     this.subtitle,
     this.controlAffinity = ListTileControlAffinity.leading,

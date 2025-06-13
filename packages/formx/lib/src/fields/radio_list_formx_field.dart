@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../formx.dart';
 
 /// A `FormField<T>` that builds a list of [RadioListTile].
-class RadioListFormField<T extends Object> extends FormxField<T> {
+class RadioListFormxField<T extends Object> extends FormxField<T> {
   /// Creates a `FormField<T>` that builds a list of [RadioListTile].
   ///
   /// The [items] are the list of items to be displayed.
@@ -18,7 +18,7 @@ class RadioListFormField<T extends Object> extends FormxField<T> {
   ///
   /// Additional customization can be done with the [decoration] and/or [ListTileTheme].
   ///
-  const RadioListFormField({
+  const RadioListFormxField({
     super.key,
     required this.items,
     this.title = _defaultTitle,

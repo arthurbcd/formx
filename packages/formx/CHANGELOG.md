@@ -1,18 +1,25 @@
 # Changelog
 
+## 0.35.0 - Jun 13, 2025
+
+- Added `SliderFormField`.
+- Fixed `FormxState.visit`, key now correctly visits nested forms.
+- Improved `FormxField` enabled state handling.
+- Renamed all library fields to `FormxField` for consistency.
+
 ## 0.34.1 - Jun 12, 2025
 
-- Add `Formx.submit`.
-- Add `Formx.trySubmit`.
-- Add `Formx.rawValues`.
-- Add `Formx.errorTexts`.
-- Add `Formx.clear`.
-- Add `FormFieldStateExtension.clear`.
+- Added `Formx.submit`.
+- Added `Formx.trySubmit`.
+- Added `Formx.rawValues`.
+- Added `Formx.errorTexts`.
+- Added `Formx.clear`.
+- Added `FormFieldStateExtension.clear`.
 
 ## 0.34.0 - Jun 10, 2025
 
 - Breaking change: visiting a form explicitly requires a `Key` value.
-- Fix missing `enabled` state in fields.
+- Fixed missing `enabled` state in fields.
 - Introduces `Formx` experimental api.
   
 ## 0.33.1 - Apr 23, 2025

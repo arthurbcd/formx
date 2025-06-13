@@ -6,10 +6,7 @@ void main() {
     const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: SizedBox(
-            width: 300,
-            child: ComplexStructureExample(),
-          ),
+          child: SizedBox(width: 300, child: ComplexStructureExample()),
         ),
       ),
     ),
@@ -36,10 +33,17 @@ class ComplexStructureExample extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    key: const Key('name'),
-                    // validator: Validator(),
+                  TextFormField(key: const Key('name')),
+                  SliderFormxField(
+                    key: const Key('age'),
+                    initialValue: 18,
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    label: 'Age',
+                    validator: Validator().maxNumber(50),
                   ),
+
                   TextFormField(
                     key: const Key('email'),
                     validator: Validator<String>(),
@@ -48,9 +52,7 @@ class ComplexStructureExample extends StatelessWidget {
                     key: const Key('password'),
                     validator: Validator<String>(
                       validators: [
-                        Validator(
-                          test: (value) => value.length > 5,
-                        ),
+                        Validator(test: (value) => value.length > 5),
                       ],
                     ),
                   ),
@@ -59,12 +61,15 @@ class ComplexStructureExample extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                context.formx('form').validate();
+                final isValid = context.formx('form').validate();
+                print('Form is valid: $isValid');
+                print('Form values: ${context.formx('form').toMap()}');
               },
               child: const Text('validate'),
             ),
             ElevatedButton(
               onPressed: () {
+                context.field('age').validate();
                 // state.nested['user']?.fields['email']
                 //     ?.setErrorText('errorText');
               },
@@ -86,12 +91,8 @@ class ComplexStructureExample extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextFormField(
-                          key: const Key('street'),
-                        ),
-                        TextFormField(
-                          key: const Key('number'),
-                        ),
+                        TextFormField(key: const Key('street')),
+                        TextFormField(key: const Key('number')),
                       ],
                     ),
                   ),

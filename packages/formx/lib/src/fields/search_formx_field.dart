@@ -4,14 +4,14 @@ import 'package:meta/meta.dart';
 import '../../formx.dart';
 
 /// A `FormField<T>` that contains a [AsyncAutocomplete] widget.
-class SearchFormField<T extends Object> extends FormField<T> {
+class SearchFormxField<T extends Object> extends FormField<T> {
   /// Creates a `FormField<T>` on top of a [ListTile] based [AsyncAutocomplete].
   ///
   /// This field builds results based on the [search] function.
   ///
   /// Use [SearchBarThemeData] for additional customization.
   ///
-  const SearchFormField({
+  const SearchFormxField({
     required AsyncSearchCallback<T> this.search,
     this.title = _defaultTitle,
     this.subtitle,
@@ -37,7 +37,7 @@ class SearchFormField<T extends Object> extends FormField<T> {
   /// Creates a `FormField<T>` on top of a [ListTile] based [AsyncAutocomplete].
   ///
   /// This field builds paged results based on the [search] function.
-  const SearchFormField.paged({
+  const SearchFormxField.paged({
     required AsyncPagedSearchCallback<T> search,
     this.title = _defaultTitle,
     this.subtitle,
@@ -150,9 +150,9 @@ class _AutocompleteFormField<T extends Object> extends StatelessWidget {
   }
 }
 
-/// A [FormFieldState] that exposes the [SearchFormField] instance.
+/// A [FormFieldState] that exposes the [SearchFormxField] instance.
 extension type SearchFormFieldState<T extends Object>(FormFieldState<T> state)
     implements FormFieldState<T> {
   @redeclare
-  SearchFormField<T> get widget => state.widget as SearchFormField<T>;
+  SearchFormxField<T> get widget => state.widget as SearchFormxField<T>;
 }

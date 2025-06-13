@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
-import '../fields/date_form_field.dart';
-import '../fields/file_form_field.dart';
-import '../fields/file_list_form_field.dart';
+import '../fields/date_formx_field.dart' show DateFormxField;
+import '../fields/file_formx_field.dart' show FileFormxField;
+import '../fields/file_list_formx_field.dart' show FileListFormxField;
 
 /// A function to pick a value for a [FormField].
 typedef FieldPicker<T> = Future<T> Function(FormFieldState state);
@@ -24,9 +24,9 @@ class FormxSetup {
   /// Creates a [FormxSetup].
   ///
   /// - [defaultTitle] - The default title for all fields.
-  /// - [datePicker] - The default date picker for [DateFormField] fields.
-  /// - [filePicker] - The default file picker for [FileFormField] fields.
-  /// - [filesPicker] - The default file picker for [FileListFormField] fields.
+  /// - [datePicker] - The default date picker for [DateFormxField] fields.
+  /// - [filePicker] - The default file picker for [FileFormxField] fields.
+  /// - [filesPicker] - The default file picker for [FileListFormxField] fields.
   /// - [fileUploader] - The default file uploader for [XFile] fields.
   ///
   /// NOTE: Only some fields have default implementations. Others will throw
@@ -34,7 +34,7 @@ class FormxSetup {
   ///
   const FormxSetup({
     this.defaultTitle = _defaultTitle,
-    this.datePicker = DateFormField.defaultPicker,
+    this.datePicker = DateFormxField.defaultPicker,
     this.filePicker = _noFilePicker,
     this.filesPicker = _noFilesPicker,
     this.fileUploader = _noFileUploader,
@@ -93,13 +93,13 @@ class FormxSetup {
   /// The default title for all fields.
   final String Function(Object value) defaultTitle;
 
-  /// The default date picker for [DateFormField] fields.
+  /// The default date picker for [DateFormxField] fields.
   final FieldPicker<DateTime?> datePicker;
 
-  /// The default file picker for [FileFormField] fields.
+  /// The default file picker for [FileFormxField] fields.
   final FieldPicker<XFile?> filePicker;
 
-  /// The default files picker for [FileListFormField] fields.
+  /// The default files picker for [FileListFormxField] fields.
   final FieldPicker<List<XFile>> filesPicker;
 
   /// The default file uploader for [XFile] file fields.

@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import '../../formx.dart';
 
 /// A [FormField] of type [DateTime].
-class DateFormField extends FormxField<DateTime> {
+class DateFormxField extends FormxField<DateTime> {
   /// Creates a [FormField] of type [DateTime].
   ///
   /// You can override the default [picker] to show a custom date picker or to
   /// apply customized parameters.
   ///
-  const DateFormField({
+  const DateFormxField({
     super.key,
     super.onChanged,
     super.decoration,
@@ -36,7 +36,7 @@ class DateFormField extends FormxField<DateTime> {
 
   /// The default [picker] to show the date picker.
   static Future<DateTime?> defaultPicker(FormFieldState state) {
-    final widget = state.widget as DateFormField;
+    final widget = state.widget as DateFormxField;
     final now = DateTime.now();
 
     return showDatePicker(

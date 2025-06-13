@@ -10,9 +10,9 @@ import 'widgets/file_label.dart';
 import 'widgets/icon_loading_button.dart';
 
 /// A [FormField] that allows the user to pick a file.
-class FileFormField extends FormxField<XFile> {
-  /// Creates a [FileFormField] that allows the user to pick a file.
-  const FileFormField({
+class FileFormxField extends FormxField<XFile> {
+  /// Creates a [FileFormxField] that allows the user to pick a file.
+  const FileFormxField({
     super.key,
     super.autovalidateMode,
     super.enabled,

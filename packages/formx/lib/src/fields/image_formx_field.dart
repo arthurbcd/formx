@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import '../../formx.dart';
 
 /// A [FormField] that allows the user to pick an image.
-class ImageFormField extends FileFormField {
-  /// Creates a [ImageFormField] that allows the user to pick an image.
-  const ImageFormField({
+class ImageFormxField extends FileFormxField {
+  /// Creates a [ImageFormxField] that allows the user to pick an image.
+  const ImageFormxField({
     super.key,
     super.autovalidateMode,
     super.autofocus,
@@ -52,7 +52,7 @@ class ImageFormField extends FileFormField {
     Widget Function(String url, XFile? file)? label,
     Widget uploadIcon = const Icon(Icons.image),
   }) {
-    return FileFormField.url(
+    return FileFormxField.url(
       filePicker: imagePicker ?? Formx.setup.imagePicker,
       fileUploader: imageUploader ?? Formx.setup.imageUploader,
       fileDeleter: imageDeleter ?? Formx.setup.imageDeleter,

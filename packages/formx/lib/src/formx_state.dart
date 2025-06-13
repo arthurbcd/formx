@@ -75,8 +75,8 @@ extension type FormxState(FormState state) implements FormState {
   bool validate([List<String>? keys]) {
     return !visit(
       keys: keys,
+      onForm: (key, state) => state.validate(),
       onField: (key, state) => state.validate(),
-      onForm: keys != null ? (key, state) => state.validate() : null,
     ).values.contains(false);
   }
 
@@ -84,8 +84,8 @@ extension type FormxState(FormState state) implements FormState {
   void save([List<String>? keys]) {
     visit(
       keys: keys,
+      onForm: (key, state) => state.save(),
       onField: (key, state) => state.save(),
-      onForm: keys != null ? (key, state) => state.save() : null,
     );
   }
 
@@ -93,8 +93,8 @@ extension type FormxState(FormState state) implements FormState {
   void reset([List<String>? keys]) {
     visit(
       keys: keys,
+      onForm: (key, state) => state.reset(),
       onField: (key, state) => state.reset(),
-      onForm: keys != null ? (key, state) => state.reset() : null,
     );
   }
 

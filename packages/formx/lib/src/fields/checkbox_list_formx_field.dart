@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../formx.dart';
 
 /// A `FormField<List<T>>` that builds a list of [CheckboxListTile].
-class CheckboxListFormField<T extends Object> extends FormxField<List<T>> {
+class CheckboxListFormxField<T extends Object> extends FormxField<List<T>> {
   /// Creates a `FormField<List<T>>` that builds a list of [CheckboxListTile].
   ///
   /// The [items] are the list of items to be displayed.
@@ -18,7 +18,7 @@ class CheckboxListFormField<T extends Object> extends FormxField<List<T>> {
   ///
   /// Additional customization can be done with the [decoration] and/or [ListTileTheme].
   ///
-  const CheckboxListFormField({
+  const CheckboxListFormxField({
     super.key,
     required this.items,
     this.title = _defaultTitle,

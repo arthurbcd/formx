@@ -9,9 +9,7 @@ void main() {
       locale: Locale('pt', 'BR'),
       supportedLocales: [Locale('pt', 'BR')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      home: Material(
-        child: FormxExample(),
-      ),
+      home: Material(child: FormxExample()),
     ),
   );
 }
@@ -32,16 +30,16 @@ class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
 
   List<String> get items => [
-        'name1',
-        'name2',
-        'name3',
-        'name4',
-        'name5',
-        'name6',
-        'name7',
-        'name8',
-        'name9',
-      ];
+    'name1',
+    'name2',
+    'name3',
+    'name4',
+    'name5',
+    'name6',
+    'name7',
+    'name8',
+    'name9',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +68,13 @@ class FormxExample extends StatelessWidget {
             child: ListView(
               // mainAxisSize: MainAxisSize.min,
               children: [
-                DateFormField(
+                DateFormxField(
                   key: userForm.key('date'),
                   validator: Validator().isAfter(DateTime.now()),
                 ),
                 SizedBox(
                   width: 300,
-                  child: AutocompleteFormField.paged(
+                  child: AutocompleteFormxField.paged(
                     key: userForm.key('autocomplete'),
                     search: search,
                     onResults: print,
@@ -84,11 +82,10 @@ class FormxExample extends StatelessWidget {
                 ),
                 SizedBox(
                   width: 200,
-                  child: SearchFormField.paged(
-                    search: search,
-                  ),
+                  child: SearchFormxField.paged(search: search),
                 ),
                 const Text('USER'),
+
                 // FileListFormField.url(
                 //   key: const Key('file'),
                 // ),
@@ -101,7 +98,6 @@ class FormxExample extends StatelessWidget {
                 // DateFormField(
                 //   key: formController['date'],
                 // ),
-
                 TextFormField(
                   key: userForm.key('price'),
                   inputFormatters: Formatter().currency(code: 'BRL'),

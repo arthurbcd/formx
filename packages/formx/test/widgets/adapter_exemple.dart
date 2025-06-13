@@ -30,7 +30,7 @@ class _Example extends StatelessWidget {
             ),
             initialValue: 'John Doe',
           ),
-          DateFormField(
+          DateFormxField(
             // ❌ DateTime != String
             key: const Key('date').options(
               adapter: (String value) => value.toUpperCase(),

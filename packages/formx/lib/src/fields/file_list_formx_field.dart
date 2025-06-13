@@ -8,9 +8,9 @@ import 'widgets/file_label.dart';
 import 'widgets/icon_loading_button.dart';
 
 /// A [FormField] that allows the user to pick multiple files.
-class FileListFormField extends FormxField<List<XFile>> {
-  /// Creates a [FileListFormField] that allows the user to pick multiple files.
-  const FileListFormField({
+class FileListFormxField extends FormxField<List<XFile>> {
+  /// Creates a [FileListFormxField] that allows the user to pick many files.
+  const FileListFormxField({
     super.key,
     super.autovalidateMode,
     super.enabled,

@@ -4,12 +4,13 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
 import '../../formx.dart';
-import 'image_form_field.dart';
+import 'image_formx_field.dart' show ImageFormxField;
+import 'image_formx_field.dart';
 
 /// A [FormField] that allows the user to pick images.
-class ImageListFormField extends FileListFormField {
-  /// Creates a [ImageFormField] that allows the user to pick images.
-  const ImageListFormField({
+class ImageListFormxField extends FileListFormxField {
+  /// Creates a [ImageFormxField] that allows the user to pick images.
+  const ImageListFormxField({
     super.key,
     super.autovalidateMode,
     super.autofocus,
@@ -53,7 +54,7 @@ class ImageListFormField extends FileListFormField {
     Widget uploadIcon = const Icon(Icons.image),
     String? Function(List<String>? urls)? validator,
   }) {
-    return FileListFormField.url(
+    return FileListFormxField.url(
       filesPicker: imagesPicker ?? Formx.setup.imagesPicker,
       fileUploader: imageUploader ?? Formx.setup.imageUploader,
       fileDeleter: imageDeleter ?? Formx.setup.imageDeleter,
