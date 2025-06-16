@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.36.0 - Jun 16, 2025
+
+- Upgraded `DateFormxField`. Now editable.
+- Added `TimeFormxField`.
+- Added `FormxConfig.timePicker`.
+- Added `FormatterExtension.time`.
+- Added `FormFieldState.time`.
+
 ## 0.35.0 - Jun 13, 2025
 
 - Added `SliderFormField`.

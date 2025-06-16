@@ -3,10 +3,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 
-import '../extensions/string_extension.dart';
-import 'country_code_extension.dart';
-import 'fiat_code_extension.dart';
-import 'formatter.dart';
+import '../../formx.dart';
 import 'formatters/credit_card_cvc_input_formatter.dart';
 import 'formatters/credit_card_expiration_input_formatter.dart';
 import 'formatters/credit_card_number_input_formatter.dart';
@@ -107,6 +104,9 @@ extension FormatterExtension on Formatter {
 
   /// Formats the value as a cpf or cnpj.
   Formatter cpfCnpj() => masks(['000.000.000-00', '00.000.000/0000-00']);
+
+  /// Formats the value as a `TimeOfDay` text.
+  Formatter time() => addFormatter(TimeTextInputFormatter());
 
   /// Formats the value as a phone number.
   ///

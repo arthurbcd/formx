@@ -63,28 +63,53 @@ class DateFormxField extends FormxField<DateTime> {
 
   @override
   Widget build(FormxFieldState<DateTime> state) {
-    final localizations = MaterialLocalizations.of(state.context);
+    final key = GlobalObjectKey<FormFieldState<String>>(state.hashCode);
+    final localizations = Localizations.of<MaterialLocalizations>(
+          state.context,
+          MaterialLocalizations,
+        ) ??
+        const DefaultMaterialLocalizations();
+    final mask = localizations.dateHelpText.replaceAll(RegExp(r'[^\W]'), '#');
     final date = state.value;
 
     return TextFormField(
-      readOnly: true,
-      onTapAlwaysCalled: true,
+      key: key,
       enabled: enabled,
       autofocus: autofocus,
       focusNode: focusNode,
       restorationId: restorationId,
       forceErrorText: forceErrorText,
+      autovalidateMode: AutovalidateMode.onUnfocus,
+      keyboardType: TextInputType.datetime,
+      inputFormatters: Formatter().mask(mask),
+      validator: Validator<String>(
+        invalidText: localizations.invalidDateFormatLabel,
+        test: (text) => localizations.parseCompactDate(text) != null,
+      ),
+      onChanged: (text) {
+        final parsedDate = localizations.parseCompactDate(text);
+        state.didChange(parsedDate);
+      },
+      onSaved: (text) {
+        final parsedDate = localizations.parseCompactDate(text);
+        state.didChange(parsedDate);
+      },
       decoration: decoration?.copyWith(
         hintText: decoration?.hintText ?? localizations.dateHelpText,
         errorText: decoration?.errorText ?? state.errorText,
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.calendar_today),
+          onPressed: () async {
+            final pickedDate = await picker(state);
+            state.didChange(pickedDate ?? date);
+
+            if (pickedDate != null) {
+              final text = localizations.formatCompactDate(pickedDate);
+              key.currentState?.didChange(text);
+            }
+          },
+        ),
       ),
-      controller: TextEditingController(
-        text: date != null ? localizations.formatCompactDate(date) : null,
-      ),
-      onTap: () async {
-        final pickedDate = await picker(state);
-        state.didChange(pickedDate ?? date);
-      },
     );
   }
 }

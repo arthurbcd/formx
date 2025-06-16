@@ -160,6 +160,7 @@ Validator.disableOnDebug = true; // only works on debug mode
 - `.cpf`
 - `.cnpj`
 - `.date`
+- `.time`
 - `.alpha`
 - `.numeric`
 - `.alphanumeric`

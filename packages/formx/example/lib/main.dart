@@ -9,7 +9,9 @@ void main() {
       locale: Locale('pt', 'BR'),
       supportedLocales: [Locale('pt', 'BR')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      home: Material(child: FormxExample()),
+      home: Center(
+        child: SizedBox(width: 400, child: Material(child: FormxExample())),
+      ),
     ),
   );
 }
@@ -70,7 +72,11 @@ class FormxExample extends StatelessWidget {
               children: [
                 DateFormxField(
                   key: userForm.key('date'),
-                  validator: Validator().isAfter(DateTime.now()),
+                  validator: Validator().required(),
+                ),
+                TimeFormxField(
+                  key: userForm.key('time'),
+                  validator: Validator().required(),
                 ),
                 SizedBox(
                   width: 300,
@@ -175,6 +181,7 @@ class FormxExample extends StatelessWidget {
                 // ),
                 ElevatedButton(
                   onPressed: () {
+                    userForm.validate();
                     final map = userForm.values;
                     print(map);
                   },

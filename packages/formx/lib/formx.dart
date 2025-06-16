@@ -23,6 +23,7 @@ export 'src/fields/search/async_search.dart';
 export 'src/fields/search/async_search_base.dart';
 export 'src/fields/search_formx_field.dart';
 export 'src/fields/slider_formx_field.dart';
+export 'src/fields/time_formx_field.dart';
 export 'src/fields/widgets/formx_field.dart';
 export 'src/formatter/country_code_extension.dart';
 export 'src/formatter/fiat_code_extension.dart';

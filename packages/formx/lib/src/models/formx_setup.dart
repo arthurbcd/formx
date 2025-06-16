@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../fields/date_formx_field.dart' show DateFormxField;
 import '../fields/file_formx_field.dart' show FileFormxField;
 import '../fields/file_list_formx_field.dart' show FileListFormxField;
+import '../fields/time_formx_field.dart';
 
 /// A function to pick a value for a [FormField].
 typedef FieldPicker<T> = Future<T> Function(FormFieldState state);
@@ -35,6 +36,7 @@ class FormxSetup {
   const FormxSetup({
     this.defaultTitle = _defaultTitle,
     this.datePicker = DateFormxField.defaultPicker,
+    this.timePicker = TimeFormxField.defaultPicker,
     this.filePicker = _noFilePicker,
     this.filesPicker = _noFilesPicker,
     this.fileUploader = _noFileUploader,
@@ -95,6 +97,9 @@ class FormxSetup {
 
   /// The default date picker for [DateFormxField] fields.
   final FieldPicker<DateTime?> datePicker;
+
+  /// The default date picker for [TimeFormxField] fields.
+  final FieldPicker<TimeOfDay?> timePicker;
 
   /// The default file picker for [FileFormxField] fields.
   final FieldPicker<XFile?> filePicker;
