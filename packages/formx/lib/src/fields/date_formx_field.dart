@@ -72,6 +72,22 @@ class DateFormxField extends FormxField<DateTime> {
     final mask = localizations.dateHelpText.replaceAll(RegExp(r'[^\W]'), '#');
     final date = state.value;
 
+    final datetext = switch (date) {
+      null => null,
+      var date => localizations.formatCompactDate(date),
+    };
+
+    if (datetext != key.currentState?.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        key.currentState?.didChange(
+          switch (date) {
+            null => null,
+            var date => localizations.formatCompactDate(date),
+          },
+        );
+      });
+    }
+
     return TextFormField(
       key: key,
       enabled: enabled,

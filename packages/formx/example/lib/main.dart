@@ -187,6 +187,14 @@ class FormxExample extends StatelessWidget {
                   },
                   child: const Text('Submit'),
                 ),
+                ElevatedButton(
+                  onPressed: () {
+                    userForm.reset();
+                    final map = userForm.values;
+                    print(map);
+                  },
+                  child: const Text('Reset'),
+                ),
               ],
             ),
           ),

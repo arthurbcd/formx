@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.36.1 - Aug 6, 2025
+
+- Fix `DateFormxField.reset`.
+
 ## 0.36.0 - Jun 16, 2025
 
 - Upgraded `DateFormxField`. Now editable.
