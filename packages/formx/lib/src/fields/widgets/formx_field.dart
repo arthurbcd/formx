@@ -150,19 +150,25 @@ class _InputDecoratorxState extends State<InputDecoratorx> {
 class _FormxFieldState<T> extends FormxFieldState<T> {}
 
 /// The state of a [FormxField].
-abstract class FormxFieldState<T> extends FormFieldState<T> {
+class FormxFieldState<T> extends FormFieldState<T> {
+  GlobalKey<FormFieldState>? extraKey;
+  void Function(T? value)? onChanged;
+  void Function()? onReset;
+
   @override
   FormxField<T> get widget => super.widget as FormxField<T>;
 
   @override
   void didChange(T? value) {
     super.didChange(value);
+    onChanged?.call(value);
     widget.onChanged?.call(value);
   }
 
   @override
   void reset() {
     super.reset();
+    onReset?.call();
     widget.onChanged?.call(value);
   }
 }

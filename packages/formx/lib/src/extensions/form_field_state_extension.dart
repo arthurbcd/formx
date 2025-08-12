@@ -4,7 +4,6 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
 import '../../formx.dart';
-import '../fields/time_formx_field.dart';
 
 /// Extends [FormFieldState] with a programatic way to set [errorText].
 extension FormFieldStateExtension<T> on FormFieldState<T> {

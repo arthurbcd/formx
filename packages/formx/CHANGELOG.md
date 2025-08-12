@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.36.2 - Aug 12, 2025
+
+- Improve `DateFormxField.didChange`.
+
 ## 0.36.1 - Aug 6, 2025
 
 - Fix `DateFormxField.reset`.

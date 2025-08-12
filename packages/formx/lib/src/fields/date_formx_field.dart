@@ -63,7 +63,6 @@ class DateFormxField extends FormxField<DateTime> {
 
   @override
   Widget build(FormxFieldState<DateTime> state) {
-    final key = GlobalObjectKey<FormFieldState<String>>(state.hashCode);
     final localizations = Localizations.of<MaterialLocalizations>(
           state.context,
           MaterialLocalizations,
@@ -72,24 +71,17 @@ class DateFormxField extends FormxField<DateTime> {
     final mask = localizations.dateHelpText.replaceAll(RegExp(r'[^\W]'), '#');
     final date = state.value;
 
-    final datetext = switch (date) {
-      null => null,
-      var date => localizations.formatCompactDate(date),
+    state.onChanged ??= (date) {
+      final text = date != null ? localizations.formatCompactDate(date) : null;
+      state.extraKey?.currentState?.didChange(text);
     };
 
-    if (datetext != key.currentState?.value) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        key.currentState?.didChange(
-          switch (date) {
-            null => null,
-            var date => localizations.formatCompactDate(date),
-          },
-        );
-      });
-    }
+    state.onReset ??= () {
+      state.extraKey?.currentState?.reset();
+    };
 
     return TextFormField(
-      key: key,
+      key: state.extraKey ??= GlobalKey(),
       enabled: enabled,
       autofocus: autofocus,
       focusNode: focusNode,
@@ -104,10 +96,12 @@ class DateFormxField extends FormxField<DateTime> {
       ),
       onChanged: (text) {
         final parsedDate = localizations.parseCompactDate(text);
+        state.onChanged = null;
         state.didChange(parsedDate);
       },
       onSaved: (text) {
         final parsedDate = localizations.parseCompactDate(text);
+        state.onChanged = null;
         state.didChange(parsedDate);
       },
       decoration: decoration?.copyWith(
@@ -118,11 +112,6 @@ class DateFormxField extends FormxField<DateTime> {
           onPressed: () async {
             final pickedDate = await picker(state);
             state.didChange(pickedDate ?? date);
-
-            if (pickedDate != null) {
-              final text = localizations.formatCompactDate(pickedDate);
-              key.currentState?.didChange(text);
-            }
           },
         ),
       ),
