@@ -80,8 +80,13 @@ class DateFormxField extends FormxField<DateTime> {
       state.extraKey?.currentState?.reset();
     };
 
+    final initialDate = state.widget.initialValue;
+
     return TextFormField(
       key: state.extraKey ??= GlobalKey(),
+      initialValue: initialDate != null
+          ? localizations.formatCompactDate(initialDate)
+          : null,
       enabled: enabled,
       autofocus: autofocus,
       focusNode: focusNode,

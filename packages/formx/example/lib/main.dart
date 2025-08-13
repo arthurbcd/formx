@@ -71,6 +71,7 @@ class FormxExample extends StatelessWidget {
               children: [
                 DateFormxField(
                   key: userForm.key('date'),
+                  initialValue: DateTime.now(),
                   validator: Validator().required(),
                 ),
                 TimeFormxField(
