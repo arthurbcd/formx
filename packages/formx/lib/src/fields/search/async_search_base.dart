@@ -17,6 +17,7 @@ abstract class AsyncSearchBase<T extends Object> extends StatefulWidget {
     this.emptyBuilder,
     this.errorBuilder = defaultErrorBuilder,
     this.scrollLoadingBuilder,
+    this.controller,
   }) : assert(search != null || pagedSearch != null, 'must set a search');
 
   /// The default loading builder to show while searching.
@@ -82,6 +83,9 @@ abstract class AsyncSearchBase<T extends Object> extends StatefulWidget {
 
   /// The results of the search.
   final ValueChanged<List<T>>? onResults;
+
+  /// Controls the text being edited.
+  final TextEditingController? controller;
 }
 
 /// Signature for returning a list of items based on a [query].

@@ -26,7 +26,11 @@ class AsyncSearch<T extends Object> extends AsyncSearchBase<T> {
     super.emptyBuilder,
     super.errorBuilder,
     super.scrollLoadingBuilder,
+    SearchController? super.controller,
   });
+
+  @override
+  SearchController? get controller => super.controller as SearchController?;
 
   /// The default [AsyncSearch] view builder to show the search results.
   static Widget defaultViewBuilder(BuildContext context, Widget child) => child;
@@ -52,7 +56,7 @@ class AsyncSearchState<T extends Object> extends State<AsyncSearch<T>> {
   var _query = '';
   var _selectedText = '';
 
-  final _controller = SearchController();
+  late final _controller = widget.controller ?? SearchController();
   var _page = 0;
   final _scrollLoading = ValueNotifier(false);
   var _isLastPage = false;
@@ -93,7 +97,7 @@ class AsyncSearchState<T extends Object> extends State<AsyncSearch<T>> {
   }
 
   Future<void> _scrollListener() async {
-    final (pagedSearch, position) = (widget.pagedSearch, this._position);
+    final (pagedSearch, position) = (widget.pagedSearch, _position);
     if (pagedSearch == null || position == null) return;
 
     if (position.isAtMax && !isLastPage && !scrollLoading.value) {

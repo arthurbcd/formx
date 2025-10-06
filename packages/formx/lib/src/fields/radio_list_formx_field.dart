@@ -38,12 +38,13 @@ class RadioListFormxField<T extends Object> extends FormxField<T> {
     super.validator,
     super.onSaved,
     super.enabled,
+    super.readOnly,
     super.restorationId,
   });
 
   // Default implementations
   static Widget _defaultTitle(Object item) {
-    return Text(Formx.setup.defaultTitle(item));
+    return SelectableText(Formx.setup.defaultTitle(item));
   }
 
   static Widget _defaultItemBuilder(state, item, Widget child) => child;
@@ -88,16 +89,18 @@ class RadioListFormxField<T extends Object> extends FormxField<T> {
           item,
           RadioListTile(
             value: item,
-            groupValue: state.value,
             title: title?.call(item),
             subtitle: subtitle?.call(item),
             controlAffinity: controlAffinity,
-            onChanged: enabled ? state.didChange : null,
           ),
         ).useIntrinsicWidth(!isExpanded),
     ];
 
-    return listBuilder(state, children);
+    return RadioGroup(
+      groupValue: state.value,
+      onChanged: state.didChange,
+      child: listBuilder(state, children),
+    );
   }
 }
 

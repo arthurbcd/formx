@@ -20,6 +20,7 @@ class TimeFormxField extends FormxField<TimeOfDay> {
     super.autofocus,
     super.focusNode,
     super.enabled,
+    super.readOnly,
     super.initialValue,
     super.autovalidateMode,
     super.onSaved,
@@ -78,6 +79,7 @@ class TimeFormxField extends FormxField<TimeOfDay> {
   Widget build(FormxFieldState<TimeOfDay> state) {
     final alwaysUse24H = MediaQuery.alwaysUse24HourFormatOf(state.context);
     final key = GlobalObjectKey<FormFieldState<String>>(state.hashCode);
+    final disabledColor = Theme.of(state.context).disabledColor;
     final localizations = Localizations.of<MaterialLocalizations>(
           state.context,
           MaterialLocalizations,
@@ -88,6 +90,7 @@ class TimeFormxField extends FormxField<TimeOfDay> {
     return TextFormField(
       key: key,
       enabled: enabled,
+      readOnly: readOnly,
       autofocus: autofocus,
       focusNode: focusNode,
       restorationId: restorationId,
@@ -111,19 +114,21 @@ class TimeFormxField extends FormxField<TimeOfDay> {
         hintText: decoration?.hintText ?? 'hh:mm',
         errorText: decoration?.errorText ?? state.errorText,
         suffixIcon: IconButton(
-          icon: const Icon(Icons.access_time),
-          onPressed: () async {
-            final pickedTime = await picker(state);
-            state.didChange(pickedTime ?? date);
+          icon: Icon(Icons.access_time, color: readOnly ? disabledColor : null),
+          onPressed: readOnly
+              ? null
+              : () async {
+                  final pickedTime = await picker(state);
+                  state.didChange(pickedTime ?? date);
 
-            if (pickedTime != null) {
-              final text = localizations.formatTimeOfDay(
-                pickedTime,
-                alwaysUse24HourFormat: alwaysUse24H,
-              );
-              key.currentState?.didChange(text);
-            }
-          },
+                  if (pickedTime != null) {
+                    final text = localizations.formatTimeOfDay(
+                      pickedTime,
+                      alwaysUse24HourFormat: alwaysUse24H,
+                    );
+                    key.currentState?.didChange(text);
+                  }
+                },
         ),
       ),
     );

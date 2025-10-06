@@ -38,11 +38,12 @@ class CheckboxListFormxField<T extends Object> extends FormxField<List<T>> {
     super.validator,
     super.onSaved,
     super.enabled,
+    super.readOnly,
     super.restorationId,
   });
 
   static Widget _defaultTitle(Object item) {
-    return Text(Formx.setup.defaultTitle(item));
+    return SelectableText(Formx.setup.defaultTitle(item));
   }
 
   static Widget _defaultItemBuilder(state, item, Widget child) => child;

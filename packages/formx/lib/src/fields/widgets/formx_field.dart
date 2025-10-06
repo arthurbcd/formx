@@ -24,6 +24,7 @@ class FormxField<T> extends FormField<T> {
     super.onSaved,
     super.validator,
     super.restorationId,
+    this.readOnly = false,
     this.autofocus = false,
     this.focusNode,
     this.decoration = const InputDecoration(),
@@ -31,6 +32,9 @@ class FormxField<T> extends FormField<T> {
     this.onChanged,
     super.builder = _build,
   });
+
+  /// If true, this field is read-only.
+  final bool readOnly;
 
   /// Called on [FormFieldState.didChange].
   final ValueChanged<T?>? onChanged;
@@ -120,16 +124,38 @@ class _InputDecoratorxState extends State<InputDecoratorx> {
     final field = context.findAncestorStateOfType<FormxFieldState>();
     final decoration = widget.decoration;
     final enabled = field?.widget.enabled ?? true;
+    final readOnly = field?.widget.readOnly ?? false;
+    final theme = Theme.of(context);
 
-    Widget child = Focus(
+    final child = Focus(
       autofocus: widget.autofocus ?? field?.widget.autofocus ?? false,
       focusNode: widget.focusNode ?? field?.widget.focusNode,
       onFocusChange:
           enabled ? (hasFocus) => setState(() => _hasFocus = hasFocus) : null,
-      child: MouseRegion(
-        onEnter: enabled ? (_) => setHovering(true) : null,
-        onExit: enabled ? (_) => setHovering(false) : null,
-        child: widget.child,
+      child: Theme(
+        data: theme.copyWith(
+          splashColor: readOnly ? Colors.transparent : null,
+          checkboxTheme: theme.checkboxTheme.copyWith(
+            mouseCursor: readOnly
+                ? const WidgetStatePropertyAll(SystemMouseCursors.basic)
+                : null,
+          ),
+          radioTheme: theme.radioTheme.copyWith(
+            mouseCursor: readOnly
+                ? const WidgetStatePropertyAll(SystemMouseCursors.basic)
+                : null,
+          ),
+          listTileTheme: theme.listTileTheme.copyWith(
+            mouseCursor: readOnly
+                ? const WidgetStatePropertyAll(SystemMouseCursors.basic)
+                : null,
+          ),
+        ),
+        child: MouseRegion(
+          onEnter: enabled ? (_) => setHovering(true) : null,
+          onExit: enabled ? (_) => setHovering(false) : null,
+          child: widget.child,
+        ),
       ),
     );
 
@@ -159,7 +185,18 @@ class FormxFieldState<T> extends FormFieldState<T> {
   FormxField<T> get widget => super.widget as FormxField<T>;
 
   @override
+  bool get hasError => !widget.readOnly && super.hasError;
+
+  @override
+  bool get isValid => widget.readOnly || super.isValid;
+
+  @override
+  String? get errorText => widget.readOnly ? null : super.errorText;
+
+  @override
   void didChange(T? value) {
+    if (widget.readOnly) return;
+
     super.didChange(value);
     onChanged?.call(value);
     widget.onChanged?.call(value);
@@ -167,9 +204,25 @@ class FormxFieldState<T> extends FormFieldState<T> {
 
   @override
   void reset() {
+    if (widget.readOnly) return;
+
     super.reset();
     onReset?.call();
     widget.onChanged?.call(value);
+  }
+
+  @override
+  bool validate() {
+    if (widget.readOnly) return true;
+
+    return super.validate();
+  }
+
+  @override
+  void save() {
+    if (widget.readOnly) return;
+
+    super.save();
   }
 }
 

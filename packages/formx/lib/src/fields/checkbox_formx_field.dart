@@ -12,6 +12,7 @@ class CheckboxFormxField extends FormxField<bool> {
     super.key,
     super.autovalidateMode,
     super.enabled,
+    super.readOnly,
     super.forceErrorText,
     super.initialValue = false,
     super.onSaved,
@@ -39,7 +40,7 @@ class CheckboxFormxField extends FormxField<bool> {
       title: title,
       subtitle: switch (state.errorText) {
         null => subtitle,
-        _ => Text(
+        _ => SelectableText(
             state.errorText!,
             style: TextStyle(color: theme.colorScheme.error),
           ),

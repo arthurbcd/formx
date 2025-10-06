@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.37.0 - Oct 06, 2025
+
+- Add `AsyncSearch.controller`.
+- Add `SearchFormxField.controller`.
+- Add `AsyncAutocomplete.controller`.
+- Add `AutocompleteFormxField.controller`.
+- Add `FormxField.readOnly` to all fields.
+
 ## 0.36.3 - Aug 13, 2025
 
 - Fix `DateFormxField`.
@@ -33,7 +41,7 @@
 - Breaking change: visiting a form explicitly requires a `Key` value.
 - Fixed missing `enabled` state in fields.
 - Introduces `Formx` experimental api.
-  
+
 ## 0.33.1 - Apr 23, 2025
 
 - Relaxed assertion on `Formx.visit`.
@@ -49,7 +57,7 @@
 
 - Added `FormKey`, shorthand for `GlobalKey<FormState>` with key value.
 - Fixes `FieldKey` using `Key.value` identity instead of `Key`.
-- Improved `FieldKey` type assertions. 
+- Improved `FieldKey` type assertions.
 
 ## 0.31.0 - Mar 07, 2025
 
@@ -204,7 +212,7 @@
 ## 0.19.1 - Oct 22, 2024
 
 - Added `FormFieldState.valueAdapted`.
-- Fixed `FieldKey.unmask` apply on the entire map instead of just the value. 
+- Fixed `FieldKey.unmask` apply on the entire map instead of just the value.
 - Deprecates `FieldKey` extensions. Use `Key.options` instead.
 
 ## 0.19.0 - Oct 20, 2024

@@ -19,6 +19,7 @@ class DateFormxField extends FormxField<DateTime> {
     super.autofocus,
     super.focusNode,
     super.enabled,
+    super.readOnly,
     super.initialValue,
     super.autovalidateMode,
     super.onSaved,
@@ -68,6 +69,8 @@ class DateFormxField extends FormxField<DateTime> {
           MaterialLocalizations,
         ) ??
         const DefaultMaterialLocalizations();
+    final disabledColor = Theme.of(state.context).disabledColor;
+
     final mask = localizations.dateHelpText.replaceAll(RegExp(r'[^\W]'), '#');
     final date = state.value;
 
@@ -88,6 +91,7 @@ class DateFormxField extends FormxField<DateTime> {
           ? localizations.formatCompactDate(initialDate)
           : null,
       enabled: enabled,
+      readOnly: readOnly,
       autofocus: autofocus,
       focusNode: focusNode,
       restorationId: restorationId,
@@ -113,11 +117,14 @@ class DateFormxField extends FormxField<DateTime> {
         hintText: decoration?.hintText ?? localizations.dateHelpText,
         errorText: decoration?.errorText ?? state.errorText,
         suffixIcon: IconButton(
-          icon: const Icon(Icons.calendar_today),
-          onPressed: () async {
-            final pickedDate = await picker(state);
-            state.didChange(pickedDate ?? date);
-          },
+          icon: Icon(Icons.calendar_today,
+              color: readOnly ? disabledColor : null),
+          onPressed: readOnly || !enabled
+              ? null
+              : () async {
+                  final pickedDate = await picker(state);
+                  state.didChange(pickedDate ?? date);
+                },
         ),
       ),
     );

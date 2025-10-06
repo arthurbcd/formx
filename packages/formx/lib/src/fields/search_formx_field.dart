@@ -24,6 +24,7 @@ class SearchFormxField<T extends Object> extends FormField<T> {
     this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
     this.emptyBuilder,
     this.scrollLoadingBuilder,
+    this.controller,
     super.key,
     super.initialValue,
     super.enabled,
@@ -50,6 +51,7 @@ class SearchFormxField<T extends Object> extends FormField<T> {
     this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
     this.emptyBuilder,
     this.scrollLoadingBuilder,
+    this.controller,
     super.key,
     super.initialValue,
     super.enabled,
@@ -106,6 +108,9 @@ class SearchFormxField<T extends Object> extends FormField<T> {
   /// Defaults to [loadingBuilder].
   final WidgetBuilder? scrollLoadingBuilder;
 
+  /// Controls the text being edited.
+  final SearchController? controller;
+
   static Widget _builder<T extends Object>(FormFieldState<T> state) {
     return _AutocompleteFormField(SearchFormFieldState(state));
   }
@@ -128,6 +133,7 @@ class _AutocompleteFormField<T extends Object> extends StatelessWidget {
       loadingBuilder: widget.loadingBuilder,
       scrollLoadingBuilder: widget.scrollLoadingBuilder,
       debounce: widget.debounce,
+      controller: widget.controller,
       builder: (_, onSelected, value) {
         return ListTile(
           dense: true,

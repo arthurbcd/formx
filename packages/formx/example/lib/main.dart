@@ -17,15 +17,15 @@ void main() {
 
 final userKey = FormKey('user');
 
-final userForm = Formx(
-  initialValues: {
-    'name': 'Arthur',
-    'age': '18',
-    'cpf': '00252054202',
-    'email': 'some@email',
-    'phone': '91982224111',
-  },
-);
+// final userForm = Formx(
+//   initialValues: {
+//     'name': 'Arthur',
+//     'age': '18',
+//     'cpf': '00252054202',
+//     'email': 'some@email',
+//     'phone': '91982224111',
+//   },
+// );
 
 class FormxExample extends StatelessWidget {
   const FormxExample({super.key});
@@ -54,41 +54,54 @@ class FormxExample extends StatelessWidget {
 
         // Check your console and type, it's alive!
         onChanged: () {
-          final map = userForm.values;
-          print(map);
+          // final map = userForm.values;
+          // print(map);
         },
 
         // Builder shortcut to access the form state.
         child: Center(
           child: Form(
             onChanged: () {
-              final map = userForm.values;
-              print(map);
+              // final map = userForm.values;
+              // print(map);
             },
             // key: const Key('sub'),
             child: ListView(
               // mainAxisSize: MainAxisSize.min,
               children: [
                 DateFormxField(
-                  key: userForm.key('date'),
+                  // key: userForm.key('date'),
+                  readOnly: true,
                   initialValue: DateTime.now(),
                   validator: Validator().required(),
+                  decoration: const InputDecoration(
+                    labelText: 'DateFormxField',
+                  ),
                 ),
                 TimeFormxField(
-                  key: userForm.key('time'),
+                  // key: userForm.key('time'),
+                  readOnly: true,
                   validator: Validator().required(),
+                  decoration: const InputDecoration(
+                    labelText: 'TimeFormxField',
+                  ),
                 ),
+                const SliderFormxField(readOnly: true),
                 SizedBox(
                   width: 300,
                   child: AutocompleteFormxField.paged(
-                    key: userForm.key('autocomplete'),
+                    // key: userForm.key('autocomplete'),
                     search: search,
                     onResults: print,
+                    controller: TextEditingController(),
                   ),
                 ),
                 SizedBox(
                   width: 200,
-                  child: SearchFormxField.paged(search: search),
+                  child: SearchFormxField.paged(
+                    controller: SearchController(),
+                    search: search,
+                  ),
                 ),
                 const Text('USER'),
 
@@ -105,31 +118,31 @@ class FormxExample extends StatelessWidget {
                 //   key: formController['date'],
                 // ),
                 TextFormField(
-                  key: userForm.key('price'),
+                  // key: userForm.key('price'),
                   inputFormatters: Formatter().currency(code: 'BRL'),
                 ),
 
                 TextFormField(
-                  key: userForm.key('name'),
+                  // key: userForm.key('name'),
                   // inputFormatters: Formatter().pinyin(),
                   // validator: Validator().required().minLength(2),
                 ),
 
                 // Just add a key to your fields and you're good to go.
                 TextFormField(
-                  key: userForm.key('phone'),
+                  // key: userForm.key('phone'),
                   // initialValue: phoneFormatter.format('91982224111'),
                   inputFormatters: phoneFormatter,
                   validator: Validator().minWords(2),
                 ),
 
                 TextFormField(
-                  key: userForm.key('age'),
+                  // key: userForm.key('age'),
                   inputFormatters: Formatter().phone(),
                   validator: Validator(),
                 ),
                 TextFormField(
-                  key: userForm.key('cpf'),
+                  // key: userForm.key('cpf'),
                   inputFormatters: Formatter().cpfCnpj(),
                   validator: Validator().cpfCnpj(),
                   decoration: InputDecoration(
@@ -143,55 +156,58 @@ class FormxExample extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
-                  key: userForm.key('email', keepMask: true),
+                  // key: userForm.key('email', keepMask: true),
                   validator: Validator().required().email(),
                 ),
 
                 /// You can nest [Formx] to create complex structures.
-                // Form(
-                //   key: formController['address'],
-                //   child: Column(
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //       const Text('Address:'),
-                //       TextFormField(
-                //         key: formController['street'],
-                //         initialValue: 'Sesame Street',
-                //       ),
-                //       TextFormField(
-                //         key: formController['age'],
-                //       ),
-                //       RadioListFormField(
-                //         key: formController['names'],
-                //         items: const ['Arthur', 'Iran', 'Juan'],
-                //         validator: Validator().required(),
-                //       ),
-                //       CheckboxListFormField(
-                //         key: formController['friends'],
-                //         items: const ['Arthur', 'Iran', 'Juan'],
-                //         validator: Validator().minLength(2),
-                //       ),
-                //       CheckboxFormField(
-                //         key: formController['terms'],
-                //         title: const Text('I agree to the terms'),
-                //         validator: Validator().required(),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                Form(
+                  // key: formController['address'],
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Address:'),
+                      TextFormField(
+                        // key: formController['street'],
+                        initialValue: 'Sesame Street',
+                      ),
+                      TextFormField(
+                        // key: formController['age'],
+                      ),
+                      RadioListFormxField(
+                        readOnly: true,
+                        // key: formController['names'],
+                        items: const ['Arthur', 'Iran', 'Juan'],
+                        validator: Validator().required(),
+                      ),
+                      CheckboxListFormxField(
+                        readOnly: true,
+                        // key: formController['friends'],
+                        items: const ['Arthur', 'Iran', 'Juan'],
+                        validator: Validator().minLength(2),
+                      ),
+                      CheckboxFormxField(
+                        readOnly: true,
+                        // key: formController['terms'],
+                        title: const SelectableText('I agree to the terms'),
+                        validator: Validator().required(),
+                      ),
+                    ],
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: () {
-                    userForm.validate();
-                    final map = userForm.values;
-                    print(map);
+                    // userForm.validate();
+                    // final map = userForm.values;
+                    // print(map);
                   },
                   child: const Text('Submit'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    userForm.reset();
-                    final map = userForm.values;
-                    print(map);
+                    // userForm.reset();
+                    // final map = userForm.values;
+                    // print(map);
                   },
                   child: const Text('Reset'),
                 ),

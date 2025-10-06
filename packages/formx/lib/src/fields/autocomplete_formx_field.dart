@@ -20,6 +20,7 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
     this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
     this.viewEmptyBuilder,
     this.scrollLoadingBuilder,
+    this.controller,
     super.decoration,
     super.key,
     super.initialValue,
@@ -45,6 +46,7 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
     this.viewErrorBuilder = AsyncSearchBase.defaultErrorBuilder,
     this.viewEmptyBuilder,
     this.scrollLoadingBuilder,
+    this.controller,
     super.key,
     super.autofocus,
     super.autovalidateMode,
@@ -93,6 +95,9 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
   /// The view builder to show when results are empty. If null, shows nothing.
   final WidgetBuilder? viewEmptyBuilder;
 
+  /// Controls the text being edited.
+  final TextEditingController? controller;
+
   /// The view builder to show when an error occurs. If null, shows nothing.
   final Widget Function(
     BuildContext context,
@@ -114,6 +119,7 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
       loadingBuilder: loadingBuilder,
       scrollLoadingBuilder: scrollLoadingBuilder,
       debounce: debounce,
+      controller: controller,
       fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
         if (state.value != null && controller.text.isEmpty) {
           controller.text = title(state.value!);

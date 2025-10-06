@@ -23,6 +23,7 @@ class AsyncAutocomplete<T extends Object> extends AsyncSearchBase<T> {
     super.emptyBuilder,
     super.errorBuilder,
     super.scrollLoadingBuilder,
+    super.controller,
   });
 
   /// The default [AsyncAutocomplete] view builder to show the search results.
@@ -84,6 +85,7 @@ class AsyncAutocompleteState<T extends Object>
   int _page = 0;
   final _scrollLoading = ValueNotifier(false);
   bool _isLastPage = false;
+  final _focus = FocusNode();
 
   /// The current search query.
   String get query => _query;
@@ -181,6 +183,8 @@ class AsyncAutocompleteState<T extends Object>
   @override
   Widget build(BuildContext context) {
     return Autocomplete<T>(
+      focusNode: _focus,
+      textEditingController: widget.controller,
       fieldViewBuilder: widget.fieldViewBuilder,
       displayStringForOption: (_) => _selectedText,
       optionsBuilder: (value) async {
@@ -195,7 +199,7 @@ class AsyncAutocompleteState<T extends Object>
       },
       optionsViewBuilder: (context, onSelected, values) {
         void select(T value, String text) {
-          this._selectedText = text;
+          _selectedText = text;
           onSelected(value);
 
           FocusScope.of(context).unfocus();
