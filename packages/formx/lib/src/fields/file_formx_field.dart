@@ -26,6 +26,7 @@ class FileFormxField extends FormxField<XFile> {
     super.onChanged,
     super.autofocus,
     super.focusNode,
+    super.readOnly,
     this.label,
     this.uploadIcon = const Icon(Icons.upload_file),
     this.filePicker,
@@ -58,6 +59,7 @@ class FileFormxField extends FormxField<XFile> {
     void Function(String? url, XFile? file)? onFileChanged,
     Widget Function(String url, XFile? file)? label,
     Widget uploadIcon = const Icon(Icons.upload_file),
+    bool readOnly = false,
   }) {
     return _FileUrlFormField(
       key: key,
@@ -81,6 +83,7 @@ class FileFormxField extends FormxField<XFile> {
       fileUploader: fileUploader,
       onFileChanged: onFileChanged,
       path: path,
+      readOnly: readOnly,
     );
   }
 
@@ -146,6 +149,7 @@ class _FileUrlFormField extends FormxField<String> {
     super.autofocus,
     super.decorator,
     super.focusNode,
+    super.readOnly,
     this.filePicker,
     this.path,
     this.fileUploader,

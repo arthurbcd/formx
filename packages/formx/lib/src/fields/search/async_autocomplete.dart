@@ -24,6 +24,8 @@ class AsyncAutocomplete<T extends Object> extends AsyncSearchBase<T> {
     super.errorBuilder,
     super.scrollLoadingBuilder,
     super.controller,
+    super.enabled,
+    super.readOnly,
   });
 
   /// The default [AsyncAutocomplete] view builder to show the search results.
@@ -49,7 +51,10 @@ class AsyncAutocomplete<T extends Object> extends AsyncSearchBase<T> {
     FocusNode focusNode,
     VoidCallback onFieldSubmitted,
   ) {
+    final widget = context.findAncestorWidgetOfExactType<AsyncAutocomplete>();
     return TextFormField(
+      enabled: widget?.enabled,
+      readOnly: widget?.readOnly ?? false,
       controller: textEditingController,
       focusNode: focusNode,
       onFieldSubmitted: (_) => onFieldSubmitted(),

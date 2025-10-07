@@ -2,10 +2,8 @@
 
 ## 0.37.0 - Oct 06, 2025
 
-- Add `AsyncSearch.controller`.
-- Add `SearchFormxField.controller`.
-- Add `AsyncAutocomplete.controller`.
-- Add `AutocompleteFormxField.controller`.
+- Add `AsyncSearch/FormxField`: `controller`, `readOnly` & `enabled`.
+- Add `AsyncAutocomplete/FormxField`: `controller`, `readOnly` & `enabled`.
 - Add `FormxField.readOnly` to all fields.
 
 ## 0.36.3 - Aug 13, 2025

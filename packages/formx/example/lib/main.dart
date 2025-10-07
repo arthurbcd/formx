@@ -90,6 +90,7 @@ class FormxExample extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   child: AutocompleteFormxField.paged(
+                    enabled: false,
                     // key: userForm.key('autocomplete'),
                     search: search,
                     onResults: print,
@@ -99,6 +100,7 @@ class FormxExample extends StatelessWidget {
                 SizedBox(
                   width: 200,
                   child: SearchFormxField.paged(
+                    enabled: false,
                     controller: SearchController(),
                     search: search,
                   ),

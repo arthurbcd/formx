@@ -18,6 +18,8 @@ abstract class AsyncSearchBase<T extends Object> extends StatefulWidget {
     this.errorBuilder = defaultErrorBuilder,
     this.scrollLoadingBuilder,
     this.controller,
+    this.enabled = true,
+    this.readOnly = false,
   }) : assert(search != null || pagedSearch != null, 'must set a search');
 
   /// The default loading builder to show while searching.
@@ -86,6 +88,12 @@ abstract class AsyncSearchBase<T extends Object> extends StatefulWidget {
 
   /// Controls the text being edited.
   final TextEditingController? controller;
+
+  /// Whether the field is enabled or disabled.
+  final bool enabled;
+
+  /// Whether the field is read-only.
+  final bool readOnly;
 }
 
 /// Signature for returning a list of items based on a [query].

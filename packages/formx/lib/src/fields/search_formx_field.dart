@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import '../../formx.dart';
 
 /// A `FormField<T>` that contains a [AsyncAutocomplete] widget.
-class SearchFormxField<T extends Object> extends FormField<T> {
+class SearchFormxField<T extends Object> extends FormxField<T> {
   /// Creates a `FormField<T>` on top of a [ListTile] based [AsyncAutocomplete].
   ///
   /// This field builds results based on the [search] function.
@@ -32,6 +32,7 @@ class SearchFormxField<T extends Object> extends FormField<T> {
     super.validator,
     super.autovalidateMode,
     super.restorationId,
+    super.readOnly,
   })  : pagedSearch = null,
         super(builder: _builder);
 
@@ -59,6 +60,7 @@ class SearchFormxField<T extends Object> extends FormField<T> {
     super.validator,
     super.autovalidateMode,
     super.restorationId,
+    super.readOnly,
   })  : search = null,
         pagedSearch = search,
         super(builder: _builder);
@@ -127,6 +129,8 @@ class _AutocompleteFormField<T extends Object> extends StatelessWidget {
     final widget = state.widget;
 
     return AsyncSearch(
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
       search: widget.search,
       pagedSearch: widget.pagedSearch,
       onResults: widget.onResults,

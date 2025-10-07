@@ -27,6 +27,8 @@ class AsyncSearch<T extends Object> extends AsyncSearchBase<T> {
     super.errorBuilder,
     super.scrollLoadingBuilder,
     SearchController? super.controller,
+    super.enabled,
+    super.readOnly,
   });
 
   @override
@@ -157,7 +159,9 @@ class AsyncSearchState<T extends Object> extends State<AsyncSearch<T>> {
   @override
   Widget build(BuildContext context) {
     return SearchAnchor.bar(
-      searchController: _controller,
+      enabled: widget.enabled,
+      searchController:
+          widget.readOnly ? _NoOpSearchController(_selectedText) : _controller,
       viewTrailing: [
         ListenableBuilder(
           listenable: Listenable.merge([loading, _controller]),
@@ -222,6 +226,33 @@ class AsyncSearchState<T extends Object> extends State<AsyncSearch<T>> {
         ];
       },
     );
+  }
+}
+
+class _NoOpSearchController extends SearchController {
+  _NoOpSearchController(String text) {
+    super.value = value.copyWith(
+      text: text,
+      selection: const TextSelection.collapsed(offset: -1),
+      composing: TextRange.empty,
+    );
+  }
+
+  @override
+  set value(TextEditingValue value) {
+    super.value = super.value.copyWith(
+          selection: value.selection,
+        );
+  }
+
+  @override
+  void openView() {
+    // do nothing
+  }
+
+  @override
+  void closeView([String? selectedText]) {
+    // do nothing
   }
 }
 

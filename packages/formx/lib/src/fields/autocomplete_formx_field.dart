@@ -60,6 +60,7 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
     super.onSaved,
     super.restorationId,
     super.validator,
+    super.readOnly,
   })  : search = null,
         pagedSearch = search;
 
@@ -113,6 +114,8 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
   @override
   Widget build(FormFieldState<T> state) {
     return AsyncAutocomplete(
+      enabled: enabled,
+      readOnly: readOnly,
       search: search,
       pagedSearch: pagedSearch,
       onResults: onResults,
@@ -129,6 +132,8 @@ class AutocompleteFormxField<T extends Object> extends FormxField<T> {
             .loading;
 
         return TextFormField(
+          enabled: enabled,
+          readOnly: readOnly,
           controller: controller,
           autofocus: autofocus,
           focusNode: focusNode,
