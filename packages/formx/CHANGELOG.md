@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.37.1 - Oct 09, 2025
+
+- Fix `AsyncAutocomplete` assert conflict.
+
 ## 0.37.0 - Oct 06, 2025
 
 - Add `AsyncSearch/FormxField`: `controller`, `readOnly` & `enabled`.

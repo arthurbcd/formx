@@ -117,8 +117,10 @@ class DateFormxField extends FormxField<DateTime> {
         hintText: decoration?.hintText ?? localizations.dateHelpText,
         errorText: decoration?.errorText ?? state.errorText,
         suffixIcon: IconButton(
-          icon: Icon(Icons.calendar_today,
-              color: readOnly ? disabledColor : null),
+          icon: Icon(
+            Icons.calendar_today,
+            color: readOnly ? disabledColor : null,
+          ),
           onPressed: readOnly || !enabled
               ? null
               : () async {

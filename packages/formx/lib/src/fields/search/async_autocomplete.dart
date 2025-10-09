@@ -189,7 +189,7 @@ class AsyncAutocompleteState<T extends Object>
   Widget build(BuildContext context) {
     return Autocomplete<T>(
       focusNode: _focus,
-      textEditingController: widget.controller,
+      textEditingController: widget.controller ?? TextEditingController(),
       fieldViewBuilder: widget.fieldViewBuilder,
       displayStringForOption: (_) => _selectedText,
       optionsBuilder: (value) async {
