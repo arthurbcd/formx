@@ -185,11 +185,13 @@ class AsyncAutocompleteState<T extends Object>
     super.dispose();
   }
 
+  late final controller = widget.controller ?? TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Autocomplete<T>(
       focusNode: _focus,
-      textEditingController: widget.controller ?? TextEditingController(),
+      textEditingController: controller,
       fieldViewBuilder: widget.fieldViewBuilder,
       displayStringForOption: (_) => _selectedText,
       optionsBuilder: (value) async {

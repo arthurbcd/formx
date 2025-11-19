@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.37.2 - Nov 19, 2025
+
+- Fix `AsyncAutocomplete` `TextField.controller` conlifct.
+
 ## 0.37.1 - Oct 09, 2025
 
 - Fix `AsyncAutocomplete` assert conflict.
